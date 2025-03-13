@@ -222,21 +222,16 @@ func TestConvertFromDirective(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := context.Background()
-			df, err := ParseDockerfile(ctx, []byte(tt.input))
+			df, err := ParseDockerfile(context.Background(), []byte(tt.input))
 			if err != nil {
-				t.Fatalf("ParseDockerfile() error = %v", err)
-			}
-
-			if len(df.Lines) == 0 {
-				t.Fatalf("ParseDockerfile() parsed no lines")
+				t.Fatalf("Failed to parse dockerfile: %v", err)
 			}
 
 			line := df.Lines[0]
 			t.Logf("Before conversion: %+v", line)
 
 			// Apply conversion
-			convertFromDirective(line, tt.opts)
+			convertFromDirective(line, tt.opts, make(map[string]bool))
 
 			t.Logf("After conversion: %+v", line)
 			t.Logf("Raw line: %s", line.Raw)

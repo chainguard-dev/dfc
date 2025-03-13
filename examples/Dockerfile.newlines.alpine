@@ -1,0 +1,9 @@
+FROM cgr.dev/chainguard/alpine:latest
+
+RUN && apk add -U curl git nginx
+
+WORKDIR /app
+
+COPY . .
+
+CMD ["nginx", "-g", "daemon off;"] 

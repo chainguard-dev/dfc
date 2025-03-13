@@ -1,8 +1,6 @@
 package dfc2
 
 import (
-	"bufio"
-	"bytes"
 	"context"
 	"strings"
 
@@ -13,15 +11,14 @@ import (
 func ParseDockerfile(_ context.Context, content []byte) (*Dockerfile, error) {
 	dockerfile := &Dockerfile{
 		Lines:        []*DockerfileLine{},
-		StageAliases: make(map[string]bool),
+		stageAliases: make(map[string]bool),
 	}
 
 	// Stage counter for multi-stage builds
 	stage := 0
 
 	// Process the content line by line
-	scanner := bufio.NewScanner(bytes.NewReader(content))
-	lineNum := 0
+	lines := strings.Split(string(content), "\n")
 
 	// Variables to track multi-line commands
 	var currentMultiLine *DockerfileLine
@@ -30,10 +27,10 @@ func ParseDockerfile(_ context.Context, content []byte) (*Dockerfile, error) {
 	// Variables to track comments and empty lines
 	var pendingExtra strings.Builder
 	var hasExtraContent bool
+	var blankLines []int // Track line numbers of blank lines
 
-	for scanner.Scan() {
-		lineNum++
-		line := scanner.Text()
+	for i, line := range lines {
+		lineNum := i + 1
 		trimmedLine := strings.TrimSpace(line)
 
 		// If we're in a multi-line command, handle it specially
@@ -64,6 +61,11 @@ func ParseDockerfile(_ context.Context, content []byte) (*Dockerfile, error) {
 
 		// Handle empty lines and comments
 		if trimmedLine == "" || strings.HasPrefix(trimmedLine, "#") {
+			// Track blank lines explicitly
+			if trimmedLine == "" {
+				blankLines = append(blankLines, lineNum)
+			}
+
 			// Add to pending extra content
 			if hasExtraContent {
 				pendingExtra.WriteString("\n")
@@ -80,12 +82,25 @@ func ParseDockerfile(_ context.Context, content []byte) (*Dockerfile, error) {
 			continue
 		}
 
-		// Add any pending extra content
-		if hasExtraContent {
+		// If we have pending blank lines, make sure they're captured
+		if len(blankLines) > 0 {
+			// Generate explicit newlines based on blank line count
+			extraNewlines := strings.Repeat("\n", len(blankLines))
+			if hasExtraContent {
+				// If we have other content, add it too
+				dfLine.ExtraBefore = pendingExtra.String() + extraNewlines
+			} else {
+				dfLine.ExtraBefore = extraNewlines
+			}
+		} else if hasExtraContent {
+			// No blank lines but we have extra content
 			dfLine.ExtraBefore = pendingExtra.String()
-			pendingExtra.Reset()
-			hasExtraContent = false
 		}
+
+		// Reset tracking
+		pendingExtra.Reset()
+		hasExtraContent = false
+		blankLines = nil
 
 		// For FROM directives, update stage info
 		if dfLine.Directive == DirectiveFrom {
@@ -98,7 +113,7 @@ func ParseDockerfile(_ context.Context, content []byte) (*Dockerfile, error) {
 				}
 				// Record the stage alias if present
 				if dfLine.From.Alias != "" {
-					dockerfile.StageAliases[dfLine.From.Alias] = true
+					dockerfile.stageAliases[dfLine.From.Alias] = true
 				}
 			}
 		} else if dfLine.Directive != "" {
@@ -143,10 +158,6 @@ func ParseDockerfile(_ context.Context, content []byte) (*Dockerfile, error) {
 			Directive:   "",
 			Stage:       stage,
 		})
-	}
-
-	if err := scanner.Err(); err != nil {
-		return nil, err
 	}
 
 	return dockerfile, nil

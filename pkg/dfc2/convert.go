@@ -31,58 +31,6 @@ func ConvertDockerfile(ctx context.Context, content []byte, opts Options) ([]byt
 	return []byte(result), nil
 }
 
-// DebugConvertDockerfile converts a Dockerfile to use Alpine with debug output
-func DebugConvertDockerfile(ctx context.Context, content []byte, opts Options) ([]byte, error) {
-	// Parse the Dockerfile
-	dockerfile, err := ParseDockerfile(ctx, content)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse Dockerfile: %w", err)
-	}
-
-	// Print debug info
-	fmt.Fprintf(os.Stderr, "Parsed %d lines\n", len(dockerfile.Lines))
-	for i, line := range dockerfile.Lines {
-		fmt.Fprintf(os.Stderr, "Line %d: Directive=%s, Raw=%s\n", i, line.Directive, line.Raw)
-
-		if line.Directive == DirectiveRun && line.Run != nil {
-			fmt.Fprintf(os.Stderr, "  Run: Distro=%s, Packages=%v\n", line.Run.Distro, line.Run.Packages)
-
-			if line.Run.Command != nil {
-				fmt.Fprintf(os.Stderr, "  Command: %s\n", line.Run.Command.String())
-
-				// Find package manager commands
-				for _, pm := range AllPackageManagers {
-					pmStr := string(pm)
-					cmds := line.Run.Command.FindCommandsByPrefix(pmStr)
-					if len(cmds) > 0 {
-						fmt.Fprintf(os.Stderr, "  Found %d %s commands\n", len(cmds), pmStr)
-
-						for j, cmd := range cmds {
-							fmt.Fprintf(os.Stderr, "    Command %d: %s %s\n", j, cmd.Command, strings.Join(cmd.Args, " "))
-						}
-					}
-				}
-			}
-		}
-	}
-
-	// Apply the conversion
-	err = applyConversion(dockerfile, opts)
-	if err != nil {
-		return nil, fmt.Errorf("failed to apply conversion: %w", err)
-	}
-
-	// Print debug info after conversion
-	fmt.Fprintf(os.Stderr, "\nAfter conversion:\n")
-	for i, line := range dockerfile.Lines {
-		fmt.Fprintf(os.Stderr, "Line %d: Directive=%s, Raw=%s\n", i, line.Directive, line.Raw)
-	}
-
-	// Rebuild the Dockerfile
-	result := rebuildDockerfile(dockerfile)
-	return []byte(result), nil
-}
-
 // applyConversion applies the conversion to the parsed Dockerfile
 func applyConversion(dockerfile *Dockerfile, opts Options) error {
 	// Process each line
@@ -90,7 +38,7 @@ func applyConversion(dockerfile *Dockerfile, opts Options) error {
 		// Only process FROM and RUN directives
 		switch line.Directive {
 		case DirectiveFrom:
-			convertFromDirective(line, opts, dockerfile.StageAliases)
+			convertFromDirective(line, opts, dockerfile.stageAliases)
 		case DirectiveRun:
 			convertRunDirective(line, opts)
 		}
@@ -302,20 +250,31 @@ func mapPackages(packages []string, packageMap map[string]string) []string {
 	return uniqueResult
 }
 
-// rebuildDockerfile reconstructs the Dockerfile from the parsed representation
+// rebuildDockerfile reconstructs a Dockerfile from its structured representation
 func rebuildDockerfile(dockerfile *Dockerfile) string {
 	var builder strings.Builder
 
 	for i, line := range dockerfile.Lines {
-		// Add any ExtraBefore content
+		// Write any extra content that comes before this line
 		if line.ExtraBefore != "" {
+			// Write the extra content exactly as is - it should already contain the necessary newlines
 			builder.WriteString(line.ExtraBefore)
-			builder.WriteString("\n")
+
+			// If ExtraBefore doesn't end with a newline, add one
+			if !strings.HasSuffix(line.ExtraBefore, "\n") {
+				builder.WriteString("\n")
+			}
 		}
 
+		// Skip empty directives (they're just comments or whitespace)
+		if line.Directive == "" {
+			continue
+		}
+
+		// Write the line itself
 		builder.WriteString(line.Raw)
 
-		// Add newline unless this is the last line
+		// Add a newline after each line except the last one
 		if i < len(dockerfile.Lines)-1 {
 			builder.WriteString("\n")
 		}

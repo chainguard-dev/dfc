@@ -93,7 +93,7 @@ func init() {
 
 // DockerfileLine represents a single line in a Dockerfile
 type DockerfileLine struct {
-	Raw         string       `json:"raw,omitempty"`
+	Raw         string       `json:"raw"`
 	ExtraBefore string       `json:"extraBefore,omitempty"` // Comments and whitespace that appear before this line
 	Directive   string       `json:"directive,omitempty"`
 	Stage       int          `json:"stage,omitempty"`
@@ -120,8 +120,8 @@ type RunDetails struct {
 
 // Dockerfile represents a parsed Dockerfile
 type Dockerfile struct {
-	Lines        []*DockerfileLine
-	StageAliases map[string]bool // Tracks stage aliases defined with AS
+	Lines        []*DockerfileLine `json:"lines"`
+	stageAliases map[string]bool   // Tracks stage aliases defined with AS
 }
 
 // Options represents conversion options
