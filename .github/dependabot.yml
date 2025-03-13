@@ -16,3 +16,13 @@ updates:
         update-types:
           - "minor"
           - "patch"
+  - package-ecosystem: "github-actions"
+    directory: "/*"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 5
+    groups:
+      all:
+        update-types:
+          - "minor"
+          - "patch"
