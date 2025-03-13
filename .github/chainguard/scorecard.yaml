@@ -1,0 +1,9 @@
+issuer: https://token.actions.githubusercontent.com
+subject: repo:chainguard-dev/dfc:ref:refs/heads/main
+claim_pattern:
+  job_workflow_ref: chainguard-dev/dfc/.github/workflows/scorecard.yml@.*
+
+permissions:
+  actions: read
+  contents: read
+  security_events: write
