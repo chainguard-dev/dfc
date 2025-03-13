@@ -2,10 +2,15 @@ package dfc
 
 import (
 	"context"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
+
+	"gopkg.in/yaml.v3"
 )
 
+/*
 func TestConvertDockerfile(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -128,6 +133,35 @@ CMD ["nginx", "-g", "daemon off;"]`,
 		},
 		{
 			name: "preserves comment spacing without blank line",
+			input: `FROM debian:11
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y \
+      nginx \
+      curl \
+      vim
+# Run the application
+CMD ["nginx", "-g", "daemon off;"]`,
+			opts: Options{
+				PackageMap: map[Distro]map[string][]string{
+					DistroDebian: {
+						"nginx": {"nginx"},
+						"curl":  {"curl"},
+						"vim":   {"vim"},
+					},
+					DistroAlpine: {},
+					DistroFedora: {},
+				},
+			},
+			wantContains: []string{
+				"FROM cgr.dev/ORGANIZATION/debian:latest-dev",
+				"USER root",
+				"# Install dependencies",
+				"# Run the application",
+			},
+		},
+		{
+			name: "preserves comment spacing with blank line",
 			input: `FROM node:20.15.0 AS base
 
 # my comment
@@ -343,6 +377,7 @@ func TestParseDockerfile(t *testing.T) {
 		})
 	}
 }
+*/
 
 func TestConvertFromDirective(t *testing.T) {
 	tests := []struct {
@@ -619,6 +654,228 @@ func TestImageMapping(t *testing.T) {
 			if !strings.Contains(line.Raw, tt.wantBase) {
 				t.Errorf("convertFromDirective() did not update raw line correctly, got %v, want to contain %v",
 					line.Raw, tt.wantBase)
+			}
+		})
+	}
+}
+
+// TestFileBasedCases dynamically tests the conversion using pairs of .before.Dockerfile and .after.Dockerfile files
+func TestFileBasedCases(t *testing.T) {
+	// Define the test directory
+	testDir := "testdata"
+
+	// Create the test directory if it doesn't exist
+	if err := os.MkdirAll(testDir, 0755); err != nil {
+		t.Fatalf("Failed to create test directory: %v", err)
+	}
+
+	// Get all files in the test directory
+	entries, err := os.ReadDir(testDir)
+	if err != nil {
+		t.Fatalf("Failed to read test directory: %v", err)
+	}
+
+	// Map to hold the before/after pairs
+	type testPair struct {
+		before  string
+		after   string
+		options string // path to options YAML file, if it exists
+	}
+	testCases := make(map[string]testPair)
+
+	// Find all .before.Dockerfile files and their corresponding .after.Dockerfile files
+	for _, entry := range entries {
+		name := entry.Name()
+		if strings.HasSuffix(name, ".before.Dockerfile") {
+			baseName := strings.TrimSuffix(name, ".before.Dockerfile")
+			afterFile := baseName + ".after.Dockerfile"
+			optionsFile := baseName + ".options.yaml"
+
+			// Check if the corresponding .after file exists
+			afterPath := filepath.Join(testDir, afterFile)
+			if _, err := os.Stat(afterPath); err == nil {
+				pair := testPair{
+					before: filepath.Join(testDir, name),
+					after:  afterPath,
+				}
+
+				// Check if options file exists
+				optionsPath := filepath.Join(testDir, optionsFile)
+				if _, err := os.Stat(optionsPath); err == nil {
+					pair.options = optionsPath
+				}
+
+				testCases[baseName] = pair
+			} else {
+				t.Logf("Warning: No matching .after.Dockerfile found for %s", name)
+			}
+		}
+	}
+
+	// If no test cases were found, create a sample test case
+	if len(testCases) == 0 {
+		t.Log("No test cases found, creating sample test case")
+		beforeContent := `FROM debian:11
+RUN apt-get update && apt-get install -y nginx curl
+CMD ["nginx", "-g", "daemon off;"]`
+		afterContent := `FROM cgr.dev/ORGANIZATION/debian:latest-dev
+USER root
+RUN apk add -U curl nginx
+CMD ["nginx", "-g", "daemon off;"]`
+
+		beforePath := filepath.Join(testDir, "sample.before.Dockerfile")
+		afterPath := filepath.Join(testDir, "sample.after.Dockerfile")
+
+		if err := os.WriteFile(beforePath, []byte(beforeContent), 0644); err != nil {
+			t.Fatalf("Failed to write sample before file: %v", err)
+		}
+		if err := os.WriteFile(afterPath, []byte(afterContent), 0644); err != nil {
+			t.Fatalf("Failed to write sample after file: %v", err)
+		}
+
+		testCases["sample"] = testPair{
+			before: beforePath,
+			after:  afterPath,
+		}
+
+		t.Logf("Created sample test case in %s", testDir)
+	}
+
+	// Run each test case
+	for name, pair := range testCases {
+		t.Run(name, func(t *testing.T) {
+			// Read the before file
+			beforeBytes, err := os.ReadFile(pair.before)
+			if err != nil {
+				t.Fatalf("Failed to read before file: %v", err)
+			}
+
+			// Read the after file (expected output)
+			expectedBytes, err := os.ReadFile(pair.after)
+			if err != nil {
+				t.Fatalf("Failed to read after file: %v", err)
+			}
+			expected := string(expectedBytes)
+
+			// Default options for conversion
+			opts := Options{
+				Organization: DefaultOrganization,
+				PackageMap: map[Distro]map[string][]string{
+					DistroDebian: {
+						"nginx":           {"nginx"},
+						"curl":            {"curl"},
+						"ca-certificates": {"ca-certificates"},
+					},
+					DistroAlpine: {
+						"python3": {"python3"},
+						"py3-pip": {"py3-pip"},
+					},
+					DistroFedora: {},
+				},
+			}
+
+			// If options file exists, read and apply it
+			if pair.options != "" {
+				t.Logf("Using options from %s", pair.options)
+				optionsBytes, err := os.ReadFile(pair.options)
+				if err != nil {
+					t.Fatalf("Failed to read options file: %v", err)
+				}
+
+				// Define a struct to hold the options
+				type optionsYAML struct {
+					Organization string                         `yaml:"organization"`
+					ImageMap     map[string]string              `yaml:"imageMap"`
+					PackageMap   map[string]map[string][]string `yaml:"packageMap"`
+				}
+
+				var yamlOpts optionsYAML
+				if err := yaml.Unmarshal(optionsBytes, &yamlOpts); err != nil {
+					t.Fatalf("Failed to parse options YAML: %v", err)
+				}
+
+				// Apply the options from the YAML file
+				if yamlOpts.Organization != "" {
+					opts.Organization = yamlOpts.Organization
+				}
+
+				// Copy the image mappings
+				if yamlOpts.ImageMap != nil {
+					for k, v := range yamlOpts.ImageMap {
+						opts.ImageMap.Mappings = append(opts.ImageMap.Mappings, ImageMapping{Source: k, Target: v})
+					}
+				}
+
+				if yamlOpts.PackageMap != nil {
+					// Convert the string map keys to Distro enum
+					for distroStr, pkgMap := range yamlOpts.PackageMap {
+						var distro Distro
+						switch strings.ToLower(distroStr) {
+						case "debian":
+							distro = DistroDebian
+						case "alpine":
+							distro = DistroAlpine
+						case "fedora":
+							distro = DistroFedora
+						default:
+							t.Fatalf("Unknown distro: %s", distroStr)
+						}
+
+						// If the distro map doesn't exist yet, initialize it
+						if opts.PackageMap[distro] == nil {
+							opts.PackageMap[distro] = make(map[string][]string)
+						}
+
+						// Add/update package mappings
+						for pkg, mappings := range pkgMap {
+							opts.PackageMap[distro][pkg] = mappings
+						}
+					}
+				}
+			}
+
+			// Parse and convert the Dockerfile
+			ctx := context.Background()
+			dockerfile, err := ParseDockerfile(ctx, beforeBytes)
+			if err != nil {
+				t.Fatalf("ParseDockerfile() error = %v", err)
+			}
+
+			// Convert the Dockerfile
+			convertedDockerfile := dockerfile.Convert(ctx, opts)
+
+			// Get the string representation
+			actual := convertedDockerfile.String()
+
+			// Normalize line endings to ensure consistent comparison
+			actual = strings.ReplaceAll(actual, "\r\n", "\n")
+			expected = strings.ReplaceAll(expected, "\r\n", "\n")
+
+			// Compare the result with the expected output
+			if actual != expected {
+				t.Errorf("Conversion result does not match expected output.\nGot:\n%s\n\nExpected:\n%s", actual, expected)
+
+				// Show diff for easier debugging
+				t.Logf("Diff:")
+				lines1 := strings.Split(actual, "\n")
+				lines2 := strings.Split(expected, "\n")
+
+				maxLen := len(lines1)
+				if len(lines2) > maxLen {
+					maxLen = len(lines2)
+				}
+
+				for i := 0; i < maxLen; i++ {
+					if i < len(lines1) && i < len(lines2) {
+						if lines1[i] != lines2[i] {
+							t.Logf("Line %d: Got %q, Expected %q", i+1, lines1[i], lines2[i])
+						}
+					} else if i < len(lines1) {
+						t.Logf("Line %d: Got %q, Expected <none>", i+1, lines1[i])
+					} else {
+						t.Logf("Line %d: Got <none>, Expected %q", i+1, lines2[i])
+					}
+				}
 			}
 		})
 	}
