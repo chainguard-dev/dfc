@@ -77,26 +77,15 @@ var PackageManagerInfoMap = map[Manager]PackageManagerInfo{
 }
 
 // PackageManagerGroups holds package managers grouped by distribution
-var PackageManagerGroups map[Distro][]Manager
+var PackageManagerGroups = map[Distro][]Manager{
+	DistroDebian: {ManagerAptGet, ManagerApt},
+	DistroFedora: {ManagerYum, ManagerDnf, ManagerMicrodnf},
+	DistroAlpine: {ManagerApk},
+}
 
 // AllPackageManagers holds a list of all supported package managers
-var AllPackageManagers []Manager
-
-// Initialize package manager groups and list
-func init() {
-	// Initialize groups
-	PackageManagerGroups = make(map[Distro][]Manager)
-
-	// Group package managers by distro
-	for pm, info := range PackageManagerInfoMap {
-		PackageManagerGroups[info.Distro] = append(PackageManagerGroups[info.Distro], pm)
-	}
-
-	// Initialize list of all package managers
-	AllPackageManagers = make([]Manager, 0, len(PackageManagerInfoMap))
-	for pm := range PackageManagerInfoMap {
-		AllPackageManagers = append(AllPackageManagers, pm)
-	}
+var AllPackageManagers = []Manager{
+	ManagerAptGet, ManagerApt, ManagerYum, ManagerDnf, ManagerMicrodnf, ManagerApk,
 }
 
 // DockerfileLine represents a single line in a Dockerfile
