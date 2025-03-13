@@ -9,7 +9,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/chainguard-dev/dfc/pkg/dfc"
+	"github.com/chainguard-dev/dfc/pkg/dfc2"
 	"github.com/spf13/cobra"
 )
 
@@ -42,34 +42,51 @@ func cli() *cobra.Command {
 				if err != nil {
 					return fmt.Errorf("failed open file: %s: %v", path, err)
 				}
+				defer file.Close()
 				input = file
 			}
 			buf := new(bytes.Buffer)
 			buf.ReadFrom(input)
 			raw := buf.Bytes()
 
-			dockerfile, err := dfc.ParseDockerfile(ctx, raw)
-			if err != nil {
-				return fmt.Errorf("unable to parse dockerfile: %v", err)
-			}
-
-			// convert
-			if err := dockerfile.Convert(ctx, &dfc.Options{
-				Organization: org,
-			}); err != nil {
-				return fmt.Errorf("converting dockerfile: %v", err)
-			}
-
 			if j {
 				if inPlace {
 					return fmt.Errorf("unable to use --in-place and --json flag at same time")
 				}
+
+				// Use dfc2 to parse the Dockerfile
+				dockerfile, err := dfc2.ParseDockerfile(ctx, raw)
+				if err != nil {
+					return fmt.Errorf("unable to parse dockerfile: %v", err)
+				}
+
+				// For JSON output, just marshal the parsed dockerfile
 				b, err := json.Marshal(dockerfile)
 				if err != nil {
 					return fmt.Errorf("marshalling dockerfile to json: %v", err)
 				}
 				fmt.Println(string(b))
 				return nil
+			}
+
+			// Setup conversion options
+			opts := dfc2.Options{
+				Organization: org,
+				PackageMap: map[string]string{
+					"ca-certificates": "ca-certificates",
+					"curl":            "curl",
+					"git":             "git",
+					"nginx":           "nginx",
+					"python3":         "python3",
+					"python3-pip":     "py3-pip",
+					"vim":             "vim",
+				},
+			}
+
+			// Convert the Dockerfile
+			result, err := dfc2.ConvertDockerfile(ctx, raw, opts)
+			if err != nil {
+				return fmt.Errorf("converting dockerfile: %v", err)
 			}
 
 			// modify file in place
@@ -83,20 +100,20 @@ func cli() *cobra.Command {
 					return fmt.Errorf("saving dockerfile backup to %s: %v", backupPath, err)
 				}
 				log.Printf("overwriting %s", path)
-				if err := os.WriteFile(path, []byte(dockerfile.String()), 0644); err != nil {
+				if err := os.WriteFile(path, result, 0644); err != nil {
 					return fmt.Errorf("overwriting %s: %v", path, err)
 				}
 				return nil
 			}
 
 			// Print to stdout
-			fmt.Print(dockerfile)
+			fmt.Print(string(result))
 
 			return nil
 		},
 	}
 
-	cmd.Flags().StringVar(&org, "org", "ORGANIZATION", "the root repo namespace at cgr.dev/<org>")
+	cmd.Flags().StringVar(&org, "org", dfc2.DefaultOrganization, "the organization for cgr.dev/ORGANIZATION/alpine (defaults to ORGANIZATION)")
 	cmd.Flags().BoolVarP(&inPlace, "in-place", "i", false, "modified the Dockerfile in place (vs. stdout), saving original in a .bak file")
 	cmd.Flags().BoolVar(&j, "json", false, "print dockerfile as json (pre-conversion)")
 

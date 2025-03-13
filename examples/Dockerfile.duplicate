@@ -1,0 +1,15 @@
+FROM debian:11
+
+# Test multiline installation with possible duplication
+RUN apt-get update \
+    && apt-get install -qyy curl ca-certificates gnupg apt-transport-https \
+    && $APP_DIR/docker/install-node.sh
+
+# Test another installation with overlapping packages
+RUN apt-get install -y curl vim 
+
+# Test apt command
+RUN apt update && apt install -y git
+
+# Run the application
+CMD ["bash"] 

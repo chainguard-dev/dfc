@@ -1,0 +1,27 @@
+# This is a comment at the top
+
+# Another comment
+# And another comment
+
+FROM debian:11
+
+# Comment after FROM
+
+# Multiple comments
+# Between directives
+
+# Comment before RUN
+RUN apt-get update && \
+    apt-get install -y \
+      curl \
+      ca-certificates \
+      git
+
+# Comment before WORKDIR
+WORKDIR /app
+
+# Final comment before CMD
+CMD ["bash"]
+
+# Trailing comments
+# At the end of file 

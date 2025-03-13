@@ -1,0 +1,19 @@
+FROM debian:11
+
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y \
+      ca-certificates \
+      curl \
+      git \
+      nginx \
+      python3 \
+      python3-pip \
+      vim
+
+# Set up the application
+WORKDIR /app
+COPY . .
+
+# Run the application
+CMD ["nginx", "-g", "daemon off;"] 

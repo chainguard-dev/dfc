@@ -1,0 +1,37 @@
+FROM golang:1.18 AS builder
+
+WORKDIR /app
+COPY . .
+
+# Install build dependencies
+RUN apt-get update && \
+    apt-get install -y \
+      build-essential \
+      ca-certificates \
+      git
+
+# Build the application
+RUN go build -o app
+
+FROM builder AS test
+# In this stage we run tests
+RUN go test ./...
+
+FROM debian:11 AS prod
+
+# Install runtime dependencies
+RUN apt-get update && \
+    apt-get install -y \
+      ca-certificates \
+      curl \
+      nginx
+
+# Copy the application from the builder stage
+COPY --from=builder /app/app /app
+
+# Set up the application
+WORKDIR /app
+ENV PATH="/app:${PATH}"
+
+# Run the application
+CMD ["app"] 
