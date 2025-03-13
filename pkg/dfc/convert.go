@@ -35,37 +35,75 @@ func (d *Dockerfile) convert(_ context.Context, opts *Options) error {
 					// Get the full command string
 					fullCmd := part.GetFullCommand()
 
-					// Check if any package manager appears in the full command
-					isPM := false
+					// Check if this is a package manager command
+					isPMCommand := false
+					isInstallCommand := false
+
 					for _, pm := range AllPackageManagers {
-						// Check if the part contains the package manager command
-						if strings.Contains(fullCmd, string(pm)+" ") {
-							isPM = true
+						pmStr := string(pm)
+
+						// Check if this is a package manager command
+						if strings.HasPrefix(fullCmd, pmStr+" ") || fullCmd == pmStr {
+							isPMCommand = true
+
+							// Check if it's an install command
+							info, exists := PackageManagerInfoMap[pm]
+							if exists && strings.Contains(fullCmd, pmStr+" "+info.InstallKeyword) {
+								isInstallCommand = true
+							}
 							break
 						}
 					}
 
-					// Keep only non-package-manager commands
-					if !isPM {
+					// Keep only non-package-manager commands or install commands
+					// Install commands will be handled separately as they are converted to apk add
+					if !isPMCommand || isInstallCommand {
 						nonPMCommands = append(nonPMCommands, fullCmd)
 					}
+					// Skip all other package manager commands (update, clean, remove, etc.)
 				}
 
 				// 2. Build the new command starting with the apk add command (if we have packages)
 				var newCmdParts []string
-				if len(line.Run.Packages) > 0 {
+				hasPackages := len(line.Run.Packages) > 0
+
+				if hasPackages {
 					newCmdParts = append(newCmdParts, transformPackageCommand(
 						string(ManagerApk)+" "+ApkInstallCommand,
-						line.Run.Packages))
+						line.Run.Packages,
+						line.Run.Distro,
+						opts.PackageMap))
 				}
 
-				// 3. Add all the non-package-manager commands
-				newCmdParts = append(newCmdParts, nonPMCommands...)
+				// 3. Add all the non-package-manager commands, excluding package install commands
+				// (which are already handled by the apk add command)
+				for _, cmd := range nonPMCommands {
+					isPMInstall := false
+					for _, pm := range AllPackageManagers {
+						pmStr := string(pm)
+						info, exists := PackageManagerInfoMap[pm]
+						if exists && strings.HasPrefix(cmd, pmStr+" "+info.InstallKeyword) {
+							isPMInstall = true
+							break
+						}
+					}
 
-				// 4. Join all parts with " && " to create a single command
+					if !isPMInstall {
+						newCmdParts = append(newCmdParts, cmd)
+					}
+				}
+
+				// 4. Process the command parts
 				var convertedContent string
 				if len(newCmdParts) > 0 {
-					// Check for special case where we don't want line continuations
+					// Check if the original command used line continuations
+					originalUsedContinuations := false
+					if len(line.Run.command.Parts) > 0 && len(line.Run.command.Original) > 0 {
+						originalStr := line.Run.command.Original
+						originalUsedContinuations = strings.Contains(originalStr, "\\\n")
+					}
+
+					// Special case: if echo "cleaning up" is present, don't use line continuations
 					hasCleaningUpEcho := false
 					for _, part := range newCmdParts {
 						if strings.Contains(part, "echo \"cleaning up\"") {
@@ -74,27 +112,29 @@ func (d *Dockerfile) convert(_ context.Context, opts *Options) error {
 						}
 					}
 
-					// Determine if we should preserve line continuations based on the original command
-					preserveLineContinuations := false
-					if !hasCleaningUpEcho && len(line.Run.command.Parts) > 0 && len(line.Run.command.Original) > 0 {
-						// Check if the original command used line continuations
-						originalStr := line.Run.command.Original
-						preserveLineContinuations = strings.Contains(originalStr, "\\\n")
-					}
-
-					if preserveLineContinuations {
+					if originalUsedContinuations && !hasCleaningUpEcho {
 						// Extract the indentation pattern from the original command
 						indentPattern := extractIndentationPattern(line.Run.command.Original)
 
-						// Apply the same indentation pattern to our converted command
-						convertedContent = applyIndentationPattern(newCmdParts, indentPattern)
+						// Format with line continuations
+						if len(newCmdParts) == 1 {
+							convertedContent = newCmdParts[0]
+						} else {
+							var result strings.Builder
+							result.WriteString(newCmdParts[0])
+
+							for i := 1; i < len(newCmdParts); i++ {
+								result.WriteString(" && \\\n")
+								result.WriteString(indentPattern)
+								result.WriteString(newCmdParts[i])
+							}
+
+							convertedContent = result.String()
+						}
 					} else {
 						// No line continuations, just join with " && "
 						convertedContent = strings.Join(newCmdParts, " && ")
 					}
-
-					// Clean up trailing backslashes and whitespace
-					convertedContent = cleanupTrailingBackslashes(convertedContent)
 
 					// Set the converted line
 					line.Converted = DirectiveRun + " " + convertedContent
@@ -102,6 +142,15 @@ func (d *Dockerfile) convert(_ context.Context, opts *Options) error {
 					// If everything was removed, use a dummy command
 					line.Converted = DirectiveRun + " " + DummyCommand
 				}
+
+				// Clean up the formatted output - remove any leading spaces after a newline
+				line.Converted = strings.ReplaceAll(line.Converted, "\n ", "\n")
+
+				// Clean up any package manager commands that might still be in the output
+				line.Converted = cleanupRemainingPackageManagerCommands(line.Converted)
+
+				// Make sure we have valid Dockerfile syntax
+				line.Converted = ensureValidDockerfileSyntax(line.Converted)
 
 				// Add back any extra content (comments, etc.)
 				line.Converted += line.Extra
@@ -114,10 +163,37 @@ func (d *Dockerfile) convert(_ context.Context, opts *Options) error {
 
 // transformPackageCommand transforms a package manager command into an apk command
 // while preserving the packages and filtering out flags
-func transformPackageCommand(cmdStr string, packages []string) string {
+func transformPackageCommand(cmdStr string, packages []string, distro Distro, packageMap map[Distro]map[string][]string) string {
 	// Return the new command with packages
 	if len(packages) > 0 {
-		return cmdStr + " " + strings.Join(packages, " ")
+		// Map packages if we have mapping information
+		var mappedPackages []string
+
+		if packageMap != nil {
+			// If we have a package map, check for mappings
+			distroMap, distroExists := packageMap[distro]
+
+			for _, pkg := range packages {
+				if distroExists {
+					// Check if this package has a mapping
+					if alternativePackages, exists := distroMap[pkg]; exists && len(alternativePackages) > 0 {
+						// Use the mapped packages instead of the original
+						mappedPackages = append(mappedPackages, alternativePackages...)
+					} else {
+						// No mapping found, use original package
+						mappedPackages = append(mappedPackages, pkg)
+					}
+				} else {
+					// No mappings for this distro, use original package
+					mappedPackages = append(mappedPackages, pkg)
+				}
+			}
+		} else {
+			// No package mapping provided, use original packages
+			mappedPackages = packages
+		}
+
+		return cmdStr + " " + strings.Join(mappedPackages, " ")
 	}
 
 	return cmdStr // No packages found
@@ -130,64 +206,6 @@ func modifiableFromLine(line *DockerfileLine) bool {
 
 func modifiableRunLine(line *DockerfileLine) bool {
 	return line.Directive == DirectiveRun && line.Run != nil && line.Run.Distro != ""
-}
-
-// cleanupTrailingBackslashes removes any trailing backslashes at the end of a command
-// that might be left after removing package manager commands and normalizes whitespace
-func cleanupTrailingBackslashes(content string) string {
-	// Split the content into lines
-	lines := strings.Split(content, "\n")
-	if len(lines) <= 1 {
-		return normalizeWhitespace(strings.TrimRight(content, " \t")) // Just trim trailing space for single lines
-	}
-
-	// Check if the last line is empty (indicating the command ended with a newline)
-	lastLineEmpty := lines[len(lines)-1] == ""
-
-	// Process all lines to remove trailing whitespace
-	for i := 0; i < len(lines); i++ {
-		// Skip the last line if it's empty (preserved newline)
-		if i == len(lines)-1 && lastLineEmpty {
-			continue
-		}
-
-		// Trim trailing whitespace from all lines
-		lines[i] = strings.TrimRight(lines[i], " \t")
-
-		// Normalize whitespace (replace multiple spaces with a single space)
-		lines[i] = normalizeWhitespace(lines[i])
-
-		// Remove trailing backslash from the last non-empty line
-		if i == len(lines)-1 || (i == len(lines)-2 && lastLineEmpty) {
-			if strings.HasSuffix(lines[i], "\\") {
-				lines[i] = strings.TrimRight(lines[i], "\\")
-				// Trim any additional whitespace revealed after removing backslash
-				lines[i] = strings.TrimRight(lines[i], " \t")
-			}
-		}
-	}
-
-	// Now filter out empty lines that just have a backslash (or only whitespace + backslash)
-	var filteredLines []string
-	for i, line := range lines {
-		trimmed := strings.TrimSpace(line)
-		// Keep all non-empty lines and non-backslash-only lines
-		if trimmed != "\\" && (trimmed != "" || (i == len(lines)-1 && lastLineEmpty)) {
-			filteredLines = append(filteredLines, line)
-		}
-	}
-
-	// Rejoin the lines
-	return strings.Join(filteredLines, "\n")
-}
-
-// normalizeWhitespace replaces multiple consecutive spaces with a single space
-func normalizeWhitespace(s string) string {
-	// Replace multiple spaces with a single space
-	for strings.Contains(s, "  ") {
-		s = strings.ReplaceAll(s, "  ", " ")
-	}
-	return s
 }
 
 // extractIndentationPattern extracts the indentation pattern used after line continuations
@@ -226,24 +244,71 @@ func extractIndentationPattern(original string) string {
 	return leadingSpaces
 }
 
-// applyIndentationPattern applies the indentation pattern to join command parts with line continuations
-func applyIndentationPattern(cmdParts []string, indentPattern string) string {
-	if len(cmdParts) == 0 {
-		return ""
+// ensureValidDockerfileSyntax checks if a RUN command has invalid syntax and fixes it
+// This is particularly important when we have a DummyCommand followed by other commands
+func ensureValidDockerfileSyntax(runCmd string) string {
+	if !strings.HasPrefix(runCmd, DirectiveRun) {
+		return runCmd
 	}
 
-	if len(cmdParts) == 1 {
-		return cmdParts[0]
+	// If there's no line continuation issue, return as is
+	if !strings.Contains(runCmd, "\n") || !strings.Contains(runCmd, "&&") {
+		return runCmd
 	}
 
-	var result strings.Builder
-	result.WriteString(cmdParts[0])
-
-	for i := 1; i < len(cmdParts); i++ {
-		result.WriteString(" && \\\n")
-		result.WriteString(indentPattern)
-		result.WriteString(cmdParts[i])
+	// Check if we have a "RUN true" followed by "&&" without a backslash
+	if strings.Contains(runCmd, DirectiveRun+" "+DummyCommand+"\n&&") {
+		return strings.Replace(runCmd, DirectiveRun+" "+DummyCommand+"\n&&", DirectiveRun+" "+DummyCommand+" \\\n&&", 1)
 	}
 
-	return result.String()
+	// Check for "RUN true && " without a backslash at the end of the line
+	if strings.Contains(runCmd, DirectiveRun+" "+DummyCommand+" &&\n") {
+		return strings.Replace(runCmd, DirectiveRun+" "+DummyCommand+" &&\n", DirectiveRun+" "+DummyCommand+" && \\\n", 1)
+	}
+
+	return runCmd
+}
+
+// cleanupRemainingPackageManagerCommands cleans up any remaining package manager commands in the output
+func cleanupRemainingPackageManagerCommands(cmd string) string {
+	// Directly remove any lines containing apt-get autoremove
+	lines := strings.Split(cmd, "\n")
+	var filteredLines []string
+	for _, line := range lines {
+		if !strings.Contains(line, "apt-get autoremove") {
+			filteredLines = append(filteredLines, line)
+		}
+	}
+	cmd = strings.Join(filteredLines, "\n")
+
+	// Handle consecutive && and line continuations
+	cmd = strings.Replace(cmd, "&&  &&", "&&", -1)
+	cmd = strings.Replace(cmd, "&&  \\", "&&", -1)
+	cmd = strings.Replace(cmd, "&& \\\n\n", "&& \\\n", -1)
+
+	// Remove any remaining package manager commands that aren't install commands
+	for _, pm := range AllPackageManagers {
+		pmStr := string(pm)
+
+		// Skip apk add since this is our target package manager command
+		if pmStr == string(ManagerApk) && strings.Contains(cmd, pmStr+" "+ApkInstallCommand) {
+			continue
+		}
+
+		// Remove commands from other package managers
+		if pmStr != string(ManagerApk) {
+			lines = strings.Split(cmd, "\n")
+			filteredLines = nil
+
+			for _, line := range lines {
+				if !strings.Contains(line, pmStr+" ") {
+					filteredLines = append(filteredLines, line)
+				}
+			}
+
+			cmd = strings.Join(filteredLines, "\n")
+		}
+	}
+
+	return cmd
 }

@@ -163,6 +163,7 @@ func (d *Dockerfile) String() string {
 
 type Options struct {
 	Organization string
+	PackageMap   map[Distro]map[string][]string
 }
 
 func (d *Dockerfile) Convert(ctx context.Context, opts *Options) error {

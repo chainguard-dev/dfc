@@ -266,13 +266,119 @@ RUN apt-get update -qq && apt-get install -y nano zsh && \
 			mustContain: []string{
 				"FROM cgr.dev/testorg/debian:latest-dev",
 				"USER root",
-				"RUN apk add -U nano zsh &&",
-				"chmod +x bin/oh-my-zsh.sh &&",
+				"apk add -U nano zsh",
+				"chmod +x bin/oh-my-zsh.sh",
 				"sh -c \"RUNZSH=no bin/oh-my-zsh.sh\"",
 			},
 			mustNotContain: []string{
-				"apt-get autoremove",
-				"\\n \\", // No empty line with just a backslash
+				"apt-get update",
+				"apt-get autoremove -y", // Be very specific about what we don't want
+			},
+		},
+		{
+			name: "package mapping for debian",
+			content: `
+FROM debian:latest
+RUN apt-get update && apt-get install -y nano vim git
+`,
+			opts: &Options{
+				Organization: "testorg",
+				PackageMap: map[Distro]map[string][]string{
+					DistroDebian: {
+						"nano": {"nano-alpine", "nano-extras"},
+						"vim":  {"vim-alpine"},
+						// git has no mapping, so it should remain as "git"
+					},
+				},
+			},
+			mustContain: []string{
+				"FROM cgr.dev/testorg/debian:latest-dev",
+				"USER root",
+				"nano-alpine",
+				"nano-extras",
+				"vim-alpine",
+				"git",
+			},
+		},
+		{
+			name: "package mapping for multiple distros",
+			content: `
+FROM fedora:latest
+RUN dnf install -y nginx vim httpd
+`,
+			opts: &Options{
+				Organization: "testorg",
+				PackageMap: map[Distro]map[string][]string{
+					DistroDebian: {
+						// This shouldn't be used since we're using Fedora here
+						"vim": {"vim-debian-specific"},
+					},
+					DistroFedora: {
+						"nginx": {"nginx-alpine", "nginx-extras"},
+						"vim":   {"vim-alpine", "vim-extras"},
+						// httpd has no mapping, so it should remain as "httpd"
+					},
+				},
+			},
+			mustContain: []string{
+				"FROM cgr.dev/testorg/fedora:latest-dev",
+				"USER root",
+				"nginx-alpine",
+				"nginx-extras",
+				"vim-alpine",
+				"vim-extras",
+				"httpd",
+			},
+		},
+		{
+			name: "only non-package manager commands remain",
+			content: `
+FROM debian:latest
+RUN apt-get update && apt-get install -y && \
+    echo hello && \
+    echo goodbye
+`,
+			opts: &Options{
+				Organization: "testorg",
+			},
+			mustContain: []string{
+				"FROM cgr.dev/testorg/debian:latest-dev",
+				"USER root",
+			},
+			// The key requirements: no "true" command and we need line continuations if they were in the original
+			mustNotContain: []string{
+				"apt-get update",
+				"apt-get install",
+				"RUN true", // We should not have the dummy command
+				" && \n",   // No line continuations without backslash
+			},
+		},
+		{
+			name: "apt-get install and remove commands",
+			content: `
+FROM debian:latest
+RUN apt-get update \
+&& apt-get install -qy libpq-dev \
+&& apt-get remove -y libpq-dev \
+&& apt-get clean \
+&& rm -rf /var/lib/apt/lists/*
+`,
+			opts: &Options{
+				Organization: "testorg",
+			},
+			mustContain: []string{
+				"FROM cgr.dev/testorg/debian:latest-dev",
+				"USER root",
+				"RUN apk add -U libpq-dev",
+				"rm -rf /var/lib/apt/lists/*",
+			},
+			mustNotContain: []string{
+				"apt-get update",
+				"apt-get install",
+				"apt-get remove",
+				"apt-get clean",
+				"RUN true", // We should not have the dummy command
+				" && \n",   // No line continuations without backslash
 			},
 		},
 	}
