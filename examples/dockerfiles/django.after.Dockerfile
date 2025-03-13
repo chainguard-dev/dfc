@@ -18,7 +18,7 @@ ARG REQ_FILE=requirements/prod.txt
 
 # install python dependencies
 COPY ./requirements ./requirements
-RUN apk add -U gcc glibc-dev postgresql-dev zlib-dev && python3 -m pip install --no-cache-dir -r ${REQ_FILE} \ && rm -rf /var/lib/apt/lists/*
+RUN apk add -U gcc glibc-dev postgresql-dev zlib-dev && python3 -m pip install --no-cache-dir -r ${REQ_FILE} && rm -rf /var/lib/apt/lists/*
 
 # copy project
 COPY . .

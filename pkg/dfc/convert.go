@@ -366,6 +366,9 @@ func rebuildRawRunLine(line *DockerfileLine) {
 	// Get the command string
 	cmdStr := line.Run.command.String()
 
+	cmdStr = strings.ReplaceAll(cmdStr, " \\ && ", " && ")
+	cmdStr = strings.ReplaceAll(cmdStr, " \\ || ", " || ")
+
 	// Fix spacing around operators
 	cmdStr = strings.ReplaceAll(cmdStr, "&&", " && ")
 	cmdStr = strings.ReplaceAll(cmdStr, "||", " || ")
@@ -382,10 +385,6 @@ func rebuildRawRunLine(line *DockerfileLine) {
 	for strings.Contains(cmdStr, "  ") {
 		cmdStr = strings.ReplaceAll(cmdStr, "  ", " ")
 	}
-
-	// Clean up any double operators that might be introduced by removing commands in the middle
-	cmdStr = strings.ReplaceAll(cmdStr, "&& &&", "&&")
-	cmdStr = strings.ReplaceAll(cmdStr, "|| ||", "||")
 
 	// Update the raw line
 	line.Raw = DirectiveRun + " " + cmdStr
@@ -423,6 +422,7 @@ func rebuildRawRunLine(line *DockerfileLine) {
 				for strings.Contains(line.Raw, "  ") {
 					line.Raw = strings.ReplaceAll(line.Raw, "  ", " ")
 				}
+
 			}
 		}
 	}
@@ -598,6 +598,11 @@ func rebuildRawRunLine(line *DockerfileLine) {
 				}
 			}
 		}
+
+		// prevent bad backslashes
+		line.Raw = strings.ReplaceAll(line.Raw, " \\ && ", " && ")
+		line.Raw = strings.ReplaceAll(line.Raw, " \\ || ", " || ")
+
 	} else if strings.Contains(line.Raw, DefaultInstallCommand) {
 		// If we already have an apk add command, make sure we don't add another one
 		// This is to prevent duplicate apk add commands
