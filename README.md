@@ -158,14 +158,12 @@ func main() {
 	}
 
 	// Convert
-	if err := dockerfile.Convert(ctx, &dfc.Options{
+	converted := dockerfile.Convert(ctx, dfc.Options{
 		Organization: org,
-	}); err != nil {
-		log.Fatalf("Convert(): %v", err)
-	}
+	})
 
 	// Print converted Dockerfile content
-	fmt.Println(dockerfile)
+	fmt.Println(converted)
 }
 ```
 
