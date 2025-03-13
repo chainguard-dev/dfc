@@ -25,18 +25,24 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Parse the Dockerfile
+	ctx := context.Background()
+	dockerfile, err := dfc2.ParseDockerfile(ctx, content)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error parsing Dockerfile: %v\n", err)
+		os.Exit(1)
+	}
+
 	// Create options
 	opts := dfc2.Options{
 		Organization: "chainguard",
 	}
 
 	// Convert the Dockerfile
-	ctx := context.Background()
-	result, err := dfc2.ConvertDockerfile(ctx, content, opts)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error converting Dockerfile: %v\n", err)
-		os.Exit(1)
-	}
+	convertedDockerfile := dockerfile.Convert(ctx, opts)
+
+	// Get the string representation
+	result := convertedDockerfile.String()
 
 	// Write the output
 	err = ioutil.WriteFile(output, []byte(result), 0644)

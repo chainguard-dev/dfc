@@ -49,24 +49,10 @@ func cli() *cobra.Command {
 			buf.ReadFrom(input)
 			raw := buf.Bytes()
 
-			if j {
-				if inPlace {
-					return fmt.Errorf("unable to use --in-place and --json flag at same time")
-				}
-
-				// Use dfc2 to parse the Dockerfile
-				dockerfile, err := dfc2.ParseDockerfile(ctx, raw)
-				if err != nil {
-					return fmt.Errorf("unable to parse dockerfile: %v", err)
-				}
-
-				// For JSON output, just marshal the parsed dockerfile
-				b, err := json.Marshal(dockerfile)
-				if err != nil {
-					return fmt.Errorf("marshalling dockerfile to json: %v", err)
-				}
-				fmt.Println(string(b))
-				return nil
+			// Use dfc2 to parse the Dockerfile
+			dockerfile, err := dfc2.ParseDockerfile(ctx, raw)
+			if err != nil {
+				return fmt.Errorf("unable to parse dockerfile: %v", err)
 			}
 
 			// Setup conversion options
@@ -84,10 +70,24 @@ func cli() *cobra.Command {
 			}
 
 			// Convert the Dockerfile
-			result, err := dfc2.ConvertDockerfile(ctx, raw, opts)
-			if err != nil {
-				return fmt.Errorf("converting dockerfile: %v", err)
+			convertedDockerfile := dockerfile.Convert(ctx, opts)
+
+			if j {
+				if inPlace {
+					return fmt.Errorf("unable to use --in-place and --json flag at same time")
+				}
+
+				// Output the converted Dockerfile as JSON
+				b, err := json.Marshal(convertedDockerfile)
+				if err != nil {
+					return fmt.Errorf("marshalling converted dockerfile to json: %v", err)
+				}
+				fmt.Println(string(b))
+				return nil
 			}
+
+			// Get the string representation
+			result := convertedDockerfile.String()
 
 			// modify file in place
 			if inPlace {
@@ -100,14 +100,14 @@ func cli() *cobra.Command {
 					return fmt.Errorf("saving dockerfile backup to %s: %v", backupPath, err)
 				}
 				log.Printf("overwriting %s", path)
-				if err := os.WriteFile(path, result, 0644); err != nil {
+				if err := os.WriteFile(path, []byte(result), 0644); err != nil {
 					return fmt.Errorf("overwriting %s: %v", path, err)
 				}
 				return nil
 			}
 
 			// Print to stdout
-			fmt.Print(string(result))
+			fmt.Print(result)
 
 			return nil
 		},
@@ -115,7 +115,7 @@ func cli() *cobra.Command {
 
 	cmd.Flags().StringVar(&org, "org", dfc2.DefaultOrganization, "the organization for cgr.dev/ORGANIZATION/alpine (defaults to ORGANIZATION)")
 	cmd.Flags().BoolVarP(&inPlace, "in-place", "i", false, "modified the Dockerfile in place (vs. stdout), saving original in a .bak file")
-	cmd.Flags().BoolVar(&j, "json", false, "print dockerfile as json (pre-conversion)")
+	cmd.Flags().BoolVar(&j, "json", false, "print dockerfile as json (after conversion)")
 
 	return cmd
 }

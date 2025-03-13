@@ -21,14 +21,10 @@ func ConvertDockerfile(ctx context.Context, content []byte, opts Options) ([]byt
 	}
 
 	// Apply the conversion
-	err = applyConversion(dockerfile, opts)
-	if err != nil {
-		return nil, fmt.Errorf("failed to apply conversion: %w", err)
-	}
+	convertedDockerfile := dockerfile.Convert(ctx, opts)
 
-	// Rebuild the Dockerfile
-	result := rebuildDockerfile(dockerfile)
-	return []byte(result), nil
+	// Return the string representation
+	return []byte(convertedDockerfile.String()), nil
 }
 
 // applyConversion applies the conversion to the parsed Dockerfile
@@ -38,7 +34,7 @@ func applyConversion(dockerfile *Dockerfile, opts Options) error {
 		// Only process FROM and RUN directives
 		switch line.Directive {
 		case DirectiveFrom:
-			convertFromDirective(line, opts, dockerfile.stageAliases)
+			convertFromDirective(line, opts, dockerfile.StageAliases)
 		case DirectiveRun:
 			convertRunDirective(line, opts)
 		}
@@ -248,37 +244,4 @@ func mapPackages(packages []string, packageMap map[string]string) []string {
 	}
 
 	return uniqueResult
-}
-
-// rebuildDockerfile reconstructs a Dockerfile from its structured representation
-func rebuildDockerfile(dockerfile *Dockerfile) string {
-	var builder strings.Builder
-
-	for i, line := range dockerfile.Lines {
-		// Write any extra content that comes before this line
-		if line.ExtraBefore != "" {
-			// Write the extra content exactly as is - it should already contain the necessary newlines
-			builder.WriteString(line.ExtraBefore)
-
-			// If ExtraBefore doesn't end with a newline, add one
-			if !strings.HasSuffix(line.ExtraBefore, "\n") {
-				builder.WriteString("\n")
-			}
-		}
-
-		// Skip empty directives (they're just comments or whitespace)
-		if line.Directive == "" {
-			continue
-		}
-
-		// Write the line itself
-		builder.WriteString(line.Raw)
-
-		// Add a newline after each line except the last one
-		if i < len(dockerfile.Lines)-1 {
-			builder.WriteString("\n")
-		}
-	}
-
-	return builder.String()
 }

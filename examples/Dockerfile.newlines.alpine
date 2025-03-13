@@ -6,4 +6,4 @@ WORKDIR /app
 
 COPY . .
 
-CMD ["nginx", "-g", "daemon off;"] 
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,6 +1,9 @@
 package dfc2
 
 import (
+	"context"
+	"strings"
+
 	"github.com/chainguard-dev/dfc/internal/shellparse2"
 )
 
@@ -121,7 +124,110 @@ type RunDetails struct {
 // Dockerfile represents a parsed Dockerfile
 type Dockerfile struct {
 	Lines        []*DockerfileLine `json:"lines"`
-	stageAliases map[string]bool   // Tracks stage aliases defined with AS
+	StageAliases map[string]bool   `json:"stageAliases"` // Tracks stage aliases defined with AS
+}
+
+// String returns the Dockerfile content as a string
+func (d *Dockerfile) String() string {
+	var builder strings.Builder
+
+	for i, line := range d.Lines {
+		// Write any extra content that comes before this line
+		if line.ExtraBefore != "" {
+			// Write the extra content exactly as is - it should already contain the necessary newlines
+			builder.WriteString(line.ExtraBefore)
+
+			// If ExtraBefore doesn't end with a newline, add one
+			if !strings.HasSuffix(line.ExtraBefore, "\n") {
+				builder.WriteString("\n")
+			}
+		}
+
+		// Skip empty directives (they're just comments or whitespace)
+		if line.Directive == "" {
+			continue
+		}
+
+		// Write the line itself
+		builder.WriteString(line.Raw)
+
+		// Add a newline after each line except the last one
+		if i < len(d.Lines)-1 {
+			builder.WriteString("\n")
+		}
+	}
+
+	return builder.String()
+}
+
+// Convert applies the conversion to the Dockerfile and returns a new converted Dockerfile
+func (d *Dockerfile) Convert(ctx context.Context, opts Options) *Dockerfile {
+	// Create a deep copy of the Dockerfile
+	newDf := &Dockerfile{
+		Lines:        make([]*DockerfileLine, len(d.Lines)),
+		StageAliases: make(map[string]bool),
+	}
+
+	// Copy stage aliases
+	for alias, val := range d.StageAliases {
+		newDf.StageAliases[alias] = val
+	}
+
+	// Copy lines
+	for i, line := range d.Lines {
+		// Create a deep copy of the line
+		newLine := &DockerfileLine{
+			Raw:         line.Raw,
+			ExtraBefore: line.ExtraBefore,
+			Directive:   line.Directive,
+			Stage:       line.Stage,
+		}
+
+		// Copy From details if present
+		if line.From != nil {
+			newLine.From = &FromDetails{
+				Base:        line.From.Base,
+				Tag:         line.From.Tag,
+				Alias:       line.From.Alias,
+				Parent:      line.From.Parent,
+				BaseDynamic: line.From.BaseDynamic,
+				TagDynamic:  line.From.TagDynamic,
+			}
+		}
+
+		// Copy Run details if present
+		if line.Run != nil {
+			// For Command, we need to copy or clone it from the original
+			var newCommand *shellparse2.ShellCommand
+			if line.Run.Command != nil {
+				// Here we would ideally clone the command, but for simplicity let's reuse it
+				// If shellparse2.ShellCommand had a Clone method, we would use it here
+				newCommand = line.Run.Command
+			}
+
+			// Create new RunDetails
+			newLine.Run = &RunDetails{
+				Command:  newCommand,
+				Distro:   line.Run.Distro,
+				Packages: append([]string{}, line.Run.Packages...), // Copy slice
+			}
+		}
+
+		newDf.Lines[i] = newLine
+	}
+
+	// Apply the conversion
+	for _, line := range newDf.Lines {
+		// Only process FROM and RUN directives
+		switch line.Directive {
+		case DirectiveFrom:
+			convertFromDirective(line, opts, newDf.StageAliases)
+		case DirectiveRun:
+			convertRunDirective(line, opts)
+		}
+	}
+
+	return newDf
 }
 
 // Options represents conversion options

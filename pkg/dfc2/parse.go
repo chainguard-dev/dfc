@@ -11,7 +11,7 @@ import (
 func ParseDockerfile(_ context.Context, content []byte) (*Dockerfile, error) {
 	dockerfile := &Dockerfile{
 		Lines:        []*DockerfileLine{},
-		stageAliases: make(map[string]bool),
+		StageAliases: make(map[string]bool),
 	}
 
 	// Stage counter for multi-stage builds
@@ -107,13 +107,9 @@ func ParseDockerfile(_ context.Context, content []byte) (*Dockerfile, error) {
 			stage++
 			dfLine.Stage = stage
 			if dfLine.From != nil {
-				if dfLine.From.Parent > 0 {
-					// Link to parent stage
-					dfLine.From.Parent = dfLine.From.Parent
-				}
 				// Record the stage alias if present
 				if dfLine.From.Alias != "" {
-					dockerfile.stageAliases[dfLine.From.Alias] = true
+					dockerfile.StageAliases[dfLine.From.Alias] = true
 				}
 			}
 		} else if dfLine.Directive != "" {
