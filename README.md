@@ -35,7 +35,7 @@ The following CLI flags are also available:
 - `--org=<org>` - the registry namespace, i.e. `cgr.dev/<org>/` (default placeholder: `ORGANIZATION`)
 - `--json` / `-j` - serialize Dockerfile as JSON (prior to conversion)
 - `--in-place` / `-i` - modify the Dockerfile in place vs. printing to stdout, saving original in a `.bak` file
-- `--mappings=<path>` / `-m` - path to a custom package mappings file with distro-specific mappings (defaults to embedded packages.yaml)
+- `--mappings=<path>` / `-m` - path to a custom package mappings YAML file (instead of the default)
 
 ## Install
 
@@ -83,35 +83,57 @@ DOCKERFILE
 #              RUN apk add -U nano
 ```
 
+Using custom package mappings:
+
+```sh
+# Create a custom mappings file
+cat > custom-mappings.yaml <<EOF
+debian:
+  nano:
+    - vim
+    - less
+EOF
+
+# Convert a Dockerfile using custom mappings
+cat <<DOCKERFILE | dfc --mappings=custom-mappings.yaml
+FROM node
+RUN apt-get update && apt-get install -y nano
+DOCKERFILE
+# Converts to: FROM cgr.dev/ORGANIZATION/node:latest-dev
+#              USER root
+#              RUN apk add -U less vim
+```
 
 ## Custom Package Mappings
 
-You can provide a custom YAML file with package mappings for different distributions. The file should have the following structure:
+The `--mappings` flag allows you to provide a custom YAML file with package mappings for different distributions. This is useful when you want to override the default mappings or add your own.
+
+The mappings file should follow this format:
 
 ```yaml
-# Alpine package mappings
+# Mapping for alpine packages
 alpine:
-  package-name:
-    - chainguard-package-name-1
+  original-package-name:
+    - replacement-package-1
+    - replacement-package-2
 
-# Debian package mappings
+# Mapping for debian packages
 debian:
-  package-name:
-    - chainguard-package-name-2
-	- chainguard-package-name-3
+  original-package-name:
+    - replacement-package
 
-# Fedora package mappings
+# Mapping for fedora packages
 fedora:
-  package-name:
-    - chainguard-package-name-4
-	- chainguard-package-name-5
-	- chainguard-package-name-6
+  original-package-name:
+    - replacement-package
 ```
 
-To use this file:
+For example, to create a custom mapping for gcc in Debian:
 
-```sh
-dfc --mappings=./custom-mappings.yaml ./Dockerfile
+```yaml
+debian:
+  gcc:
+    - custom-gcc-package
 ```
 
 ## Limitations

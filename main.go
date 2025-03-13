@@ -33,6 +33,7 @@ func cli() *cobra.Command {
 	var j bool
 	var inPlace bool
 	var org string
+	var mappingsFile string
 
 	cmd := &cobra.Command{
 		Use:     "dfc",
@@ -99,10 +100,25 @@ func cli() *cobra.Command {
 				})
 			}
 
-			// Try to parse and merge additional mappings from the embedded packages.yaml
+			// Try to parse and merge additional mappings from packages.yaml or custom mappings file
 			var packageMap dfc.PackageMap
-			if err := yaml.Unmarshal(packagesYamlBytes, &packageMap); err != nil {
-				return fmt.Errorf("unmarshalling images mappings: %v", err)
+			var mappingsBytes []byte
+
+			// Use custom mappings file if provided
+			if mappingsFile != "" {
+				var err error
+				mappingsBytes, err = os.ReadFile(mappingsFile)
+				if err != nil {
+					return fmt.Errorf("reading mappings file %s: %v", mappingsFile, err)
+				}
+				log.Printf("using custom mappings file: %s", mappingsFile)
+			} else {
+				// Use embedded packages.yaml
+				mappingsBytes = packagesYamlBytes
+			}
+
+			if err := yaml.Unmarshal(mappingsBytes, &packageMap); err != nil {
+				return fmt.Errorf("unmarshalling package mappings: %v", err)
 			}
 
 			// Setup conversion options
@@ -153,6 +169,7 @@ func cli() *cobra.Command {
 	cmd.Flags().StringVar(&org, "org", dfc.DefaultOrganization, "the organization for cgr.dev/ORGANIZATION/<image> Chainguard images (defaults to ORGANIZATION)")
 	cmd.Flags().BoolVarP(&inPlace, "in-place", "i", false, "modified the Dockerfile in place (vs. stdout), saving original in a .bak file")
 	cmd.Flags().BoolVarP(&j, "json", "j", false, "print dockerfile as json (before conversion)")
+	cmd.Flags().StringVarP(&mappingsFile, "mappings", "m", "", "path to a custom package mappings YAML file (instead of the default)")
 
 	return cmd
 }
