@@ -2,10 +2,9 @@ package dfc2
 
 import (
 	"context"
-	"strings"
-
 	"maps"
 	"slices"
+	"strings"
 
 	"github.com/chainguard-dev/dfc/internal/shellparse2"
 )
@@ -18,11 +17,10 @@ type Manager string
 
 // Supported distributions
 const (
-	DistroDebian  Distro = "debian"
-	DistroFedora  Distro = "fedora"
-	DistroAlpine  Distro = "alpine"
-	DistroUbuntu  Distro = "ubuntu"
-	DistroUnknown Distro = "unknown"
+	DistroDebian Distro = "debian"
+	DistroFedora Distro = "fedora"
+	DistroAlpine Distro = "alpine"
+	DistroUbuntu Distro = "ubuntu"
 )
 
 // Supported package managers
@@ -33,6 +31,12 @@ const (
 	ManagerDnf      Manager = "dnf"
 	ManagerMicrodnf Manager = "microdnf"
 	ManagerApt      Manager = "apt"
+)
+
+// Install subcommands
+const (
+	SubcommandInstall = "install"
+	SubcommandAdd     = "add"
 )
 
 // Dockerfile directives
@@ -51,6 +55,7 @@ const (
 	DefaultUser           = "root"
 	DefaultPackageManager = "apk"
 	DefaultOrganization   = "ORGANIZATION"
+	DefaultInstallCommand = "apk add -U"
 )
 
 // PackageManagerInfo holds metadata about a package manager
@@ -61,12 +66,14 @@ type PackageManagerInfo struct {
 
 // PackageManagerInfoMap maps package managers to their metadata
 var PackageManagerInfoMap = map[Manager]PackageManagerInfo{
-	ManagerAptGet:   {Distro: DistroDebian, InstallKeyword: "install"},
-	ManagerApk:      {Distro: DistroAlpine, InstallKeyword: "add"},
-	ManagerYum:      {Distro: DistroFedora, InstallKeyword: "install"},
-	ManagerDnf:      {Distro: DistroFedora, InstallKeyword: "install"},
-	ManagerMicrodnf: {Distro: DistroFedora, InstallKeyword: "install"},
-	ManagerApt:      {Distro: DistroDebian, InstallKeyword: "install"},
+	ManagerAptGet: {Distro: DistroDebian, InstallKeyword: SubcommandInstall},
+	ManagerApt:    {Distro: DistroDebian, InstallKeyword: SubcommandInstall},
+
+	ManagerYum:      {Distro: DistroFedora, InstallKeyword: SubcommandInstall},
+	ManagerDnf:      {Distro: DistroFedora, InstallKeyword: SubcommandInstall},
+	ManagerMicrodnf: {Distro: DistroFedora, InstallKeyword: SubcommandInstall},
+
+	ManagerApk: {Distro: DistroAlpine, InstallKeyword: SubcommandAdd},
 }
 
 // PackageManagerGroups holds package managers grouped by distribution
@@ -83,11 +90,6 @@ func init() {
 	// Group package managers by distro
 	for pm, info := range PackageManagerInfoMap {
 		PackageManagerGroups[info.Distro] = append(PackageManagerGroups[info.Distro], pm)
-	}
-
-	// Make sure unknown distro is always included
-	if _, exists := PackageManagerGroups[DistroUnknown]; !exists {
-		PackageManagerGroups[DistroUnknown] = []Manager{}
 	}
 
 	// Initialize list of all package managers
@@ -119,10 +121,9 @@ type FromDetails struct {
 
 // RunDetails holds details about a RUN directive
 type RunDetails struct {
-	Distro   Distro   `json:"distro,omitempty"`
-	Packages []string `json:"packages,omitempty"`
-
-	command *shellparse2.ShellCommand `json:"-"`
+	Command  *shellparse2.ShellCommand `json:"-"`
+	Distro   Distro                    `json:"distro,omitempty"`
+	Packages []string                  `json:"packages,omitempty"`
 }
 
 // Dockerfile represents a parsed Dockerfile
@@ -142,19 +143,14 @@ func (d *Dockerfile) String() string {
 			// Write the extra content exactly as is - it should already contain the necessary newlines
 			builder.WriteString(line.Extra)
 
-			// If ExtraBefore doesn't end with a newline, add one
+			// If Extra doesn't end with a newline, add one
 			// (unless we are on the last line)
 			if !strings.HasSuffix(line.Extra, "\n") && i < len(d.Lines)-1 {
 				builder.WriteString("\n")
 			}
 		}
 
-		// Skip empty directives (they're just comments or whitespace)
-		if line.Directive == "" {
-			continue
-		}
-
-		// Write the line itself
+		// Write the line itself, regardless of whether it has a directive
 		builder.WriteString(line.Raw)
 
 		// Add a newline after each line except the last one
@@ -203,15 +199,15 @@ func (d *Dockerfile) Convert(ctx context.Context, opts Options) *Dockerfile {
 		if line.Run != nil {
 			// For Command, we need to copy or clone it from the original
 			var newCommand *shellparse2.ShellCommand
-			if line.Run.command != nil {
+			if line.Run.Command != nil {
 				// Here we would ideally clone the command, but for simplicity let's reuse it
 				// If shellparse2.ShellCommand had a Clone method, we would use it here
-				newCommand = line.Run.command
+				newCommand = line.Run.Command
 			}
 
 			// Create new RunDetails
 			newLine.Run = &RunDetails{
-				command:  newCommand,
+				Command:  newCommand,
 				Distro:   line.Run.Distro,
 				Packages: slices.Clone(line.Run.Packages), // Copy slice
 			}

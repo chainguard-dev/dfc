@@ -347,29 +347,48 @@ func (sc *ShellCommand) ReplaceCommand(node Node, newCmd string) {
 				currentNode.Parts = cmdParts
 			}
 
-			// Preserve the original formatting
-			if strings.Contains(currentNode.Raw, "\n") {
-				// This is a multi-line command, format it nicely
-				lines := strings.Split(currentNode.Raw, "\n")
-				if len(lines) > 1 {
-					// Get the indentation from the second line
-					indent := ""
-					for i := 0; i < len(lines[1]); i++ {
-						if !isWhitespace(lines[1][i]) {
-							break
-						}
-						indent += string(lines[1][i])
-					}
+			// Preserve the original formatting and indentation from the raw string
+			// Instead of reconstructing the raw, just update the command part
+			// while keeping the original whitespace and operators
+			actualCmd, indent, lineBreak, prefix := extractFormatting(currentNode.Raw)
 
-					// Format the new command with the same indentation
-					currentNode.Raw = newCmd
-				} else {
-					currentNode.Raw = currentNode.Prefix + newCmd + currentNode.LineBreak
+			// Find the command part in the raw string, preserving whitespace
+			// This is more complex than a simple replace to maintain spacing
+			rawLines := strings.Split(currentNode.Raw, "\n")
+			if len(rawLines) > 0 {
+				// For the first line, find where the command starts
+				firstLine := rawLines[0]
+				cmdStart := 0
+				for i, c := range firstLine {
+					if !isWhitespace(byte(c)) {
+						cmdStart = i
+						break
+					}
 				}
+
+				// Replace just the command part in the first line
+				// This preserves spacing around operators like &&
+				cmdEnd := len(firstLine)
+				for i := cmdStart; i < len(firstLine); i++ {
+					if firstLine[i] == '&' || firstLine[i] == '|' || firstLine[i] == ';' ||
+						firstLine[i] == '\\' {
+						cmdEnd = i
+						break
+					}
+				}
+
+				// Replace the command part while preserving spacing
+				rawLines[0] = firstLine[:cmdStart] + newCmd + firstLine[cmdEnd:]
+				currentNode.Raw = strings.Join(rawLines, "\n")
 			} else {
-				// Single-line command
-				currentNode.Raw = currentNode.Prefix + newCmd + currentNode.LineBreak
+				// Fallback to simple replace if we can't parse the lines
+				currentNode.Raw = strings.Replace(currentNode.Raw, actualCmd, newCmd, 1)
 			}
+
+			// Set the formatting info for proper string construction
+			currentNode.Indent = indent
+			currentNode.LineBreak = lineBreak
+			currentNode.Prefix = prefix
 
 			return
 		}
@@ -417,16 +436,24 @@ func (sc *ShellCommand) String() string {
 	currentNode := sc.RootNode
 
 	for currentNode != nil {
+		// For command nodes, use the raw string if it's multi-line
+		// This preserves all original formatting, including newlines and indentation
 		if currentNode.Type == NodeCommand {
-			if len(currentNode.Parts) > 0 {
+			if strings.Contains(currentNode.Raw, "\n") {
+				// For multi-line commands, use the raw string which should have the correct formatting
+				result.WriteString(currentNode.Raw)
+			} else if len(currentNode.Parts) > 0 {
+				// For single-line commands with parts, use the prefix, parts, and line break
 				result.WriteString(currentNode.Prefix)
 				result.WriteString(currentNode.Indent)
 				result.WriteString(strings.Join(currentNode.Parts, " "))
 				result.WriteString(currentNode.LineBreak)
 			} else {
+				// Fall back to the raw string if no parts
 				result.WriteString(currentNode.Raw)
 			}
 		} else {
+			// For operators and text, use the raw string
 			result.WriteString(currentNode.Raw)
 		}
 
@@ -468,4 +495,44 @@ func ExtractPackagesFromInstallCommand(node Node) []string {
 	}
 
 	return packages
+}
+
+// extractFormatting extracts the actual command, indentation, line break, and prefix from a raw command string
+func extractFormatting(raw string) (string, string, string, string) {
+	// Split the raw string into lines
+	lines := strings.Split(raw, "\n")
+
+	// Extract the actual command
+	actualCmd := strings.TrimSpace(lines[0])
+
+	// Extract indentation
+	indent := ""
+	if len(lines) > 1 {
+		for i := 0; i < len(lines[1]); i++ {
+			if !isWhitespace(lines[1][i]) {
+				break
+			}
+			indent += string(lines[1][i])
+		}
+	}
+
+	// Extract line break
+	lineBreak := ""
+	if len(lines) > 1 {
+		lineBreak = "\n"
+	}
+
+	// Extract prefix
+	prefix := ""
+	i := 0
+	for ; i < len(raw); i++ {
+		if !isWhitespace(raw[i]) {
+			break
+		}
+	}
+	if i > 0 {
+		prefix = raw[:i]
+	}
+
+	return actualCmd, indent, lineBreak, prefix
 }

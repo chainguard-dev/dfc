@@ -35,6 +35,14 @@ func ParseDockerfile(_ context.Context, content []byte) (*Dockerfile, error) {
 
 		// If we're in a multi-line command, handle it specially
 		if currentMultiLine != nil {
+			// Skip comments within multi-line commands
+			if strings.HasPrefix(trimmedLine, "#") {
+				// Store the comment as is, we'll handle it during extraction
+				multiLineContent.WriteString("\n")
+				multiLineContent.WriteString(line)
+				continue
+			}
+
 			// Add this line to the multi-line command
 			multiLineContent.WriteString("\n")
 			multiLineContent.WriteString(line)
@@ -163,13 +171,29 @@ func ParseDockerfile(_ context.Context, content []byte) (*Dockerfile, error) {
 func parseDockerfileLine(line string) *DockerfileLine {
 	trimmedLine := strings.TrimSpace(line)
 	if trimmedLine == "" || strings.HasPrefix(trimmedLine, "#") {
-		// Empty line or comment - these should be handled as ExtraBefore content
+		// Empty line or comment - these should be handled as Extra content
 		return nil
 	}
 
 	// Check for a directive
 	parts := strings.SplitN(trimmedLine, " ", 2)
 	directive := strings.ToUpper(parts[0])
+
+	// Verify this is a valid Dockerfile directive
+	// Common directives include: FROM, RUN, CMD, LABEL, EXPOSE, ENV, ADD, COPY, ENTRYPOINT, VOLUME, USER, WORKDIR, ARG, ONBUILD, STOPSIGNAL, HEALTHCHECK, SHELL
+	// Operators like && are not directives
+	isValidDirective := directive == "FROM" || directive == "RUN" || directive == "CMD" ||
+		directive == "LABEL" || directive == "EXPOSE" || directive == "ENV" ||
+		directive == "ADD" || directive == "COPY" || directive == "ENTRYPOINT" ||
+		directive == "VOLUME" || directive == "USER" || directive == "WORKDIR" ||
+		directive == "ARG" || directive == "ONBUILD" || directive == "STOPSIGNAL" ||
+		directive == "HEALTHCHECK" || directive == "SHELL" || directive == "MAINTAINER"
+
+	// If it's not a valid directive, it might be a continuation of a previous command
+	// But since we're parsing line by line, we'll return nil and it should be handled as part of a multi-line command
+	if !isValidDirective {
+		return nil
+	}
 
 	dfLine := &DockerfileLine{
 		Raw:       line,
@@ -229,9 +253,7 @@ func parseFromDirective(content string) *FromDetails {
 // extractRun extracts information from a RUN directive
 func extractRun(content string) *RunDetails {
 	// Create a new RunDetails object
-	details := &RunDetails{
-		Packages: []string{},
-	}
+	details := &RunDetails{}
 
 	// Extract the command part (after "RUN ")
 	cmdStart := strings.Index(content, "RUN ")
@@ -241,9 +263,16 @@ func extractRun(content string) *RunDetails {
 
 	cmdContent := content[cmdStart+4:]
 
-	// Parse the shell command
+	// Clean up the command content for analysis
+	// This is just for analysis - we'll preserve the original formatting
+	analyzableContent := cleanupCommandContent(cmdContent)
+
+	// Parse the shell command with the original content to preserve formatting
 	cmd := shellparse2.NewShellCommand(cmdContent)
-	details.command = cmd
+	details.Command = cmd
+
+	// Use the analyzable content to determine the package manager
+	analyzeCmd := shellparse2.NewShellCommand(analyzableContent)
 
 	// First, determine the distribution based on package manager commands
 	var detectedPackageManager Manager
@@ -251,7 +280,7 @@ func extractRun(content string) *RunDetails {
 		pmStr := string(pm)
 
 		// Check if this package manager is used in the command
-		pmCmds := cmd.FindCommandsByPrefix(pmStr)
+		pmCmds := analyzeCmd.FindCommandsByPrefix(pmStr)
 		if len(pmCmds) > 0 {
 			// Found a package manager, get its associated distro
 			info := PackageManagerInfoMap[pm]
@@ -261,10 +290,9 @@ func extractRun(content string) *RunDetails {
 		}
 	}
 
-	// If no distro detected, set to unknown
+	// If we arent able to detect distro, just return nil
 	if details.Distro == "" {
-		details.Distro = DistroUnknown
-		return details
+		return nil
 	}
 
 	// Extract packages only for the detected package manager
@@ -273,7 +301,7 @@ func extractRun(content string) *RunDetails {
 		info := PackageManagerInfoMap[detectedPackageManager]
 
 		// Find install commands for this package manager
-		installCmds := cmd.FindCommandsByPrefixAndSubcommand(pmStr, info.InstallKeyword)
+		installCmds := analyzeCmd.FindCommandsByPrefixAndSubcommand(pmStr, info.InstallKeyword)
 
 		// Extract packages from each install command
 		for _, installCmd := range installCmds {
@@ -288,6 +316,54 @@ func extractRun(content string) *RunDetails {
 	}
 
 	return details
+}
+
+// cleanupCommandContent removes comments and normalizes line breaks in multi-line commands
+// This is used only for analysis, not for preserving formatting
+func cleanupCommandContent(content string) string {
+	lines := strings.Split(content, "\n")
+	var cleanedLines []string
+	var currentCommand string
+
+	for _, line := range lines {
+		// Strip leading/trailing whitespace
+		trimmedLine := strings.TrimSpace(line)
+
+		// Skip empty lines and comments
+		if trimmedLine == "" || strings.HasPrefix(trimmedLine, "#") {
+			continue
+		}
+
+		// Check if this is a continuation or a new command
+		if strings.HasPrefix(trimmedLine, "&&") || strings.HasPrefix(trimmedLine, "||") ||
+			strings.HasPrefix(trimmedLine, ";") {
+			// This is a continuation, append it to the current command
+			currentCommand += " " + trimmedLine
+		} else if strings.HasSuffix(trimmedLine, "\\") {
+			// This is a continuation with backslash, remove the backslash and add to current command
+			trimmedLine = strings.TrimSuffix(trimmedLine, "\\")
+			if currentCommand == "" {
+				currentCommand = trimmedLine
+			} else {
+				currentCommand += " " + trimmedLine
+			}
+		} else {
+			// This is a new command
+			if currentCommand != "" {
+				// Add the previous command
+				cleanedLines = append(cleanedLines, currentCommand)
+			}
+			currentCommand = trimmedLine
+		}
+	}
+
+	// Add the last command if there is one
+	if currentCommand != "" {
+		cleanedLines = append(cleanedLines, currentCommand)
+	}
+
+	// Join with spaces to normalize the command
+	return strings.Join(cleanedLines, " ")
 }
 
 // deduplicatePackages removes duplicate packages from a slice
