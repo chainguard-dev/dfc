@@ -49,12 +49,11 @@ const (
 // Default values
 const (
 	DefaultRegistryDomain = "cgr.dev"
-	DefaultBaseImage      = "alpine"
-	DefaultImageTag       = "latest"
+	DefaultImageTag       = "latest-dev"
 	DefaultUser           = "root"
 	DefaultPackageManager = "apk"
-	DefaultOrganization   = "ORGANIZATION"
 	DefaultInstallCommand = "apk add -U"
+	DefaultOrganization   = "ORGANIZATION"
 )
 
 // PackageManagerInfo holds metadata about a package manager
@@ -190,6 +189,12 @@ func (d *Dockerfile) String() string {
 
 // Convert applies the conversion to the Dockerfile and returns a new converted Dockerfile
 func (d *Dockerfile) Convert(ctx context.Context, opts Options) *Dockerfile {
+	// Define a struct to hold the new lines and their insertion points
+	type lineToInsert struct {
+		index int
+		line  *DockerfileLine
+	}
+
 	// Create a deep copy of the Dockerfile
 	newDf := &Dockerfile{
 		Lines:        make([]*DockerfileLine, len(d.Lines)),
@@ -242,15 +247,57 @@ func (d *Dockerfile) Convert(ctx context.Context, opts Options) *Dockerfile {
 		newDf.Lines[i] = newLine
 	}
 
+	// Array to store new lines that need to be added
+	var linesToInsert []lineToInsert
+
 	// Apply the conversion
-	for _, line := range newDf.Lines {
+	for i, line := range newDf.Lines {
 		// Only process FROM and RUN directives
 		switch line.Directive {
 		case DirectiveFrom:
-			convertFromDirective(line, opts, newDf.stageAliases)
+			// If the FROM line was successfully converted, add a "USER root" line after it
+			if convertFromDirective(line, opts, newDf.stageAliases) {
+				// Create the USER root line
+				userRootLine := &DockerfileLine{
+					Raw:       DirectiveUser + " " + DefaultUser,
+					Directive: DirectiveUser,
+					Stage:     line.Stage, // Same stage as the FROM line
+				}
+
+				// Add to our list of new lines to insert
+				linesToInsert = append(linesToInsert, lineToInsert{index: i + 1, line: userRootLine})
+			}
 		case DirectiveRun:
 			convertRunDirective(line, opts)
 		}
+	}
+
+	// Insert the new lines at the appropriate positions
+	if len(linesToInsert) > 0 {
+		// Create a new slice to hold all lines, including the new ones
+		finalLines := make([]*DockerfileLine, 0, len(newDf.Lines)+len(linesToInsert))
+
+		// Create a map of insertion points for O(1) lookups
+		insertionPoints := make(map[int]*DockerfileLine)
+		for _, insert := range linesToInsert {
+			insertionPoints[insert.index] = insert.line
+		}
+
+		// Build the final set of lines with insertions
+		for i := 0; i <= len(newDf.Lines); i++ {
+			// Check if we need to insert a line at this position
+			if newLine, shouldInsert := insertionPoints[i]; shouldInsert {
+				finalLines = append(finalLines, newLine)
+			}
+
+			// Add the original line if we're not at the end
+			if i < len(newDf.Lines) {
+				finalLines = append(finalLines, newDf.Lines[i])
+			}
+		}
+
+		// Update the lines
+		newDf.Lines = finalLines
 	}
 
 	return newDf
@@ -260,4 +307,20 @@ func (d *Dockerfile) Convert(ctx context.Context, opts Options) *Dockerfile {
 type Options struct {
 	Organization string
 	PackageMap   map[string]string
+	ImageMap     ImageMap
+}
+
+// ImageMap maps source image names to target Chainguard image names
+type ImageMap struct {
+	// Map of source image names/patterns to target image names
+	Mappings []ImageMapping
+}
+
+// ImageMapping represents a mapping from a source image to a target Chainguard image
+type ImageMapping struct {
+	// Source image name or pattern
+	Source string `yaml:"source"`
+
+	// Target image name (without registry/org prefix)
+	Target string `yaml:"target"`
 }

@@ -26,7 +26,8 @@ CMD ["nginx", "-g", "daemon off;"]`,
 				},
 			},
 			wantContains: []string{
-				"FROM cgr.dev/ORGANIZATION/alpine:latest",
+				"FROM cgr.dev/ORGANIZATION/debian:latest-dev",
+				"USER root",
 				"apk add -U nginx curl",
 			},
 			wantNotContain: []string{
@@ -51,8 +52,10 @@ CMD ["/app"]`,
 				},
 			},
 			wantContains: []string{
-				"FROM cgr.dev/ORGANIZATION/alpine:latest AS builder",
-				"FROM cgr.dev/ORGANIZATION/alpine:latest",
+				"FROM cgr.dev/ORGANIZATION/golang:latest-dev AS builder",
+				"USER root",
+				"FROM cgr.dev/ORGANIZATION/debian:latest-dev",
+				"USER root",
 				"apk add -U ca-certificates",
 			},
 			wantNotContain: []string{
@@ -73,7 +76,8 @@ CMD ["python3", "-m", "http.server"]`,
 				},
 			},
 			wantContains: []string{
-				"FROM cgr.dev/myorg/alpine:latest",
+				"FROM cgr.dev/myorg/ubuntu:latest-dev",
+				"USER root",
 				"apk add -U python3 py3-pip",
 			},
 			wantNotContain: []string{
@@ -100,7 +104,8 @@ CMD ["nginx", "-g", "daemon off;"]`,
 				},
 			},
 			wantContains: []string{
-				"FROM cgr.dev/ORGANIZATION/alpine:latest",
+				"FROM cgr.dev/ORGANIZATION/debian:latest-dev",
+				"USER root",
 				"# Install dependencies",
 				"# Run the application",
 			},
@@ -113,7 +118,8 @@ CMD ["nginx", "-g", "daemon off;"]`,
 ARG ABC`,
 			opts: Options{},
 			wantContains: []string{
-				"FROM cgr.dev/ORGANIZATION/alpine:latest AS base",
+				"FROM cgr.dev/ORGANIZATION/node:latest-dev AS base",
+				"USER root",
 				"# my comment\nARG ABC",
 			},
 			wantNotContain: []string{
@@ -129,7 +135,8 @@ ARG ABC`,
 ARG ABC`,
 			opts: Options{},
 			wantContains: []string{
-				"FROM cgr.dev/ORGANIZATION/alpine:latest AS base",
+				"FROM cgr.dev/ORGANIZATION/node:latest-dev AS base",
+				"USER root",
 				"# comment with blank line after\n\nARG ABC",
 			},
 		},
@@ -145,6 +152,8 @@ ARG ABC
 CMD ["echo", "hello"]`,
 			opts: Options{},
 			wantContains: []string{
+				"FROM cgr.dev/ORGANIZATION/node:latest-dev AS base",
+				"USER root",
 				"# comment with blank line after\n\nARG ABC",
 				"# comment without blank line\nCMD",
 			},
@@ -165,6 +174,8 @@ COPY . .
 CMD ["echo", "hello"]`,
 			opts: Options{},
 			wantContains: []string{
+				"FROM cgr.dev/ORGANIZATION/ubuntu:latest-dev",
+				"USER root",
 				"# This is a comment\n# This is a second line of the comment\n# This is a third line of the comment\n\nCOPY",
 			},
 		},
@@ -177,6 +188,8 @@ RUN apt-get update
 # This is a trailing comment`,
 			opts: Options{},
 			wantContains: []string{
+				"FROM cgr.dev/ORGANIZATION/ubuntu:latest-dev",
+				"USER root",
 				"RUN true",
 				"# This is a trailing comment",
 			},
@@ -194,6 +207,8 @@ RUN apt-get update
 `,
 			opts: Options{},
 			wantContains: []string{
+				"FROM cgr.dev/ORGANIZATION/ubuntu:latest-dev",
+				"USER root",
 				"RUN true",
 				"# This is a trailing comment\n",
 			},
@@ -280,39 +295,52 @@ func TestParseDockerfile(t *testing.T) {
 
 func TestConvertFromDirective(t *testing.T) {
 	tests := []struct {
-		name     string
-		input    string
-		opts     Options
-		wantBase string
-		wantKeep bool // If true, expect the base to remain unchanged
+		name       string
+		input      string
+		opts       Options
+		wantBase   string
+		wantKeep   bool // If true, expect the base to remain unchanged
+		wantReturn bool // Expected return value from the function
 	}{
 		{
-			name:     "simple from directive",
-			input:    "FROM debian:11",
-			opts:     Options{},
-			wantBase: "cgr.dev/ORGANIZATION/alpine",
-			wantKeep: false,
+			name:       "simple from directive",
+			input:      "FROM debian:11",
+			opts:       Options{},
+			wantBase:   "cgr.dev/ORGANIZATION/debian",
+			wantKeep:   false,
+			wantReturn: true,
 		},
 		{
-			name:     "from with as",
-			input:    "FROM golang:1.18 AS builder",
-			opts:     Options{},
-			wantBase: "cgr.dev/ORGANIZATION/alpine",
-			wantKeep: false,
+			name:       "from with as",
+			input:      "FROM golang:1.18 AS builder",
+			opts:       Options{},
+			wantBase:   "cgr.dev/ORGANIZATION/golang",
+			wantKeep:   false,
+			wantReturn: true,
 		},
 		{
-			name:     "custom organization",
-			input:    "FROM ubuntu:20.04",
-			opts:     Options{Organization: "myorg"},
-			wantBase: "cgr.dev/myorg/alpine",
-			wantKeep: false,
+			name:       "custom organization",
+			input:      "FROM ubuntu:20.04",
+			opts:       Options{Organization: "myorg"},
+			wantBase:   "cgr.dev/myorg/ubuntu",
+			wantKeep:   false,
+			wantReturn: true,
 		},
 		{
-			name:     "stage reference",
-			input:    "FROM builder",
-			opts:     Options{},
-			wantBase: "builder",
-			wantKeep: true,
+			name:       "with repository prefix",
+			input:      "FROM someupstream/somebase:1.0",
+			opts:       Options{},
+			wantBase:   "cgr.dev/ORGANIZATION/somebase",
+			wantKeep:   false,
+			wantReturn: true,
+		},
+		{
+			name:       "stage reference",
+			input:      "FROM builder",
+			opts:       Options{},
+			wantBase:   "builder",
+			wantKeep:   true,
+			wantReturn: false,
 		},
 	}
 
@@ -332,11 +360,16 @@ func TestConvertFromDirective(t *testing.T) {
 			line := df.Lines[0]
 			t.Logf("Before conversion: %+v", line)
 
-			// Apply conversion
-			convertFromDirective(line, tt.opts, stageAliases)
+			// Apply conversion and capture the return value
+			result := convertFromDirective(line, tt.opts, stageAliases)
 
 			t.Logf("After conversion: %+v", line)
 			t.Logf("Raw line: %s", line.Raw)
+
+			// Check the return value
+			if result != tt.wantReturn {
+				t.Errorf("convertFromDirective() returned %v, want %v", result, tt.wantReturn)
+			}
 
 			if line.Directive == DirectiveFrom && line.From != nil {
 				if tt.wantKeep {
@@ -451,6 +484,90 @@ CMD ["node", "app.js"]`,
 			got := dockerfile.String()
 			if got != tt.expected {
 				t.Errorf("String() output does not match expected.\nGot:\n%s\nExpected:\n%s", got, tt.expected)
+			}
+		})
+	}
+}
+
+func TestImageMapping(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		imageMap ImageMap
+		wantBase string
+		opts     Options
+	}{
+		{
+			name:  "exact match in image map",
+			input: "FROM nginx:1.19",
+			imageMap: ImageMap{
+				Mappings: []ImageMapping{
+					{Source: "nginx:1.19", Target: "nginx"},
+				},
+			},
+			wantBase: "cgr.dev/ORGANIZATION/nginx",
+			opts:     Options{},
+		},
+		{
+			name:  "distroless best guess match",
+			input: "FROM gcr.io/distroless/nodejs20-debian12",
+			imageMap: ImageMap{
+				Mappings: []ImageMapping{
+					{Source: "node", Target: "node"},
+					{Source: "python", Target: "python"},
+					{Source: "golang", Target: "golang"},
+				},
+			},
+			wantBase: "cgr.dev/ORGANIZATION/node",
+			opts:     Options{},
+		},
+		{
+			name:  "fallback to basename with no match",
+			input: "FROM somevendor/somecustomimage:1.0",
+			imageMap: ImageMap{
+				Mappings: []ImageMapping{
+					{Source: "node", Target: "node"},
+					{Source: "python", Target: "python"},
+				},
+			},
+			wantBase: "cgr.dev/ORGANIZATION/somecustomimage",
+			opts:     Options{},
+		},
+		{
+			name:  "custom organization with image map",
+			input: "FROM nginx:1.19",
+			imageMap: ImageMap{
+				Mappings: []ImageMapping{
+					{Source: "nginx:1.19", Target: "nginx"},
+				},
+			},
+			wantBase: "cgr.dev/myorg/nginx",
+			opts:     Options{Organization: "myorg"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Set the ImageMap in options
+			tt.opts.ImageMap = tt.imageMap
+
+			df, err := ParseDockerfile(context.Background(), []byte(tt.input))
+			if err != nil {
+				t.Fatalf("Failed to parse dockerfile: %v", err)
+			}
+
+			line := df.Lines[0]
+			t.Logf("Before conversion: %+v", line)
+
+			// Apply conversion
+			convertFromDirective(line, tt.opts, nil)
+
+			t.Logf("After conversion: %+v", line)
+			t.Logf("Raw line: %s", line.Raw)
+
+			if !strings.Contains(line.Raw, tt.wantBase) {
+				t.Errorf("convertFromDirective() did not update raw line correctly, got %v, want to contain %v",
+					line.Raw, tt.wantBase)
 			}
 		})
 	}

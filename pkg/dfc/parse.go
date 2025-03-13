@@ -230,12 +230,14 @@ func parseFromDirective(content string) *FromDetails {
 	}
 
 	// Check if referencing another stage
-	if !strings.Contains(content, "/") && !strings.Contains(content, ":") {
-		// Could be a reference to another stage
-		// For simplicity, we'll just set the base and check later
-		from.Base = strings.TrimSpace(content)
-		return from
-	}
+	/*
+		if !strings.Contains(content, "/") && !strings.Contains(content, ":") {
+			// Could be a reference to another stage
+			// For simplicity, we'll just set the base and check later
+			from.Base = strings.TrimSpace(content)
+			return from
+		}
+	*/
 
 	// Parse image and tag
 	imageParts := strings.Split(content, ":")

@@ -26,15 +26,16 @@ func ConvertDockerfile(ctx context.Context, content []byte, opts Options) ([]byt
 }
 
 // convertFromDirective converts FROM directives to use Chainguard
-func convertFromDirective(line *DockerfileLine, opts Options, stageAliases map[string]bool) {
+// Returns true if the conversion was successful (FROM line was modified)
+func convertFromDirective(line *DockerfileLine, opts Options, stageAliases map[string]bool) bool {
 	if line.From == nil {
-		return
+		return false
 	}
 
 	// Don't modify FROM directives that reference other stages
 	// or that have dynamic variables
 	if line.From.BaseDynamic || isStageReference(line.From.Base, stageAliases) {
-		return
+		return false
 	}
 
 	// Organization is required
@@ -43,8 +44,41 @@ func convertFromDirective(line *DockerfileLine, opts Options, stageAliases map[s
 		opts.Organization = DefaultOrganization
 	}
 
-	// Replace the base image with Chainguard using cgr.dev/ORGANIZATION/alpine format
-	newBase := fmt.Sprintf("%s/%s/%s", DefaultRegistryDomain, opts.Organization, DefaultBaseImage)
+	// Get the full original image name
+	originalImage := line.From.Base
+
+	// Create a variable to hold the target base name we'll use
+	targetBaseName := ""
+
+	// First, try to find a mapping using the ImageMap if provided
+	if len(opts.ImageMap.Mappings) > 0 {
+		// Try for an exact match first
+		exactMatch := findExactImageMatch(originalImage, opts.ImageMap)
+		if exactMatch != "" {
+			targetBaseName = exactMatch
+		} else {
+			// If no exact match, try for a best guess match
+			bestMatch := findBestImageMatch(originalImage, opts.ImageMap)
+			if bestMatch != "" {
+				targetBaseName = bestMatch
+			}
+		}
+	}
+
+	// If we didn't find a match in the ImageMap, fall back to extracting the basename
+	if targetBaseName == "" {
+		// Extract just the base image name (without repository prefix)
+		// For example, from "someupstream/somebase" we want just "somebase"
+		if parts := strings.Split(originalImage, "/"); len(parts) > 1 {
+			// Use the last part as the base image name
+			targetBaseName = parts[len(parts)-1]
+		} else {
+			targetBaseName = originalImage
+		}
+	}
+
+	// Replace the base image with Chainguard using cgr.dev/ORGANIZATION/<basename>:latest-dev format
+	newBase := fmt.Sprintf("%s/%s/%s", DefaultRegistryDomain, opts.Organization, targetBaseName)
 
 	// Update the line
 	line.From.Base = newBase
@@ -65,7 +99,7 @@ func convertFromDirective(line *DockerfileLine, opts Options, stageAliases map[s
 	fromPrefix := DirectiveFrom + " "
 	fromIndex := strings.Index(line.Raw, fromPrefix)
 	if fromIndex == -1 {
-		return
+		return false
 	}
 
 	// Update the raw line
@@ -73,6 +107,122 @@ func convertFromDirective(line *DockerfileLine, opts Options, stageAliases map[s
 		line.Raw[:fromIndex],
 		DirectiveFrom, newBase, newTagStr, asClause,
 	)
+
+	return true
+}
+
+// findExactImageMatch looks for an exact match of the source image in the ImageMap
+func findExactImageMatch(sourceImage string, imageMap ImageMap) string {
+	for _, mapping := range imageMap.Mappings {
+		if mapping.Source == sourceImage {
+			return mapping.Target
+		}
+	}
+	return ""
+}
+
+// findBestImageMatch tries to find the best matching target image for a source image
+// by looking for partial matches in the image name
+func findBestImageMatch(sourceImage string, imageMap ImageMap) string {
+	// First, try to match against common patterns
+	lowerSourceImage := strings.ToLower(sourceImage)
+
+	type scoreMatch struct {
+		score  int
+		target string
+	}
+
+	var matches []scoreMatch
+
+	for _, mapping := range imageMap.Mappings {
+		// Skip empty mappings
+		if mapping.Source == "" || mapping.Target == "" {
+			continue
+		}
+
+		// Calculate a match score based on string similarity
+		// Higher score means better match
+		score := calculateImageMatchScore(lowerSourceImage, strings.ToLower(mapping.Source))
+
+		// Only consider matches with a minimum score
+		if score > 0 {
+			matches = append(matches, scoreMatch{score: score, target: mapping.Target})
+		}
+	}
+
+	// Find the match with the highest score
+	bestMatch := ""
+	bestScore := 0
+
+	for _, match := range matches {
+		if match.score > bestScore {
+			bestScore = match.score
+			bestMatch = match.target
+		}
+	}
+
+	return bestMatch
+}
+
+// calculateImageMatchScore calculates a similarity score between source and target image names
+// Higher score means better match
+func calculateImageMatchScore(sourceImage, patternImage string) int {
+	// Perfect match gets highest score
+	if sourceImage == patternImage {
+		return 1000
+	}
+
+	// Initialize score
+	score := 0
+
+	// Common base images to look for
+	baseImages := []string{
+		"node", "nodejs", "python", "golang", "ruby", "php", "java",
+		"openjdk", "alpine", "debian", "ubuntu", "fedora", "centos",
+		"distroless", "nginx", "apache", "httpd", "mysql", "postgres",
+		"redis", "mongodb", "mariadb", "memcached", "rabbitmq",
+	}
+
+	// Check if the source contains the pattern
+	if strings.Contains(sourceImage, patternImage) {
+		score += 100
+	}
+
+	// Check if pattern contains the source
+	if strings.Contains(patternImage, sourceImage) {
+		score += 50
+	}
+
+	// Check for common image names in both the source and pattern
+	for _, baseImage := range baseImages {
+		// If both source and pattern contain the same base image name, that's a good match
+		if strings.Contains(sourceImage, baseImage) && strings.Contains(patternImage, baseImage) {
+			score += 75
+		} else if strings.Contains(sourceImage, baseImage) {
+			// If only the source contains a known base image, look for it in the mapping target
+			if strings.Contains(patternImage, baseImage) {
+				score += 50
+			}
+		}
+	}
+
+	// Special case for distroless images which often have a specific format
+	if strings.Contains(sourceImage, "distroless") || strings.Contains(sourceImage, "gcr.io/distroless") {
+		// For distroless/nodejs, match to node
+		if strings.Contains(sourceImage, "nodejs") && strings.Contains(patternImage, "node") {
+			score += 150
+		}
+		// For distroless/python, match to python
+		if strings.Contains(sourceImage, "python") && strings.Contains(patternImage, "python") {
+			score += 150
+		}
+		// For distroless/java, match to java
+		if strings.Contains(sourceImage, "java") && strings.Contains(patternImage, "java") {
+			score += 150
+		}
+	}
+
+	return score
 }
 
 // isStageReference checks if a FROM base is a reference to another build stage

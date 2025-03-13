@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,7 +12,14 @@ import (
 
 	"github.com/chainguard-dev/dfc/pkg/dfc"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 )
+
+//go:embed images.yaml
+var imagesYamlBytes []byte
+
+//go:embed packages.yaml
+var packagesYamlBytes []byte
 
 func main() {
 	// inspired by https://github.com/jonjohnsonjr/apkrane/blob/main/main.go
@@ -69,18 +77,77 @@ func cli() *cobra.Command {
 				return nil
 			}
 
+			// Load image mappings from embedded images.yaml
+			var imageMap dfc.ImageMap
+
+			// Parse the directory listing format in the embedded images.yaml
+			var imgYaml struct {
+				Directory []string `yaml:"directory"`
+			}
+			if err := yaml.Unmarshal(imagesYamlBytes, &imgYaml); err != nil {
+				return fmt.Errorf("unmarshalling images.yaml: %v", err)
+			}
+
+			// Convert the directory list to our ImageMap format
+			for _, imageName := range imgYaml.Directory {
+				imageMap.Mappings = append(imageMap.Mappings, dfc.ImageMapping{
+					Source: imageName,
+					Target: imageName,
+				})
+			}
+
+			// Load package mappings from embedded packages.yaml
+			packageMap := map[string]string{
+				"ca-certificates": "ca-certificates",
+				"curl":            "curl",
+				"git":             "git",
+				"nginx":           "nginx",
+				"python3":         "python3",
+				"python3-pip":     "py3-pip",
+				"vim":             "vim",
+			}
+
+			// Try to parse and merge additional mappings from the embedded packages.yaml
+			var pkgConfig dfc.PackagesConfig
+			if err := yaml.Unmarshal(packagesYamlBytes, &pkgConfig); err != nil {
+				log.Printf("Warning: could not parse packages.yaml: %v", err)
+			} else {
+				// Process Alpine packages
+				for pkgName, mappings := range pkgConfig.Alpine {
+					if len(mappings) > 0 {
+						for targetPkg := range mappings[0] {
+							packageMap[pkgName] = targetPkg
+							break // We only take the first mapping for now
+						}
+					}
+				}
+
+				// Process Debian packages
+				for pkgName, mappings := range pkgConfig.Debian {
+					if len(mappings) > 0 {
+						for targetPkg := range mappings[0] {
+							packageMap[pkgName] = targetPkg
+							break // We only take the first mapping for now
+						}
+					}
+				}
+
+				// Process Fedora packages
+				for pkgName, mappings := range pkgConfig.Fedora {
+					if len(mappings) > 0 {
+						for targetPkg := range mappings[0] {
+							packageMap[pkgName] = targetPkg
+							break // We only take the first mapping for now
+						}
+					}
+				}
+			}
+
 			// Setup conversion options
 			opts := dfc.Options{
 				Organization: org,
-				PackageMap: map[string]string{
-					"ca-certificates": "ca-certificates",
-					"curl":            "curl",
-					"git":             "git",
-					"nginx":           "nginx",
-					"python3":         "python3",
-					"python3-pip":     "py3-pip",
-					"vim":             "vim",
-				},
+				PackageMap:   packageMap,
+				ImageMap:     imageMap,
 			}
 
 			// Convert the Dockerfile
@@ -121,7 +188,7 @@ func cli() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&org, "org", dfc.DefaultOrganization, "the organization for cgr.dev/ORGANIZATION/alpine Chainguard image (defaults to ORGANIZATION)")
+	cmd.Flags().StringVar(&org, "org", dfc.DefaultOrganization, "the organization for cgr.dev/ORGANIZATION/<image> Chainguard images (defaults to ORGANIZATION)")
 	cmd.Flags().BoolVarP(&inPlace, "in-place", "i", false, "modified the Dockerfile in place (vs. stdout), saving original in a .bak file")
 	cmd.Flags().BoolVarP(&j, "json", "j", false, "print dockerfile as json (before conversion)")
 
