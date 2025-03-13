@@ -5,5 +5,8 @@ claim_pattern:
 
 permissions:
   actions: read
+  checks: read
   contents: read
+  issues: read
+  pull_requests: read
   security_events: write
