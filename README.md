@@ -111,17 +111,17 @@ If a previous `USER` line is found in the same stage, then another line will be 
 If you're here to improve/contribute something or are therwise interested in the
 source code, here is the basic project layout:
 
-- [`main.go`](./main.go) Primary CLI entrypoint
+- [`internal/`](./internal/)
+- - [`shellparse/`](./internal/shellparse/)
+- - - [`shell.go`](./internal/shellparse/shell.go) Internal methods for parsing shell from RUN lines
+- - - [`shell_test.go`](./internal/shellparse/shell_test.go) Testing of shell parsing
 - [`pkg/`](./pkg/)
 - - [`dfc/`](./pkg/dfc/)
 - - - [`convert.go`](./pkg/dfc/convert.go) Internal methods for converting images/packages
 - - - [`dfc.go`](./pkg/dfc/dfc.go) Public types/methods for using dfc from Go
 - - - [`dfc_test.go`](./pkg/dfc/dfc_test.go) Testing of Dockerfile conversion
 - - - [`parse.go`](./pkg/dfc/parse.go) Internals methods for parsing raw Dockefiles
-- [`internal/`](./internal/)
-- - [`shellparse/`](./internal/shellparse/)
-- - - [`shell.go`](./internal/shellparse/shell.go) Internal methods for parsing shell from RUN lines
-- - - [`shell_test.go`](./internal/shellparse/shell_test.go) Testing of shell parsing
+- [`main.go`](./main.go) Primary CLI entrypoint
 
 ## Using from Go
 
