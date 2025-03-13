@@ -35,6 +35,8 @@ jobs:
           identity: scorecard
 
       - name: "Run analysis"
+        env:
+          GH_TOKEN: ${{ steps.octo-sts.outputs.token }}
         uses: ossf/scorecard-action@f49aabe0b5af0936a0987cfb85d86b75731b0186 # v2.4.1
         with:
           results_file: results.sarif
@@ -42,6 +44,8 @@ jobs:
           publish_results: true
 
       - name: "Upload artifact"
+        env:
+          GH_TOKEN: ${{ steps.octo-sts.outputs.token }}
         uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: SARIF file
@@ -49,6 +53,8 @@ jobs:
           retention-days: 5
 
       - name: "Upload to code-scanning"
+        env:
+          GH_TOKEN: ${{ steps.octo-sts.outputs.token }}
         uses: github/codeql-action/upload-sarif@6bb031afdd8eb862ea3fc1848194185e076637e5 # v3.28.11
         with:
           sarif_file: results.sarif
