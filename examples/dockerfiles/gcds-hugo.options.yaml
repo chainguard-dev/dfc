@@ -1,0 +1,7 @@
+organization: chainguard-private
+imageMap:
+  node: node
+packageMap:
+  debian: {}
+  alpine: {}
+  fedora: {} 

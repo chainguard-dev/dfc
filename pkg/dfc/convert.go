@@ -22,8 +22,18 @@ func ConvertDockerfile(ctx context.Context, content []byte, opts Options) ([]byt
 	// Apply the conversion
 	convertedDockerfile := dockerfile.Convert(ctx, opts)
 
-	// Return the string representation
-	return []byte(convertedDockerfile.String()), nil
+	// Get the string representation
+	result := convertedDockerfile.String()
+
+	// Clean up orphaned backslashes that aren't at the end of a line
+	// This specifically targets patterns like "${REQ_FILE} \ && rm" to become "${REQ_FILE} && rm"
+	result = regexp.MustCompile(`(\$\{[^}]+\})\s*\\\s*(&&|\|\|)`).ReplaceAllString(result, `$1 $2`)
+
+	// Clean up any double spaces that may have been introduced
+	result = regexp.MustCompile(`\s{2,}`).ReplaceAllString(result, " ")
+
+	// Return the cleaned result
+	return []byte(result), nil
 }
 
 // convertFromDirective converts FROM directives to use Chainguard
@@ -498,6 +508,25 @@ func rebuildRawRunLine(line *DockerfileLine) {
 			}
 			linesTmp[i] = strings.Join(words, " ")
 		}
+
+		// Remove orphaned backslashes (those not at the end of the line)
+		if strings.Contains(l, "\\") {
+			// Fix patterns like "${REQ_FILE} \ &&" to "${REQ_FILE} &&"
+			l = strings.ReplaceAll(l, " \\ ", " ")
+
+			// Also fix patterns with variable references followed by backslashes
+			if strings.Contains(l, "${") && strings.Contains(l, "}") {
+				re := regexp.MustCompile(`(\$\{[^}]+\})\s*\\(\s*&&|\s*\|\|)`)
+				l = re.ReplaceAllString(l, "$1$2")
+			}
+
+			// Clean up any double spaces
+			for strings.Contains(l, "  ") {
+				l = strings.ReplaceAll(l, "  ", " ")
+			}
+
+			linesTmp[i] = l
+		}
 	}
 	line.Raw = strings.Join(linesTmp, "\n")
 
@@ -578,5 +607,12 @@ func rebuildRawRunLine(line *DockerfileLine) {
 
 // cmdToString creates a string representation of a Node that can be used as a map key
 func cmdToString(cmd shellparse.Node) string {
+	return cmd.Command + ":" + strings.Join(cmd.Args, ",")
+}
+
+func formatCmdString(cmd shellparse.Node) string {
+	if len(cmd.Args) == 0 {
+		return cmd.Command
+	}
 	return cmd.Command + ":" + strings.Join(cmd.Args, ",")
 }

@@ -1,0 +1,12 @@
+organization: myorg
+imageMap:
+  nginx: nginx
+  debian: debian
+packageMap:
+  debian:
+    nginx:
+      - nginx
+    curl:
+      - curl
+  alpine: {}
+  fedora: {} 

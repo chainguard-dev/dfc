@@ -503,7 +503,7 @@ func ExtractPackagesFromInstallCommand(node Node) []string {
 		}
 
 		// If this looks like a plain package name, add it
-		if !strings.Contains(arg, "=") && !strings.HasPrefix(arg, "$") {
+		if !strings.Contains(arg, "=") && !strings.HasPrefix(arg, "$") && !strings.HasPrefix(arg, "\\") {
 			packages = append(packages, arg)
 		}
 	}

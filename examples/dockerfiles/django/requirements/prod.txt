@@ -1,0 +1,5 @@
+# from https://github.com/django/djangoproject.com/blob/main/requirements/prod.txt
+-r common.txt
+gunicorn==23.0.0
+redis==5.2.1
+sentry-sdk==2.22.0

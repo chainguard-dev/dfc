@@ -35,6 +35,7 @@ The following CLI flags are also available:
 - `--org=<org>` - the registry namespace, i.e. `cgr.dev/<org>/` (default placeholder: `ORGANIZATION`)
 - `--json` / `-j` - serialize Dockerfile as JSON (prior to conversion)
 - `--in-place` / `-i` - modify the Dockerfile in place vs. printing to stdout, saving original in a `.bak` file
+- `--mappings=<path>` / `-m` - path to a custom package mappings file with distro-specific mappings (defaults to embedded packages.yaml)
 
 ## Install
 
@@ -81,6 +82,42 @@ DOCKERFILE
 #              USER root
 #              RUN apk add -U nano
 ```
+
+
+## Custom Package Mappings
+
+You can provide a custom YAML file with package mappings for different distributions. The file should have the following structure:
+
+```yaml
+# Alpine package mappings
+alpine:
+  package-name:
+    - chainguard-package-name-1
+
+# Debian package mappings
+debian:
+  package-name:
+    - chainguard-package-name-2
+	- chainguard-package-name-3
+
+# Fedora package mappings
+fedora:
+  package-name:
+    - chainguard-package-name-4
+	- chainguard-package-name-5
+	- chainguard-package-name-6
+```
+
+To use this file:
+
+```sh
+dfc --mappings=./custom-mappings.yaml ./Dockerfile
+```
+
+## Limitations
+
+TODO: add bullet list of all the limitations of this tool since it makes best attempt at conversion
+but in no way emsures that DOckerfiles asre actually buildable by Docker.
 
 ## How it works
 

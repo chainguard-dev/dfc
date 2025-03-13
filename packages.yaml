@@ -1,17 +1,27 @@
 # mapping of alpine packages to equivalent chainguard package(s)
 alpine:
-  demo:
-    - demo-alpine-part-1
-    - demo-alpine-part-2
+  dfc-demo:
+    - dfc-demo-alpine-part-1
+    - dfc-demo-alpine-part-2
 
 # mapping of debian packages name to equivalent chainguard package(s)
 debian:
-  demo:
-    - demo-debian-part-1
-    - demo-debian-part-2
+  dfc-demo:
+    - dfc-demo-debian-part-1
+    - dfc-demo-debian-part-2
+
+  # Stuff noticed in django build
+  libpq5:
+    - libpq
+  libc6-dev:
+    - glibc-dev
+  libpq-dev:
+    - postgresql-dev
+  zlib1g-dev:
+    - zlib-dev
 
 # mapping of fedora packages name to equivalent chainguard package(s)
 fedora:
-  demo:
-    - demo-fedora-part-1
-    - demo-fedora-part-2
+  dfc-demo:
+    - dfc-demo-fedora-part-1
+    - dfc-demo-fedora-part-2
