@@ -9,7 +9,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/chainguard-dev/dfc/pkg/dfc2"
+	"github.com/chainguard-dev/dfc/pkg/dfc"
 	"github.com/spf13/cobra"
 )
 
@@ -50,13 +50,13 @@ func cli() *cobra.Command {
 			raw := buf.Bytes()
 
 			// Use dfc2 to parse the Dockerfile
-			dockerfile, err := dfc2.ParseDockerfile(ctx, raw)
+			dockerfile, err := dfc.ParseDockerfile(ctx, raw)
 			if err != nil {
 				return fmt.Errorf("unable to parse dockerfile: %v", err)
 			}
 
 			// Setup conversion options
-			opts := dfc2.Options{
+			opts := dfc.Options{
 				Organization: org,
 				PackageMap: map[string]string{
 					"ca-certificates": "ca-certificates",
@@ -113,7 +113,7 @@ func cli() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&org, "org", dfc2.DefaultOrganization, "the organization for cgr.dev/ORGANIZATION/alpine (defaults to ORGANIZATION)")
+	cmd.Flags().StringVar(&org, "org", dfc.DefaultOrganization, "the organization for cgr.dev/ORGANIZATION/alpine Chainguard image (defaults to ORGANIZATION)")
 	cmd.Flags().BoolVarP(&inPlace, "in-place", "i", false, "modified the Dockerfile in place (vs. stdout), saving original in a .bak file")
 	cmd.Flags().BoolVar(&j, "json", false, "print dockerfile as json (after conversion)")
 

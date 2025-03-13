@@ -28,7 +28,7 @@ func main() {
 	}
 
 	// Convert
-	if err := dockerfile.Convert(ctx, &dfc.Options{
+	if err := dockerfile.Convert(ctx, dfc.Options{
 		Organization: org,
 	}); err != nil {
 		log.Fatalf("Convert(): %v", err)

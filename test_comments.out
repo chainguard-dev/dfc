@@ -1,3 +1,0 @@
-FROM cgr.dev/ORGANIZATION/alpine:latest
-
-# This is a comment at the end

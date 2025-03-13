@@ -2,248 +2,382 @@ package dfc
 
 import (
 	"context"
-	"regexp"
-	"slices"
 	"strings"
 
 	"github.com/chainguard-dev/dfc/internal/shellparse"
 )
 
-const (
-	lineSep = "\n"
-)
+// ParseDockerfile parses a Dockerfile into a structured representation
+func ParseDockerfile(_ context.Context, content []byte) (*Dockerfile, error) {
+	dockerfile := &Dockerfile{
+		Lines:        []*DockerfileLine{},
+		stageAliases: make(map[string]bool),
+	}
 
-var (
-	hasContinuationRegex       = regexp.MustCompile(`(?m).*\\\s*$`)
-	extractRegex               = regexp.MustCompile(`(?s)^\s*(?P<directive>[A-Za-z]+)\s+(?P<command>.*)$`)
-	extractRegexDirectiveIndex = extractRegex.SubexpIndex("directive")
-	extractRegexCommandIndex   = extractRegex.SubexpIndex("command")
-	fromRegex                  = regexp.MustCompile(`(?P<base>[^\s]+)\s+\bAS?\b\s+(?P<alias>[^\s]+).*`)
-	fromRegexBaseIndex         = fromRegex.SubexpIndex("base")
-	fromRegexAliasIndex        = fromRegex.SubexpIndex("alias")
-	fromNoAliasRegex           = regexp.MustCompile(`(?P<base>[^\s]+).*`)
-	fromNoAliasRegexBaseIndex  = fromRegex.SubexpIndex("base")
-)
-
-// TODO: use context (log some stuff)
-func parse(_ context.Context, b []byte) (*Dockerfile, error) {
-	d := &Dockerfile{Lines: []*DockerfileLine{}}
+	// Stage counter for multi-stage builds
 	stage := 0
-	seenAliases := map[string]int{} // map of alises to prior stages
-	prev := ""
-	for _, raw := range strings.Split(string(b), lineSep) {
-		// If we detect a line continuation, save the contents into the
-		// prev var and skip this line
-		if hasContinuationRegex.MatchString(raw) {
-			if prev == "" {
-				prev = raw
+
+	// Process the content line by line
+	lines := strings.Split(string(content), "\n")
+
+	// Variables to track multi-line commands
+	var currentMultiLine *DockerfileLine
+	var multiLineContent strings.Builder
+
+	// Variables to track comments and empty lines
+	var pendingExtra strings.Builder
+	var hasExtraContent bool
+	var blankLines []int // Track line numbers of blank lines
+
+	for i, line := range lines {
+		lineNum := i + 1
+		trimmedLine := strings.TrimSpace(line)
+
+		// If we're in a multi-line command, handle it specially
+		if currentMultiLine != nil {
+			// Skip comments within multi-line commands
+			if strings.HasPrefix(trimmedLine, "#") {
+				// Store the comment as is, we'll handle it during extraction
+				multiLineContent.WriteString("\n")
+				multiLineContent.WriteString(line)
+				continue
+			}
+
+			// Add this line to the multi-line command
+			multiLineContent.WriteString("\n")
+			multiLineContent.WriteString(line)
+
+			// Check if the line ends with a continuation character
+			if !strings.HasSuffix(trimmedLine, "\\") {
+				// This is the end of the multi-line command
+				currentMultiLine.Raw = multiLineContent.String()
+
+				// Extract command details for RUN directives
+				if currentMultiLine.Directive == DirectiveRun {
+					currentMultiLine.Run = extractRun(currentMultiLine.Raw)
+				}
+
+				// Add the multi-line command to the Dockerfile
+				dockerfile.Lines = append(dockerfile.Lines, currentMultiLine)
+
+				// Reset multi-line tracking
+				currentMultiLine = nil
+				multiLineContent.Reset()
+			}
+			continue
+		}
+
+		// Handle empty lines and comments
+		if trimmedLine == "" || strings.HasPrefix(trimmedLine, "#") {
+			// Track blank lines explicitly
+			if trimmedLine == "" {
+				blankLines = append(blankLines, lineNum)
+			}
+
+			// Add to pending extra content
+			if hasExtraContent {
+				pendingExtra.WriteString("\n")
+			}
+			pendingExtra.WriteString(line)
+			hasExtraContent = true
+
+			continue
+		}
+
+		// This is a regular line with a directive
+		// Parse the directive
+		dfLine := parseDockerfileLine(line)
+		if dfLine == nil {
+			continue
+		}
+
+		// If we have pending blank lines, make sure they're captured
+		if len(blankLines) > 0 {
+			// Generate explicit newlines based on blank line count
+			extraNewlines := strings.Repeat("\n", len(blankLines))
+			if hasExtraContent {
+				// If we have other content, add it too
+				dfLine.Extra = pendingExtra.String() + extraNewlines
 			} else {
-				prev += lineSep + raw
+				dfLine.Extra = extraNewlines
 			}
+		} else if hasExtraContent {
+			// No blank lines but we have extra content
+			dfLine.Extra = pendingExtra.String()
+		}
+
+		// Reset tracking
+		pendingExtra.Reset()
+		hasExtraContent = false
+		blankLines = nil
+
+		// For FROM directives, update stage info
+		if dfLine.Directive == DirectiveFrom {
+			stage++
+			dfLine.Stage = stage
+			if dfLine.From != nil {
+				// Record the stage alias if present
+				if dfLine.From.Alias != "" {
+					dockerfile.stageAliases[dfLine.From.Alias] = true
+				}
+			}
+		} else if dfLine.Directive != "" {
+			// For other directives, set the current stage
+			dfLine.Stage = stage
+		}
+
+		// Check if this is the start of a multi-line command
+		if strings.HasSuffix(trimmedLine, "\\") {
+			// This is a multi-line command
+			currentMultiLine = dfLine
+			multiLineContent.WriteString(line)
 			continue
 		}
 
-		// If prev var is not empty, put it at the front of the line and reset it
-		if prev != "" {
-			raw = prev + lineSep + raw
-			prev = ""
+		// Extract command details for RUN directives
+		if dfLine.Directive == DirectiveRun {
+			dfLine.Run = extractRun(dfLine.Raw)
 		}
 
-		// Extract the directive (line type) and content/command
-		directive, content := extractTopLevel(raw)
-
-		// If we couldnt determine a line type, consider this whitespace or a comment
-		// and append to the last line (unless a line doesnt exist yet)
-		if directive == "" && len(d.Lines) > 0 {
-			lastIdx := len(d.Lines) - 1
-			extra := lineSep + raw
-			d.Lines[lastIdx].Raw += extra
-			if d.Lines[lastIdx].Directive != "" { // dont consider extra if the whole thing is extra
-				d.Lines[lastIdx].Extra += extra
-			}
-			continue
-		}
-
-		dl := &DockerfileLine{
-			Raw:       raw,
-			Directive: directive,
-			Content:   content,
-		}
-
-		// Extract more details specific to the directive
-		switch directive {
-		case DirectiveFrom:
-			dl.From = extractFrom(content, &stage, &seenAliases)
-
-		case DirectiveRun:
-			dl.Run = extractRun(content)
-		}
-
-		dl.Stage = stage
-
-		// Append the line
-		d.Lines = append(d.Lines, dl)
+		dockerfile.Lines = append(dockerfile.Lines, dfLine)
 	}
 
-	return d, nil
+	// Handle any remaining multi-line command
+	if currentMultiLine != nil {
+		currentMultiLine.Raw = multiLineContent.String()
+
+		// Extract command details for RUN directives
+		if currentMultiLine.Directive == DirectiveRun {
+			currentMultiLine.Run = extractRun(currentMultiLine.Raw)
+		}
+
+		dockerfile.Lines = append(dockerfile.Lines, currentMultiLine)
+	}
+
+	// Handle any trailing comments/whitespace
+	if hasExtraContent {
+		// Create a final line with only extra content
+		dockerfile.Lines = append(dockerfile.Lines, &DockerfileLine{
+			Raw:       "",
+			Extra:     pendingExtra.String(),
+			Directive: "",
+			Stage:     stage,
+		})
+	}
+
+	return dockerfile, nil
 }
 
-func extractTopLevel(raw string) (string, string) {
-	matches := extractRegex.FindStringSubmatch(raw)
-	numMatches := len(matches)
-	var lineType, content string
-	if numMatches >= extractRegexDirectiveIndex {
-		lineType = strings.ToUpper(matches[extractRegexDirectiveIndex])
+// parseDockerfileLine parses a single line from a Dockerfile
+func parseDockerfileLine(line string) *DockerfileLine {
+	trimmedLine := strings.TrimSpace(line)
+	if trimmedLine == "" || strings.HasPrefix(trimmedLine, "#") {
+		// Empty line or comment - these should be handled as Extra content
+		return nil
 	}
-	if numMatches >= extractRegexCommandIndex {
-		content = matches[extractRegexCommandIndex]
+
+	// Check for a directive
+	parts := strings.SplitN(trimmedLine, " ", 2)
+	directive := strings.ToUpper(parts[0])
+
+	// Verify this is a valid Dockerfile directive
+	// Common directives include: FROM, RUN, CMD, LABEL, EXPOSE, ENV, ADD, COPY, ENTRYPOINT, VOLUME, USER, WORKDIR, ARG, ONBUILD, STOPSIGNAL, HEALTHCHECK, SHELL
+	// Operators like && are not directives
+	isValidDirective := directive == "FROM" || directive == "RUN" || directive == "CMD" ||
+		directive == "LABEL" || directive == "EXPOSE" || directive == "ENV" ||
+		directive == "ADD" || directive == "COPY" || directive == "ENTRYPOINT" ||
+		directive == "VOLUME" || directive == "USER" || directive == "WORKDIR" ||
+		directive == "ARG" || directive == "ONBUILD" || directive == "STOPSIGNAL" ||
+		directive == "HEALTHCHECK" || directive == "SHELL" || directive == "MAINTAINER"
+
+	// If it's not a valid directive, it might be a continuation of a previous command
+	// But since we're parsing line by line, we'll return nil and it should be handled as part of a multi-line command
+	if !isValidDirective {
+		return nil
 	}
-	return lineType, content
+
+	dfLine := &DockerfileLine{
+		Raw:       line,
+		Directive: directive,
+	}
+
+	// Process specific directives
+	switch directive {
+	case DirectiveFrom:
+		if len(parts) > 1 {
+			dfLine.From = parseFromDirective(parts[1])
+		}
+	case DirectiveRun:
+		// For RUN commands, we'll extract details later
+		if len(parts) > 1 {
+			// We keep the entire raw line here
+			// We'll extract the command content later in extractRun
+		}
+	}
+
+	return dfLine
 }
 
-func extractFrom(content string, stage *int, seenAliases *map[string]int) *FromDetails {
-	// Increment the stage counter
-	*stage++
+// parseFromDirective parses a FROM directive to extract image and stage details
+func parseFromDirective(content string) *FromDetails {
+	from := &FromDetails{}
 
-	var base, tag, alias string
-	var parent int
-	matches := fromRegex.FindStringSubmatch(content)
-	numMatches := len(matches)
-	if numMatches >= fromRegexAliasIndex {
-		alias = matches[fromRegexAliasIndex]
-
-		// Modify seenAliases to include this entry
-		m := *seenAliases
-		m[alias] = *stage
-		seenAliases = &m
-	}
-	if numMatches >= fromRegexBaseIndex {
-		base = matches[fromRegexBaseIndex]
-		m := *seenAliases
-		if v, ok := m[base]; ok {
-			parent = v
-		}
-	} else {
-		// If we werent able to parse with the alias-style, try with non-alias (e.g. FROM node)
-		matches = fromNoAliasRegex.FindStringSubmatch(content)
-		numMatches = len(matches)
-		if numMatches >= fromNoAliasRegexBaseIndex {
-			base = matches[fromRegexBaseIndex]
-		}
+	// Look for AS clause for stage name
+	asParts := strings.Split(content, " AS ")
+	if len(asParts) > 1 {
+		content = asParts[0]
+		from.Alias = strings.TrimSpace(asParts[1])
 	}
 
-	// Assuming we were able to detemrine the base,
-	// attempt to extract the tag and parent
-	if base != "" {
-		if tmp := strings.SplitN(base, ":", 2); len(tmp) > 1 {
-			base = tmp[0]
-			tag = tmp[1]
-		}
+	// Check if referencing another stage
+	if !strings.Contains(content, "/") && !strings.Contains(content, ":") {
+		// Could be a reference to another stage
+		// For simplicity, we'll just set the base and check later
+		from.Base = strings.TrimSpace(content)
+		return from
 	}
 
-	// If a $ is detected, mark it dynamic
-	baseDynamic := strings.Contains(base, "$")
-	tagDynamic := strings.Contains(tag, "$")
-
-	return &FromDetails{
-		Base:        base,
-		Alias:       alias,
-		Tag:         tag,
-		Parent:      parent,
-		BaseDynamic: baseDynamic,
-		TagDynamic:  tagDynamic,
+	// Parse image and tag
+	imageParts := strings.Split(content, ":")
+	from.Base = strings.TrimSpace(imageParts[0])
+	if len(imageParts) > 1 {
+		from.Tag = strings.TrimSpace(imageParts[1])
 	}
+
+	// Check for dynamic parts (variables)
+	from.BaseDynamic = strings.Contains(from.Base, "${") || strings.Contains(from.Base, "$")
+	from.TagDynamic = strings.Contains(from.Tag, "${") || strings.Contains(from.Tag, "$")
+
+	return from
 }
 
+// extractRun extracts information from a RUN directive
 func extractRun(content string) *RunDetails {
-	details := &RunDetails{
-		Packages: []string{},
-	}
-	cmd := shellparse.ParseShellLine(content)
+	// Create a new RunDetails object
+	details := &RunDetails{}
 
-	// Store the parsed command
+	// Extract the command part (after "RUN ")
+	cmdStart := strings.Index(content, "RUN ")
+	if cmdStart == -1 {
+		return details
+	}
+
+	cmdContent := content[cmdStart+4:]
+
+	// Clean up the command content for analysis
+	// This is just for analysis - we'll preserve the original formatting
+	analyzableContent := cleanupCommandContent(cmdContent)
+
+	// Parse the shell command with the original content to preserve formatting
+	cmd := shellparse.NewShellCommand(cmdContent)
 	details.command = cmd
 
+	// Use the analyzable content to determine the package manager
+	analyzeCmd := shellparse.NewShellCommand(analyzableContent)
+
 	// First, determine the distribution based on package manager commands
-	// Check for each package manager and set the distribution accordingly
+	var detectedPackageManager Manager
 	for _, pm := range AllPackageManagers {
-		pmCommands := cmd.GetCommandsByMultiExe([]string{string(pm)})
-		if len(pmCommands) > 0 {
+		pmStr := string(pm)
+
+		// Check if this package manager is used in the command
+		pmCmds := analyzeCmd.FindCommandsByPrefix(pmStr)
+		if len(pmCmds) > 0 {
+			// Found a package manager, get its associated distro
 			info := PackageManagerInfoMap[pm]
 			details.Distro = info.Distro
-			break // Found a package manager, stop looking
+			detectedPackageManager = pm
+			break
 		}
 	}
 
-	// If no distro detected, set to unknown
+	// If we arent able to detect distro, just return nil
 	if details.Distro == "" {
-		details.Distro = DistroUnknown
+		return nil
 	}
 
-	// Get the package managers for this distribution
-	packageManagers, exists := PackageManagerGroups[details.Distro]
-	if exists {
-		// Convert the package managers to strings for the GetCommandsByMultiExeAndSubcommand call
-		pmStrings := make([]string, len(packageManagers))
-		for i, pm := range packageManagers {
-			pmStrings[i] = string(pm)
+	// Extract packages only for the detected package manager
+	if detectedPackageManager != "" {
+		pmStr := string(detectedPackageManager)
+		info := PackageManagerInfoMap[detectedPackageManager]
 
-			// Get the install keyword for this package manager
-			info := PackageManagerInfoMap[pm]
+		// Find install commands for this package manager
+		installCmds := analyzeCmd.FindCommandsByPrefixAndSubcommand(pmStr, info.InstallKeyword)
 
-			// Extract packages from commands with this package manager and its install keyword
-			installCommands := cmd.GetCommandsByMultiExeAndSubcommand(
-				[]string{string(pm)}, info.InstallKeyword)
-			details.Packages = append(details.Packages, extractPackagesFromCommands(installCommands)...)
+		// Extract packages from each install command
+		for _, installCmd := range installCmds {
+			packages := shellparse.ExtractPackagesFromInstallCommand(installCmd)
+			details.Packages = append(details.Packages, packages...)
 		}
+	}
 
-		slices.Sort(details.Packages)
-		details.Packages = slices.Compact(details.Packages)
+	// Deduplicate packages
+	if len(details.Packages) > 0 {
+		details.Packages = deduplicatePackages(details.Packages)
 	}
 
 	return details
 }
 
-// extractPackagesFromCommands parses package installation commands to extract just the package names,
-// removing command-line flags like "-y"
-func extractPackagesFromCommands(commands []string) []string {
-	var packages []string
+// cleanupCommandContent removes comments and normalizes line breaks in multi-line commands
+// This is used only for analysis, not for preserving formatting
+func cleanupCommandContent(content string) string {
+	lines := strings.Split(content, "\n")
+	var cleanedLines []string
+	var currentCommand string
 
-	// Create a set of all possible installation keywords
-	installKeywords := make(map[string]bool)
-	for _, pmInfo := range PackageManagerInfoMap {
-		installKeywords[pmInfo.InstallKeyword] = true
-	}
+	for _, line := range lines {
+		// Strip leading/trailing whitespace
+		trimmedLine := strings.TrimSpace(line)
 
-	for _, cmd := range commands {
-		// Split the command into words
-		parts := strings.Fields(cmd)
-
-		// Find the index after the subcommand (install/add)
-		cmdIndex := -1
-		for i, part := range parts {
-			if installKeywords[part] {
-				cmdIndex = i
-				break
-			}
-		}
-
-		// Skip if we couldn't find the subcommand
-		if cmdIndex == -1 || cmdIndex+1 >= len(parts) {
+		// Skip empty lines and comments
+		if trimmedLine == "" || strings.HasPrefix(trimmedLine, "#") {
 			continue
 		}
 
-		// Process each word after the subcommand
-		for i := cmdIndex + 1; i < len(parts); i++ {
-			// Skip flags (words starting with -)
-			if strings.HasPrefix(parts[i], "-") {
-				continue
+		// Check if this is a continuation or a new command
+		if strings.HasPrefix(trimmedLine, "&&") || strings.HasPrefix(trimmedLine, "||") ||
+			strings.HasPrefix(trimmedLine, ";") {
+			// This is a continuation, append it to the current command
+			currentCommand += " " + trimmedLine
+		} else if strings.HasSuffix(trimmedLine, "\\") {
+			// This is a continuation with backslash, remove the backslash and add to current command
+			trimmedLine = strings.TrimSuffix(trimmedLine, "\\")
+			if currentCommand == "" {
+				currentCommand = trimmedLine
+			} else {
+				currentCommand += " " + trimmedLine
 			}
-
-			// Add non-flags as packages
-			packages = append(packages, parts[i])
+		} else {
+			// This is a new command
+			if currentCommand != "" {
+				// Add the previous command
+				cleanedLines = append(cleanedLines, currentCommand)
+			}
+			currentCommand = trimmedLine
 		}
 	}
 
-	return packages
+	// Add the last command if there is one
+	if currentCommand != "" {
+		cleanedLines = append(cleanedLines, currentCommand)
+	}
+
+	// Join with spaces to normalize the command
+	return strings.Join(cleanedLines, " ")
+}
+
+// deduplicatePackages removes duplicate packages from a slice
+func deduplicatePackages(packages []string) []string {
+	seen := make(map[string]bool)
+	result := []string{}
+
+	for _, pkg := range packages {
+		if !seen[pkg] {
+			seen[pkg] = true
+			result = append(result, pkg)
+		}
+	}
+
+	return result
 }
