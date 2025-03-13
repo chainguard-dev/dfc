@@ -138,8 +138,16 @@ debian:
 
 ## Limitations
 
-TODO: add bullet list of all the limitations of this tool since it makes best attempt at conversion
-but in no way emsures that DOckerfiles asre actually buildable by Docker.
+- **Incomplete Conversion**: The tool makes a best effort to convert Dockerfiles but does not guarantee that the converted Dockerfiles will be buildable by Docker.
+- **Comment and Spacing Preservation**: While the tool attempts to preserve comments and spacing, there may be cases where formatting is altered during conversion.
+- **Dynamic Variables**: The tool may not handle dynamic variables in Dockerfiles correctly, especially if they are used in complex expressions.
+- **Unsupported Directives**: Some Dockerfile directives may not be fully supported or converted, leading to potential build issues.
+- **Package Manager Commands**: The tool focuses on converting package manager commands but may not cover all possible variations or custom commands.
+- **Multi-stage Builds**: While the tool supports multi-stage builds, it may not handle all edge cases, particularly with complex stage dependencies.
+- **Image Mapping**: The tool relies on an image map for conversion, which may not cover all possible base images or provide accurate mappings.
+- **Error Handling**: The tool may not provide detailed error messages for conversion failures, making it difficult to diagnose issues.
+- **Platform-Specific Features**: The tool may not account for platform-specific features or optimizations in Dockerfiles.
+- **Security Considerations**: The tool does not perform security checks on the converted Dockerfiles, and users should review the output for potential vulnerabilities.
 
 ## How it works
 
