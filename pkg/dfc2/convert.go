@@ -27,22 +27,6 @@ func ConvertDockerfile(ctx context.Context, content []byte, opts Options) ([]byt
 	return []byte(convertedDockerfile.String()), nil
 }
 
-// applyConversion applies the conversion to the parsed Dockerfile
-func applyConversion(dockerfile *Dockerfile, opts Options) error {
-	// Process each line
-	for _, line := range dockerfile.Lines {
-		// Only process FROM and RUN directives
-		switch line.Directive {
-		case DirectiveFrom:
-			convertFromDirective(line, opts, dockerfile.StageAliases)
-		case DirectiveRun:
-			convertRunDirective(line, opts)
-		}
-	}
-
-	return nil
-}
-
 // convertFromDirective converts FROM directives to use Alpine
 func convertFromDirective(line *DockerfileLine, opts Options, stageAliases map[string]bool) {
 	if line.From == nil {
@@ -106,7 +90,7 @@ func isStageReference(base string, stageAliases map[string]bool) bool {
 
 // convertRunDirective converts RUN directives to use apk
 func convertRunDirective(line *DockerfileLine, opts Options) {
-	if line.Run == nil || line.Run.Command == nil {
+	if line.Run == nil || line.Run.command == nil {
 		return
 	}
 
@@ -131,10 +115,10 @@ func convertRunDirective(line *DockerfileLine, opts Options) {
 			info := PackageManagerInfoMap[pm]
 
 			// Find all commands for this package manager
-			allManagerCmds := line.Run.Command.FindCommandsByPrefix(pmStr)
+			allManagerCmds := line.Run.command.FindCommandsByPrefix(pmStr)
 
 			// Find only install commands for this package manager
-			installCmds := line.Run.Command.FindCommandsByPrefixAndSubcommand(pmStr, info.InstallKeyword)
+			installCmds := line.Run.command.FindCommandsByPrefixAndSubcommand(pmStr, info.InstallKeyword)
 
 			// Add install commands to our replace list
 			cmdsToReplace = append(cmdsToReplace, installCmds...)
@@ -162,7 +146,7 @@ func convertRunDirective(line *DockerfileLine, opts Options) {
 		cmdStr := cmd.Command + " " + strings.Join(cmd.Args, " ")
 		if !installCmdStrings[cmdStr] {
 			// If it's not an install command, remove it
-			line.Run.Command.RemoveCommand(cmd)
+			line.Run.command.RemoveCommand(cmd)
 		}
 	}
 
@@ -172,11 +156,11 @@ func convertRunDirective(line *DockerfileLine, opts Options) {
 	// Replace the first install command with apk add
 	if len(cmdsToReplace) > 0 {
 		// Replace the first command
-		line.Run.Command.ReplaceCommand(cmdsToReplace[0], apkCmd)
+		line.Run.command.ReplaceCommand(cmdsToReplace[0], apkCmd)
 
 		// Remove any additional install commands
 		for i := 1; i < len(cmdsToReplace); i++ {
-			line.Run.Command.RemoveCommand(cmdsToReplace[i])
+			line.Run.command.RemoveCommand(cmdsToReplace[i])
 		}
 	}
 
@@ -208,7 +192,7 @@ func convertRunDirective(line *DockerfileLine, opts Options) {
 		// Update the raw line
 		line.Raw = fmt.Sprintf("%sRUN %s",
 			line.Raw[:runIndex],
-			line.Run.Command.String(),
+			line.Run.command.String(),
 		)
 	}
 }

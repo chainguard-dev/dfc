@@ -11,7 +11,7 @@ import (
 func ParseDockerfile(_ context.Context, content []byte) (*Dockerfile, error) {
 	dockerfile := &Dockerfile{
 		Lines:        []*DockerfileLine{},
-		StageAliases: make(map[string]bool),
+		stageAliases: make(map[string]bool),
 	}
 
 	// Stage counter for multi-stage builds
@@ -88,13 +88,13 @@ func ParseDockerfile(_ context.Context, content []byte) (*Dockerfile, error) {
 			extraNewlines := strings.Repeat("\n", len(blankLines))
 			if hasExtraContent {
 				// If we have other content, add it too
-				dfLine.ExtraBefore = pendingExtra.String() + extraNewlines
+				dfLine.Extra = pendingExtra.String() + extraNewlines
 			} else {
-				dfLine.ExtraBefore = extraNewlines
+				dfLine.Extra = extraNewlines
 			}
 		} else if hasExtraContent {
 			// No blank lines but we have extra content
-			dfLine.ExtraBefore = pendingExtra.String()
+			dfLine.Extra = pendingExtra.String()
 		}
 
 		// Reset tracking
@@ -109,7 +109,7 @@ func ParseDockerfile(_ context.Context, content []byte) (*Dockerfile, error) {
 			if dfLine.From != nil {
 				// Record the stage alias if present
 				if dfLine.From.Alias != "" {
-					dockerfile.StageAliases[dfLine.From.Alias] = true
+					dockerfile.stageAliases[dfLine.From.Alias] = true
 				}
 			}
 		} else if dfLine.Directive != "" {
@@ -149,10 +149,10 @@ func ParseDockerfile(_ context.Context, content []byte) (*Dockerfile, error) {
 	if hasExtraContent {
 		// Create a final line with only extra content
 		dockerfile.Lines = append(dockerfile.Lines, &DockerfileLine{
-			Raw:         pendingExtra.String(),
-			ExtraBefore: "",
-			Directive:   "",
-			Stage:       stage,
+			Raw:       "",
+			Extra:     pendingExtra.String(),
+			Directive: "",
+			Stage:     stage,
 		})
 	}
 
@@ -243,7 +243,7 @@ func extractRun(content string) *RunDetails {
 
 	// Parse the shell command
 	cmd := shellparse2.NewShellCommand(cmdContent)
-	details.Command = cmd
+	details.command = cmd
 
 	// First, determine the distribution based on package manager commands
 	var detectedPackageManager Manager

@@ -4,6 +4,9 @@ import (
 	"context"
 	"strings"
 
+	"maps"
+	"slices"
+
 	"github.com/chainguard-dev/dfc/internal/shellparse2"
 )
 
@@ -96,12 +99,12 @@ func init() {
 
 // DockerfileLine represents a single line in a Dockerfile
 type DockerfileLine struct {
-	Raw         string       `json:"raw"`
-	ExtraBefore string       `json:"extraBefore,omitempty"` // Comments and whitespace that appear before this line
-	Directive   string       `json:"directive,omitempty"`
-	Stage       int          `json:"stage,omitempty"`
-	From        *FromDetails `json:"from,omitempty"`
-	Run         *RunDetails  `json:"run,omitempty"`
+	Raw       string       `json:"raw,omitempty"`
+	Extra     string       `json:"extra,omitempty"` // Comments and whitespace that appear before this line
+	Directive string       `json:"directive,omitempty"`
+	Stage     int          `json:"stage,omitempty"`
+	From      *FromDetails `json:"from,omitempty"`
+	Run       *RunDetails  `json:"run,omitempty"`
 }
 
 // FromDetails holds details about a FROM directive
@@ -116,15 +119,17 @@ type FromDetails struct {
 
 // RunDetails holds details about a RUN directive
 type RunDetails struct {
-	Command  *shellparse2.ShellCommand `json:"-"`
-	Distro   Distro                    `json:",omitempty"`
-	Packages []string                  `json:",omitempty"`
+	Distro   Distro   `json:"distro,omitempty"`
+	Packages []string `json:"packages,omitempty"`
+
+	command *shellparse2.ShellCommand `json:"-"`
 }
 
 // Dockerfile represents a parsed Dockerfile
 type Dockerfile struct {
-	Lines        []*DockerfileLine `json:"lines"`
-	StageAliases map[string]bool   `json:"stageAliases"` // Tracks stage aliases defined with AS
+	Lines []*DockerfileLine `json:"lines"`
+
+	stageAliases map[string]bool // Tracks stage aliases defined with AS
 }
 
 // String returns the Dockerfile content as a string
@@ -133,12 +138,13 @@ func (d *Dockerfile) String() string {
 
 	for i, line := range d.Lines {
 		// Write any extra content that comes before this line
-		if line.ExtraBefore != "" {
+		if line.Extra != "" {
 			// Write the extra content exactly as is - it should already contain the necessary newlines
-			builder.WriteString(line.ExtraBefore)
+			builder.WriteString(line.Extra)
 
 			// If ExtraBefore doesn't end with a newline, add one
-			if !strings.HasSuffix(line.ExtraBefore, "\n") {
+			// (unless we are on the last line)
+			if !strings.HasSuffix(line.Extra, "\n") && i < len(d.Lines)-1 {
 				builder.WriteString("\n")
 			}
 		}
@@ -165,22 +171,20 @@ func (d *Dockerfile) Convert(ctx context.Context, opts Options) *Dockerfile {
 	// Create a deep copy of the Dockerfile
 	newDf := &Dockerfile{
 		Lines:        make([]*DockerfileLine, len(d.Lines)),
-		StageAliases: make(map[string]bool),
+		stageAliases: make(map[string]bool),
 	}
 
 	// Copy stage aliases
-	for alias, val := range d.StageAliases {
-		newDf.StageAliases[alias] = val
-	}
+	maps.Copy(newDf.stageAliases, d.stageAliases)
 
 	// Copy lines
 	for i, line := range d.Lines {
 		// Create a deep copy of the line
 		newLine := &DockerfileLine{
-			Raw:         line.Raw,
-			ExtraBefore: line.ExtraBefore,
-			Directive:   line.Directive,
-			Stage:       line.Stage,
+			Raw:       line.Raw,
+			Extra:     line.Extra,
+			Directive: line.Directive,
+			Stage:     line.Stage,
 		}
 
 		// Copy From details if present
@@ -199,17 +203,17 @@ func (d *Dockerfile) Convert(ctx context.Context, opts Options) *Dockerfile {
 		if line.Run != nil {
 			// For Command, we need to copy or clone it from the original
 			var newCommand *shellparse2.ShellCommand
-			if line.Run.Command != nil {
+			if line.Run.command != nil {
 				// Here we would ideally clone the command, but for simplicity let's reuse it
 				// If shellparse2.ShellCommand had a Clone method, we would use it here
-				newCommand = line.Run.Command
+				newCommand = line.Run.command
 			}
 
 			// Create new RunDetails
 			newLine.Run = &RunDetails{
-				Command:  newCommand,
+				command:  newCommand,
 				Distro:   line.Run.Distro,
-				Packages: append([]string{}, line.Run.Packages...), // Copy slice
+				Packages: slices.Clone(line.Run.Packages), // Copy slice
 			}
 		}
 
@@ -221,7 +225,7 @@ func (d *Dockerfile) Convert(ctx context.Context, opts Options) *Dockerfile {
 		// Only process FROM and RUN directives
 		switch line.Directive {
 		case DirectiveFrom:
-			convertFromDirective(line, opts, newDf.StageAliases)
+			convertFromDirective(line, opts, newDf.stageAliases)
 		case DirectiveRun:
 			convertRunDirective(line, opts)
 		}
