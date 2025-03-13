@@ -33,7 +33,7 @@ cat ./Dockerfile | dfc
 The following CLI flags are also available:
 
 - `--org=<org>` - the registry namespace, i.e. `cgr.dev/<org>/` (default placeholder: `ORGANIZATION`)
-- `--json` / `-j` - serialize Dockerfile as JSON
+- `--json` / `-j` - serialize Dockerfile as JSON (prior to conversion)
 - `--in-place` / `-i` - modify the Dockerfile in place vs. printing to stdout, saving original in a `.bak` file
 
 ## Install

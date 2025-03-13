@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/chainguard-dev/dfc/internal/shellparse"
@@ -82,7 +83,14 @@ func convertFromDirective(line *DockerfileLine, opts Options, stageAliases map[s
 
 	// Update the line
 	line.From.Base = newBase
-	line.From.Tag = DefaultImageTag
+
+	// If the tag is dynamic, just leave it there
+	if !line.From.TagDynamic {
+		line.From.Tag = DefaultImageTag
+	} else if !strings.HasSuffix(line.From.Tag, "-dev") {
+		// If the tag is dynamic, we need to add the -dev suffix
+		line.From.Tag = line.From.Tag + "-dev"
+	}
 
 	newTagStr := ""
 	if line.From.Tag != "" {
@@ -281,17 +289,31 @@ func convertRunDirective(line *DockerfileLine, opts Options) {
 	}
 
 	// Apply package mapping if provided
-	if opts.PackageMap != nil {
-		for i, pkg := range packages {
-			if mappedPkg, found := opts.PackageMap[pkg]; found {
-				packages[i] = mappedPkg
+	tmp := []string{}
+	distroMap, distroSectionFound := opts.PackageMap[distro]
+	for _, pkg := range packages {
+		if distroSectionFound {
+			// Use the distro-specific package map if available
+			if mappedPkgs, found := distroMap[pkg]; found {
+				tmp = append(tmp, mappedPkgs...)
+				continue
 			}
 		}
+		tmp = append(tmp, pkg)
 	}
+	slices.Sort(tmp)
+	tmp = slices.Compact(tmp)
+	packages = tmp
+
+	// Update line.Run.Packages with the mapped packages so it's used consistently
+	// throughout the code, including in rebuildRawRunLine
+	line.Run.Packages = packages
 
 	// Create a new apk command to install packages
 	pkgList := strings.Join(packages, " ")
 	apkCmd := DefaultInstallCommand + " " + pkgList
+
+	// Build the apk command with the mapped package names
 
 	// Decide which command to replace/remove
 	if len(installCmds) > 0 {

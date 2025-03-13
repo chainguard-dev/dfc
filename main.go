@@ -96,51 +96,10 @@ func cli() *cobra.Command {
 				})
 			}
 
-			// Load package mappings from embedded packages.yaml
-			packageMap := map[string]string{
-				"ca-certificates": "ca-certificates",
-				"curl":            "curl",
-				"git":             "git",
-				"nginx":           "nginx",
-				"python3":         "python3",
-				"python3-pip":     "py3-pip",
-				"vim":             "vim",
-			}
-
 			// Try to parse and merge additional mappings from the embedded packages.yaml
-			var pkgConfig dfc.PackagesConfig
-			if err := yaml.Unmarshal(packagesYamlBytes, &pkgConfig); err != nil {
-				log.Printf("Warning: could not parse packages.yaml: %v", err)
-			} else {
-				// Process Alpine packages
-				for pkgName, mappings := range pkgConfig.Alpine {
-					if len(mappings) > 0 {
-						for targetPkg := range mappings[0] {
-							packageMap[pkgName] = targetPkg
-							break // We only take the first mapping for now
-						}
-					}
-				}
-
-				// Process Debian packages
-				for pkgName, mappings := range pkgConfig.Debian {
-					if len(mappings) > 0 {
-						for targetPkg := range mappings[0] {
-							packageMap[pkgName] = targetPkg
-							break // We only take the first mapping for now
-						}
-					}
-				}
-
-				// Process Fedora packages
-				for pkgName, mappings := range pkgConfig.Fedora {
-					if len(mappings) > 0 {
-						for targetPkg := range mappings[0] {
-							packageMap[pkgName] = targetPkg
-							break // We only take the first mapping for now
-						}
-					}
-				}
+			var packageMap dfc.PackageMap
+			if err := yaml.Unmarshal(packagesYamlBytes, &packageMap); err != nil {
+				return fmt.Errorf("unmarshalling images mappings: %v", err)
 			}
 
 			// Setup conversion options

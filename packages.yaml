@@ -1,15 +1,17 @@
 # mapping of alpine packages to equivalent chainguard package(s)
 alpine:
-  python3-pip:
-    - py3-pip:
+  demo:
+    - demo-alpine-part-1
+    - demo-alpine-part-2
 
 # mapping of debian packages name to equivalent chainguard package(s)
 debian:
-  python3-pip:
-    - py3-pip:
+  demo:
+    - demo-debian-part-1
+    - demo-debian-part-2
 
 # mapping of fedora packages name to equivalent chainguard package(s)
 fedora:
-  python3-pip:
-    - py3-pip:
-
+  demo:
+    - demo-fedora-part-1
+    - demo-fedora-part-2

@@ -88,7 +88,7 @@ var AllPackageManagers = []Manager{
 
 // DockerfileLine represents a single line in a Dockerfile
 type DockerfileLine struct {
-	Raw       string       `json:"raw,omitempty"`
+	Raw       string       `json:"raw"`
 	Extra     string       `json:"extra,omitempty"` // Comments and whitespace that appear before this line
 	Directive string       `json:"directive,omitempty"`
 	Stage     int          `json:"stage,omitempty"`
@@ -306,7 +306,7 @@ func (d *Dockerfile) Convert(ctx context.Context, opts Options) *Dockerfile {
 // Options represents conversion options
 type Options struct {
 	Organization string
-	PackageMap   map[string]string
+	PackageMap   PackageMap
 	ImageMap     ImageMap
 }
 
@@ -324,3 +324,6 @@ type ImageMapping struct {
 	// Target image name (without registry/org prefix)
 	Target string `yaml:"target"`
 }
+
+// PackagesConfig represents the structure of packages.yaml
+type PackageMap map[Distro]map[string][]string

@@ -20,15 +20,19 @@ func TestConvertDockerfile(t *testing.T) {
 RUN apt-get update && apt-get install -y nginx curl
 CMD ["nginx", "-g", "daemon off;"]`,
 			opts: Options{
-				PackageMap: map[string]string{
-					"nginx": "nginx",
-					"curl":  "curl",
+				PackageMap: map[Distro]map[string][]string{
+					DistroDebian: {
+						"nginx": {"nginx"},
+						"curl":  {"curl"},
+					},
+					DistroAlpine: {},
+					DistroFedora: {},
 				},
 			},
 			wantContains: []string{
 				"FROM cgr.dev/ORGANIZATION/debian:latest-dev",
 				"USER root",
-				"apk add -U nginx curl",
+				"apk add -U curl nginx",
 			},
 			wantNotContain: []string{
 				"apt-get",
@@ -47,8 +51,12 @@ RUN apt-get update && apt-get install -y ca-certificates
 COPY --from=builder /app/app /app
 CMD ["/app"]`,
 			opts: Options{
-				PackageMap: map[string]string{
-					"ca-certificates": "ca-certificates",
+				PackageMap: map[Distro]map[string][]string{
+					DistroDebian: {
+						"ca-certificates": {"ca-certificates"},
+					},
+					DistroAlpine: {},
+					DistroFedora: {},
 				},
 			},
 			wantContains: []string{
@@ -70,15 +78,19 @@ RUN apt-get update && apt-get install -y python3 python3-pip
 CMD ["python3", "-m", "http.server"]`,
 			opts: Options{
 				Organization: "myorg",
-				PackageMap: map[string]string{
-					"python3":     "python3",
-					"python3-pip": "py3-pip",
+				PackageMap: map[Distro]map[string][]string{
+					DistroDebian: {
+						"python3":     {"python3"},
+						"python3-pip": {"py3-pip"},
+					},
+					DistroAlpine: {},
+					DistroFedora: {},
 				},
 			},
 			wantContains: []string{
 				"FROM cgr.dev/myorg/ubuntu:latest-dev",
 				"USER root",
-				"apk add -U python3 py3-pip",
+				"apk add -U py3-pip python3",
 			},
 			wantNotContain: []string{
 				"apt-get",
@@ -97,10 +109,14 @@ RUN apt-get update && \
 # Run the application
 CMD ["nginx", "-g", "daemon off;"]`,
 			opts: Options{
-				PackageMap: map[string]string{
-					"nginx": "nginx",
-					"curl":  "curl",
-					"vim":   "vim",
+				PackageMap: map[Distro]map[string][]string{
+					DistroDebian: {
+						"nginx": {"nginx"},
+						"curl":  {"curl"},
+						"vim":   {"vim"},
+					},
+					DistroAlpine: {},
+					DistroFedora: {},
 				},
 			},
 			wantContains: []string{
@@ -247,22 +263,51 @@ RUN apt-get update
 
 func TestParseDockerfile(t *testing.T) {
 	tests := []struct {
-		name     string
-		input    string
-		wantType string
-		wantBase string
+		name      string
+		input     string
+		wantType  string
+		wantBase  string
+		wantTag   string
+		wantAlias string
 	}{
 		{
 			name:     "simple from directive",
 			input:    "FROM debian:11",
 			wantType: DirectiveFrom,
 			wantBase: "debian",
+			wantTag:  "11",
 		},
 		{
-			name:     "from with as",
-			input:    "FROM golang:1.18 AS builder",
-			wantType: DirectiveFrom,
-			wantBase: "golang",
+			name:      "from with as",
+			input:     "FROM golang:1.18 AS builder",
+			wantType:  DirectiveFrom,
+			wantBase:  "golang",
+			wantTag:   "1.18",
+			wantAlias: "builder",
+		},
+		{
+			name:      "dynamic tag with as",
+			input:     "FROM abc:$woo as stage",
+			wantType:  DirectiveFrom,
+			wantBase:  "abc",
+			wantTag:   "$woo",
+			wantAlias: "stage",
+		},
+		{
+			name:      "mixed-case as keyword",
+			input:     "FROM golang:1.18 aS builder",
+			wantType:  DirectiveFrom,
+			wantBase:  "golang",
+			wantTag:   "1.18",
+			wantAlias: "builder",
+		},
+		{
+			name:      "dynamic tag with mixed-case as",
+			input:     "FROM abc:$woo As stage",
+			wantType:  DirectiveFrom,
+			wantBase:  "abc",
+			wantTag:   "$woo",
+			wantAlias: "stage",
 		},
 	}
 
@@ -287,6 +332,12 @@ func TestParseDockerfile(t *testing.T) {
 			if line.Directive == DirectiveFrom && line.From != nil {
 				if line.From.Base != tt.wantBase {
 					t.Errorf("ParseDockerfile() FROM base = %v, want %v", line.From.Base, tt.wantBase)
+				}
+				if tt.wantTag != "" && line.From.Tag != tt.wantTag {
+					t.Errorf("ParseDockerfile() FROM tag = %v, want %v", line.From.Tag, tt.wantTag)
+				}
+				if tt.wantAlias != "" && line.From.Alias != tt.wantAlias {
+					t.Errorf("ParseDockerfile() FROM alias = %v, want %v", line.From.Alias, tt.wantAlias)
 				}
 			}
 		})

@@ -2,6 +2,7 @@ package dfc
 
 import (
 	"context"
+	"regexp"
 	"strings"
 
 	"github.com/chainguard-dev/dfc/internal/shellparse"
@@ -222,28 +223,40 @@ func parseDockerfileLine(line string) *DockerfileLine {
 func parseFromDirective(content string) *FromDetails {
 	from := &FromDetails{}
 
-	// Look for AS clause for stage name
-	asParts := strings.Split(content, " AS ")
-	if len(asParts) > 1 {
-		content = asParts[0]
-		from.Alias = strings.TrimSpace(asParts[1])
-	}
+	// We'll use a case-insensitive regular expression to find the AS clause
+	// This will match " AS " with spaces around it (common case)
+	reAS := regexp.MustCompile(`(?i)(\s+` + KeywordAs + `\s+)(.+)$`)
+	matches := reAS.FindStringSubmatchIndex(content)
 
-	// Check if referencing another stage
-	/*
-		if !strings.Contains(content, "/") && !strings.Contains(content, ":") {
-			// Could be a reference to another stage
-			// For simplicity, we'll just set the base and check later
-			from.Base = strings.TrimSpace(content)
-			return from
-		}
-	*/
+	if len(matches) > 0 {
+		// We found an AS clause
+		asStart := matches[2]
+		aliasStart := matches[4]
+
+		// Extract the alias using the original content to preserve case
+		from.Alias = strings.TrimSpace(content[aliasStart:])
+
+		// Trim the AS clause from the content
+		content = strings.TrimSpace(content[:asStart])
+	}
 
 	// Parse image and tag
 	imageParts := strings.Split(content, ":")
 	from.Base = strings.TrimSpace(imageParts[0])
 	if len(imageParts) > 1 {
 		from.Tag = strings.TrimSpace(imageParts[1])
+
+		// Check if the tag itself contains an AS keyword
+		tagASMatches := reAS.FindStringSubmatchIndex(from.Tag)
+
+		if len(tagASMatches) > 0 {
+			// Extract the actual tag and alias
+			asStart := tagASMatches[2]
+			aliasStart := tagASMatches[4]
+
+			from.Alias = strings.TrimSpace(from.Tag[aliasStart:])
+			from.Tag = strings.TrimSpace(from.Tag[:asStart])
+		}
 	}
 
 	// Check for dynamic parts (variables)
@@ -267,7 +280,7 @@ func extractRun(content string) *RunDetails {
 	cmdContent := content[cmdStart+4:]
 
 	// Clean up the command content for analysis
-	// This is just for analysis - we'll preserve the original formatting
+	// This is used only for analysis, not for preserving formatting
 	analyzableContent := cleanupCommandContent(cmdContent)
 
 	// Parse the shell command with the original content to preserve formatting
