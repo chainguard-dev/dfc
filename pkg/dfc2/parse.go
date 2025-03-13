@@ -80,6 +80,7 @@ func ParseDockerfile(_ context.Context, content []byte) (*Dockerfile, error) {
 			}
 			pendingExtra.WriteString(line)
 			hasExtraContent = true
+
 			continue
 		}
 

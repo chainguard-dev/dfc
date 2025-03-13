@@ -248,6 +248,90 @@ func rebuildRawRunLine(line *DockerfileLine) {
 		}
 	}
 
+	// Remove trailing operators (&&, ||) that might be left after removing commands at the end
+	line.Raw = strings.TrimSpace(line.Raw)
+	if strings.HasSuffix(line.Raw, "&&") {
+		line.Raw = strings.TrimSuffix(line.Raw, "&&")
+		line.Raw = strings.TrimSpace(line.Raw)
+	} else if strings.HasSuffix(line.Raw, "||") {
+		line.Raw = strings.TrimSuffix(line.Raw, "||")
+		line.Raw = strings.TrimSpace(line.Raw)
+	}
+
+	// Also handle multiline cases with trailing operators on the last line
+	lines := strings.Split(line.Raw, "\n")
+	if len(lines) > 1 {
+		lastIdx := len(lines) - 1
+		lastLine := strings.TrimSpace(lines[lastIdx])
+		if lastLine == "&&" || lastLine == "||" {
+			// Remove the last line if it's just an operator
+			lines = lines[:lastIdx]
+			line.Raw = strings.Join(lines, "\n")
+		} else if strings.HasSuffix(lastLine, " &&") || strings.HasSuffix(lastLine, " ||") {
+			// Remove trailing operator from the last line
+			lines[lastIdx] = strings.TrimSpace(strings.TrimSuffix(strings.TrimSuffix(lastLine, " &&"), " ||"))
+			line.Raw = strings.Join(lines, "\n")
+		}
+
+		// Also handle the case where we have trailing backslashes
+		// After removing trailing commands, we might end up with a backslash on the second-to-last line
+		if len(lines) > 1 {
+			lastIdx = len(lines) - 1
+			secondLastIdx := lastIdx - 1
+
+			// Check if the last line is now empty or very minimal after removing commands
+			if strings.TrimSpace(lines[lastIdx]) == "" || strings.TrimSpace(lines[lastIdx]) == "\\" {
+				// Remove the last line completely
+				lines = lines[:lastIdx]
+
+				// And remove backslash from the new last line if it exists
+				if len(lines) > 0 {
+					newLastLine := strings.TrimRight(lines[len(lines)-1], " \t")
+					if strings.HasSuffix(newLastLine, "\\") {
+						lines[len(lines)-1] = strings.TrimSuffix(newLastLine, "\\")
+					}
+				}
+
+				line.Raw = strings.Join(lines, "\n")
+			} else {
+				// If the last line has content but the line before it ends with a backslash
+				if secondLastIdx >= 0 {
+					secondLastLine := strings.TrimRight(lines[secondLastIdx], " \t")
+					if strings.HasSuffix(secondLastLine, "\\") {
+						// Keep the backslash as it's needed for continuation
+						// Nothing to change
+					}
+				}
+			}
+		}
+	}
+
+	// Final cleanup for any trailing backslashes or characters at the end of the entire raw command
+	trimmed := strings.TrimSpace(line.Raw)
+	if strings.HasSuffix(trimmed, "\\") {
+		// Remove trailing backslash from the last line
+		line.Raw = strings.TrimSpace(strings.TrimSuffix(trimmed, "\\"))
+	} else if strings.HasSuffix(trimmed, "%") {
+		// Remove trailing % character (sometimes added by shell output)
+		line.Raw = strings.TrimSpace(strings.TrimSuffix(trimmed, "%"))
+	}
+
+	// Clean up any % characters that might be at the end of words
+	linesTmp := strings.Split(line.Raw, "\n")
+	for i, l := range linesTmp {
+		// Check for % in the line
+		if strings.Contains(l, "%") {
+			words := strings.Fields(l)
+			for j, word := range words {
+				if strings.HasSuffix(word, "%") {
+					words[j] = strings.TrimSuffix(word, "%")
+				}
+			}
+			linesTmp[i] = strings.Join(words, " ")
+		}
+	}
+	line.Raw = strings.Join(linesTmp, "\n")
+
 	// Final cleanup: if the RUN line is empty or just has operators, add the apk command back
 	trimmedRaw := strings.TrimSpace(line.Raw)
 	if trimmedRaw == DirectiveRun || trimmedRaw == DirectiveRun+" &&" || trimmedRaw == DirectiveRun+" ||" || strings.HasPrefix(trimmedRaw, DirectiveRun+"&&") {
@@ -272,7 +356,7 @@ func rebuildRawRunLine(line *DockerfileLine) {
 					continue
 				}
 
-				// Check if this is a package manager command or apt-specific cleanup
+				// Check if this is a package manager command
 				isPMCmd := false
 				for _, pmGroup := range PackageManagerGroups {
 					for _, pm := range pmGroup {
@@ -300,13 +384,19 @@ func rebuildRawRunLine(line *DockerfileLine) {
 
 			line.Raw = DirectiveRun + " " + DefaultInstallCommand + " " + pkgList + otherCmds
 		} else {
-			// If no packages but we have other commands, clean up the line
-			if strings.Contains(line.Raw, "&&") || strings.Contains(line.Raw, "||") {
+			// If no packages and no other commands, use "true" as a no-op
+			if strings.TrimSpace(line.Raw) == DirectiveRun || strings.TrimSpace(line.Raw) == DirectiveRun+" " {
+				line.Raw = DirectiveRun + " true"
+			} else if strings.Contains(line.Raw, "&&") || strings.Contains(line.Raw, "||") {
 				// Extract the part after the operators
 				re := regexp.MustCompile(DirectiveRun + `\s*(?:&&|\|\|)\s*(.*)`)
 				matches := re.FindStringSubmatch(line.Raw)
-				if len(matches) > 1 {
+				if len(matches) > 1 && len(strings.TrimSpace(matches[1])) > 0 {
+					// If there's content after the operators, use it
 					line.Raw = DirectiveRun + " " + matches[1]
+				} else {
+					// If nothing after the operators either, use "true"
+					line.Raw = DirectiveRun + " true"
 				}
 			}
 		}

@@ -140,12 +140,49 @@ func (d *Dockerfile) String() string {
 	for i, line := range d.Lines {
 		// Write any extra content that comes before this line
 		if line.Extra != "" {
-			// Write the extra content exactly as is - it should already contain the necessary newlines
-			builder.WriteString(line.Extra)
+			extraContent := line.Extra
 
-			// If Extra doesn't end with a newline, add one
-			// (unless we are on the last line)
-			if !strings.HasSuffix(line.Extra, "\n") && i < len(d.Lines)-1 {
+			// Special handling for comment blocks
+			if strings.Contains(extraContent, "#") {
+				// Check if this is the last line
+				isLastLine := i == len(d.Lines)-1
+
+				// For a trailing comment at the end of file with no directive
+				if isLastLine && line.Raw == "" {
+					// For trailing comments, preserve exactly as they were
+					// The original content already has the right number of newlines at the end
+					// Don't modify it at all - we want to preserve whether it ended with a newline or not
+
+					// But if it ends with multiple newlines, normalize to at most one
+					for strings.HasSuffix(extraContent, "\n\n") {
+						extraContent = extraContent[:len(extraContent)-1]
+					}
+				} else {
+					// For comments followed by directives, preserve original spacing
+					// First, see if the content ends with a blank line (two consecutive newlines)
+					hasBlankLineAfter := strings.HasSuffix(extraContent, "\n\n")
+
+					// Normalize trailing newlines to get the comment content without excess newlines
+					for strings.HasSuffix(extraContent, "\n") {
+						extraContent = extraContent[:len(extraContent)-1]
+					}
+
+					// If original had a blank line after, add one blank line (two newlines)
+					// Otherwise just add one newline to end the comment
+					if hasBlankLineAfter {
+						extraContent += "\n\n"
+					} else {
+						extraContent += "\n"
+					}
+				}
+			}
+
+			// Write the extra content
+			builder.WriteString(extraContent)
+
+			// If Extra doesn't end with a newline, add one before the directive
+			// (only if we're not at the last line)
+			if !strings.HasSuffix(extraContent, "\n") && i < len(d.Lines)-1 && line.Raw != "" {
 				builder.WriteString("\n")
 			}
 		}
