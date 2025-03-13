@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/chainguard-dev/dfc/pkg/dfc"
 	"github.com/spf13/cobra"
@@ -46,7 +47,7 @@ func cli() *cobra.Command {
 			var path string
 			if isFile {
 				path = args[0]
-				file, err := os.Open(path)
+				file, err := os.Open(filepath.Clean(path))
 				if err != nil {
 					return fmt.Errorf("failed open file: %s: %v", path, err)
 				}
@@ -54,7 +55,9 @@ func cli() *cobra.Command {
 				input = file
 			}
 			buf := new(bytes.Buffer)
-			buf.ReadFrom(input)
+			if _, err := buf.ReadFrom(input); err != nil {
+				return fmt.Errorf("failed to read input: %v", err)
+			}
 			raw := buf.Bytes()
 
 			// Use dfc2 to parse the Dockerfile
