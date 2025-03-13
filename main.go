@@ -55,6 +55,20 @@ func cli() *cobra.Command {
 				return fmt.Errorf("unable to parse dockerfile: %v", err)
 			}
 
+			if j {
+				if inPlace {
+					return fmt.Errorf("unable to use --in-place and --json flag at same time")
+				}
+
+				// Output the Dockerfile as JSON
+				b, err := json.Marshal(dockerfile)
+				if err != nil {
+					return fmt.Errorf("marshalling dockerfile to json: %v", err)
+				}
+				fmt.Println(string(b))
+				return nil
+			}
+
 			// Setup conversion options
 			opts := dfc.Options{
 				Organization: org,
@@ -72,20 +86,6 @@ func cli() *cobra.Command {
 			// Convert the Dockerfile
 			convertedDockerfile := dockerfile.Convert(ctx, opts)
 
-			if j {
-				if inPlace {
-					return fmt.Errorf("unable to use --in-place and --json flag at same time")
-				}
-
-				// Output the converted Dockerfile as JSON
-				b, err := json.Marshal(convertedDockerfile)
-				if err != nil {
-					return fmt.Errorf("marshalling converted dockerfile to json: %v", err)
-				}
-				fmt.Println(string(b))
-				return nil
-			}
-
 			// Get the string representation
 			result := convertedDockerfile.String()
 
@@ -94,13 +94,21 @@ func cli() *cobra.Command {
 				if !isFile {
 					return fmt.Errorf("unable to use --in-place flag when processing stdin")
 				}
+
+				// Get original file info to preserve permissions
+				fileInfo, err := os.Stat(path)
+				if err != nil {
+					return fmt.Errorf("getting file info for %s: %v", path, err)
+				}
+				originalMode := fileInfo.Mode().Perm()
+
 				backupPath := path + ".bak"
 				log.Printf("saving dockerfile backup to %s", backupPath)
-				if err := os.WriteFile(backupPath, raw, 0644); err != nil {
+				if err := os.WriteFile(backupPath, raw, originalMode); err != nil {
 					return fmt.Errorf("saving dockerfile backup to %s: %v", backupPath, err)
 				}
 				log.Printf("overwriting %s", path)
-				if err := os.WriteFile(path, []byte(result), 0644); err != nil {
+				if err := os.WriteFile(path, []byte(result), originalMode); err != nil {
 					return fmt.Errorf("overwriting %s: %v", path, err)
 				}
 				return nil
@@ -115,7 +123,7 @@ func cli() *cobra.Command {
 
 	cmd.Flags().StringVar(&org, "org", dfc.DefaultOrganization, "the organization for cgr.dev/ORGANIZATION/alpine Chainguard image (defaults to ORGANIZATION)")
 	cmd.Flags().BoolVarP(&inPlace, "in-place", "i", false, "modified the Dockerfile in place (vs. stdout), saving original in a .bak file")
-	cmd.Flags().BoolVar(&j, "json", false, "print dockerfile as json (after conversion)")
+	cmd.Flags().BoolVarP(&j, "json", "j", false, "print dockerfile as json (before conversion)")
 
 	return cmd
 }
