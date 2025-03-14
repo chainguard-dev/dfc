@@ -1,5 +1,4 @@
-Dockerfiles in the wild and testdata to see if they build
-
+Dockerfiles in the wild and testdata to see if they convert and build properly
 ## Check the available test names available
 
 ```sh
