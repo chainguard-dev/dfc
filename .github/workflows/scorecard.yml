@@ -30,13 +30,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up Octo-STS
-        uses: octo-sts/action@6177b4481c00308b3839969c3eca88c96a91775f # v1.0.0
-        id: octo-sts
-        with:
-          scope: chainguard-dev/dfc
-          identity: scorecard
-
       - name: "Run analysis"
         uses: ossf/scorecard-action@f49aabe0b5af0936a0987cfb85d86b75731b0186 # v2.4.1
         with:
