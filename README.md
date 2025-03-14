@@ -237,27 +237,7 @@ func main() {
 ## Why not use moby/buildkit?
 
 The first version of this project used [moby/buildkit](https://github.com/moby/buildkit)
-as a dependency for parsing Dockerfiles, for example:
-
-```go
-package main
-
-import (
-	"fmt"
-	"os"
-
-	"github.com/moby/buildkit/frontend/dockerfile/parser"
-)
-
-func main() {
-	path := os.Args[1]
-	file, _ := os.Open(path)
-	d, _ := parser.Parse(file)
-	fmt.Println(d.AST.Dump())
-}
-```
-
-However, after using this library for a while, it became clear that this would not
+as a dependency for parsing Dockerfiles. After using this library for a while, it became clear that this would not
 meet the needs of the project primarily for the following reasons:
 
 - The `Result` type returned by `parser.Parse` did not properly maintain whitespace or comments
@@ -267,4 +247,5 @@ Although it properly extracted the valid Dockerfile commands, it was difficult t
 actually reconstruct the Dockerfile after it was parsed. It also did not do in-depth
 parsing of shell code inside `RUN` lines required to properly evaluate certain package manager commands (e.g. `apt-get install`).
 
-Due to all of the above, buildkit was later dropped as a dependency. Instead, custom parsers for both Dockerfiles and shell code were implemeted that are highly tailored to the specific needs of this tool.
+Due to all of the above, buildkit was later dropped as a dependency. Instead, custom parsers for both Dockerfiles and shell code were implemeted that are highly tailored to the types of patterns we have detected in our Dockerfile [testdata](./testdata/).
+
