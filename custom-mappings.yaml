@@ -1,0 +1,4 @@
+debian:
+  nano:
+    - vim
+    - less
