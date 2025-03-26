@@ -12,6 +12,8 @@ debian:
   fuse:
     - fuse2
     - fuse-common
+  git-delta:
+    - delta
   gnupg2:
     - gnupg
   google-chrome-stable:
@@ -22,6 +24,10 @@ debian:
     - glibc-dev
   libcurl4-openssl-dev:
     - curl-dev
+  libgssapi-krb5-2:
+    - krb5-libs
+  libicu-dev:
+    - icu-dev
   libkrb5-dev:
     - krb5-dev
   liblzma-dev:
@@ -61,6 +67,8 @@ debian:
     - wolfi-baselayout
   netcat-traditional:
     - netcat-openbsd
+  pcre2-utils:
+    - pcre2
   postgresql-client-14:
     - postgresql-14-client
   postgresql-contrib:
