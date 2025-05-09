@@ -2021,8 +2021,23 @@ func TestParsePackageSpec(t *testing.T) {
 		},
 		{
 			name:     "apt with version release",
-			args:     args{manager: ManagerApt, packageArg: "foo-3=1.0.0-r0"},
-			wantSpec: PackageSpec{Manager: ManagerApt, Name: "foo-3", Version: "1.0.0", VersionMatcher: "=", Release: "r0"},
+			args:     args{manager: ManagerApt, packageArg: "foo-3=1.5-1~deb10u1"},
+			wantSpec: PackageSpec{Manager: ManagerApt, Name: "foo-3", Version: "1.5", VersionMatcher: "=", Release: "1~deb10u1"},
+		},
+		{
+			name:     "apt with version include hyphen and release",
+			args:     args{manager: ManagerApt, packageArg: "foo-3=1.0.0-1-r0"},
+			wantSpec: PackageSpec{Manager: ManagerApt, Name: "foo-3", Version: "1.0.0-1", VersionMatcher: "=", Release: "r0"},
+		},
+		{
+			name:     "apt with version epoch",
+			args:     args{manager: ManagerApt, packageArg: "foo-3=1:1.0.0"},
+			wantSpec: PackageSpec{Manager: ManagerApt, Name: "foo-3", Epoch: "1", Version: "1.0.0", VersionMatcher: "="},
+		},
+		{
+			name:     "apt with version epoch and release",
+			args:     args{manager: ManagerApt, packageArg: "foo-3=1:1.0.0-r0"},
+			wantSpec: PackageSpec{Manager: ManagerApt, Name: "foo-3", Epoch: "1", Version: "1.0.0", VersionMatcher: "=", Release: "r0"},
 		},
 		{
 			name:     "yum name only",
@@ -2152,6 +2167,11 @@ func TestCreateApkPackageSpec(t *testing.T) {
 		{
 			name: "apt with version release",
 			args: args{name: "bar", spec: PackageSpec{Manager: ManagerAptGet, Name: "foo", Version: "1.0.0", VersionMatcher: "=", Release: "r0"}},
+			want: "bar=~1.0.0",
+		},
+		{
+			name: "apt with version epoch",
+			args: args{name: "bar", spec: PackageSpec{Manager: ManagerAptGet, Name: "foo", Epoch: "1", Version: "1.0.0", VersionMatcher: "="}},
 			want: "bar=~1.0.0",
 		},
 		{

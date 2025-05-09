@@ -107,6 +107,7 @@ type PackageSpec struct {
 	VersionMatcher string
 	Version        string
 	Release        string
+	Epoch          string
 }
 
 // DockerfileLine represents a single line in a Dockerfile
@@ -1494,6 +1495,7 @@ func parsePackageSpec(manager Manager, packageArg string) (spec PackageSpec) {
 	switch manager {
 	case ManagerApk:
 		// https://wiki.alpinelinux.org/wiki/Alpine_Package_Keeper#Add_a_Package
+		// name{@tag}{[<>~=]version}
 		spec.Name, spec.Tag, _ = strings.Cut(packageArg, "@")
 		if spec.Tag == "" {
 			spec.Name, spec.Version, spec.VersionMatcher = parseApkVersion(spec.Name)
@@ -1502,10 +1504,20 @@ func parsePackageSpec(manager Manager, packageArg string) (spec PackageSpec) {
 		}
 		spec.Version, spec.Release, _ = strings.Cut(spec.Version, "-")
 	case ManagerApt, ManagerAptGet:
+		// https://www.debian.org/doc/debian-policy/ch-controlfields.html#version
+		// name=[epoch:]upstream_version[-debian_revision]
 		spec.Name, spec.Version, _ = strings.Cut(packageArg, "=")
-		spec.Version, spec.Release, _ = strings.Cut(spec.Version, "-")
 		if spec.Version != "" {
 			spec.VersionMatcher = "="
+			if strings.Contains(spec.Version, ":") {
+				spec.Epoch, spec.Version, _ = strings.Cut(spec.Version, ":")
+			}
+
+			// hyphens only allowed in version if there is a revision
+			if lastHyphenIndex := strings.LastIndex(spec.Version, "-"); lastHyphenIndex != -1 {
+				spec.Release = spec.Version[lastHyphenIndex+1:]
+				spec.Version = spec.Version[:lastHyphenIndex]
+			}
 		}
 	case ManagerDnf, ManagerMicrodnf, ManagerYum:
 		// Format is name-version-release
