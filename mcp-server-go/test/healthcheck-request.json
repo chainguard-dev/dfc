@@ -1,0 +1,9 @@
+{
+  "jsonrpc": "2.0",
+  "id": "test-3",
+  "method": "mcp.call_tool",
+  "params": {
+    "name": "healthcheck",
+    "arguments": {}
+  }
+}

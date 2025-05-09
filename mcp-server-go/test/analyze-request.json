@@ -1,0 +1,11 @@
+{
+  "jsonrpc": "2.0",
+  "id": "test-2",
+  "method": "mcp.call_tool",
+  "params": {
+    "name": "analyze_dockerfile",
+    "arguments": {
+      "dockerfile_content": "FROM alpine:3.18\nRUN apk add --no-cache curl wget gcc python3\nWORKDIR /app\nCOPY . .\nCMD [\"python3\", \"app.py\"]\n"
+    }
+  }
+}
