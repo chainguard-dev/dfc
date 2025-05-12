@@ -66,8 +66,31 @@ dfc --in-place ./Dockerfile
 mv ./Dockerfile.bak ./Dockerfile # revert
 ```
 
-Note: the `Dockerfile` and `Dockerfile.chainguard` in the root of this repo are not actually for building `dfc`, they
-are symlinks to files in the [`testdata/`](./testdata/) folder so users can run the commands in this README.
+Convert to apko configuration format:
+
+```sh
+dfc --apko apko_overlay.yaml ./Dockerfile
+```
+
+This will:
+1. Convert the Dockerfile to use Chainguard Images
+2. Use the Chainguard-converted Dockerfile to generate an apko overlay configuration file that can be used to build the image with apko
+
+Convert directly from original Dockerfile to apko overlay in a single command:
+
+```sh
+dfc --direct-apko apko_overlay.yaml ./Dockerfile
+```
+
+This performs both steps in one operation without displaying the Chainguard-converted Dockerfile:
+1. Convert the Dockerfile to use Chainguard Images (internally)
+2. Use the converted Dockerfile to generate an apko overlay configuration file
+
+Enable debug logging for troubleshooting (disabled by default):
+
+```sh
+dfc --debug ./Dockerfile
+```
 
 ## Examples
 
@@ -114,6 +137,36 @@ USER root
 RUN apk add --no-cache nano
 ```
 
+### Convert to apko configuration
+
+```sh
+cat <<DOCKERFILE | dfc --apko apko_overlay.yaml -
+FROM node
+RUN apt-get update && apt-get install -y nano
+WORKDIR /app
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+USER node
+DOCKERFILE
+```
+
+This will:
+1. Convert the Dockerfile to use Chainguard Images
+2. Use the Chainguard-converted Dockerfile to generate an apko overlay configuration file (`apko_overlay.yaml`) that can be used to build the image with apko:
+
+```yaml
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/edge/main
+  packages:
+    - alpine-base
+    - nano
+work-dir: /app
+environment:
+  PATH: /usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+accounts:
+  run-as: node
+```
+
 ## Supported platforms
 
 `dfc` detects the package manager being used and maps this to
@@ -125,7 +178,6 @@ The following platforms are recognized:
 | Alpine ("alpine")            | `apk`                      |
 | Debian/Ubuntu ("debian")     | `apt-get` / `apt`          |
 | Fedora/RedHat/UBI ("fedora") | `yum` / `dnf` / `microdnf` |
-
 
 ## Configuration
 
@@ -199,23 +251,6 @@ You can use this flag as a standalone command to update mappings without perform
 ```sh
 dfc --update ./Dockerfile
 ```
-
-When combined with a conversion command, the update check is performed prior to running the conversion, ensuring your conversions use the most up-to-date mappings available.
-
-### Submitting New Built-in Mappings
-
-If you'd like to request new mappings to be added to the built-in mappings file, please [open a GitHub issue](https://github.com/chainguard-dev/dfc/issues/new?template=BLANK_ISSUE).
-
-Note that the `builtin-mappings.yaml` file is generated via internal automation and cannot be edited directly. Your issue will be reviewed by the maintainers, and if approved, the mappings will be added to the internal automation that generates the built-in mappings.
-
-### Configuration Files and Cache
-
-`dfc` follows the XDG specification for configuration and cache directories:
-
-- **XDG_CONFIG_HOME**: Stores configuration files, including a symlink to `builtin-mappings.yaml`. By default, this is `~/.config/dev.chainguard.dfc/` (on macOS: `~/Library/Application\ Support/dev.chainguard.dfc/`).
-- **XDG_CACHE_HOME**: Stores cached data following the [OCI layout specification]((https://github.com/opencontainers/image-spec/blob/main/image-layout.md). By default, this is `~/.cache/dev.chainguard.dfc/` (on macOS: `~/Library/Caches/dev.chainguard.dfc/`).
-
-Note: `dfc` does not make any network requests unless the `--update` flag is provided. However, `dfc` will perform a syscall to check for the existence of the `builtin-mappings.yaml` file (symlink) in the XDG_CONFIG directory.
 
 ## How it works
 
