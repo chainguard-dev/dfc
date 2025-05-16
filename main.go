@@ -53,6 +53,7 @@ func cli() *cobra.Command {
 	var mappingsFile string
 	var updateFlag bool
 	var noBuiltInFlag bool
+	var strictFlag bool
 
 	// Default log level is info
 	var level = slag.Level(slog.LevelInfo)
@@ -128,6 +129,7 @@ func cli() *cobra.Command {
 				Registry:     registry,
 				Update:       updateFlag,
 				NoBuiltIn:    noBuiltInFlag,
+				Strict:       strictFlag,
 			}
 
 			// If custom mappings file is provided, load it as ExtraMappings
@@ -215,6 +217,9 @@ func cli() *cobra.Command {
 	cmd.Flags().BoolVar(&updateFlag, "update", false, "check for and apply available updates")
 	cmd.Flags().BoolVar(&noBuiltInFlag, "no-builtin", false, "skip built-in package/image mappings, still apply default conversion logic")
 	cmd.Flags().Var(&level, "log-level", "log level (e.g. debug, info, warn, error)")
+	cmd.Flags().BoolVar(&strictFlag, "strict", false, "when true, fail if any package is unknown")
+	// nolint:errcheck
+	cmd.Flags().MarkHidden("strict")
 
 	return cmd
 }

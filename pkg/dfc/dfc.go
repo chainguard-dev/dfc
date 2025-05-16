@@ -474,6 +474,7 @@ type Options struct {
 	NoBuiltIn         bool              // When true, don't use built-in mappings, only ExtraMappings
 	FromLineConverter FromLineConverter // Optional custom converter for FROM lines
 	RunLineConverter  RunLineConverter  // Optional custom converter for RUN lines
+	Strict            bool              // When true, fail if any package is unknown
 }
 
 // MappingsConfig represents the structure of builtin-mappings.yaml
@@ -588,7 +589,7 @@ func (d *Dockerfile) Convert(ctx context.Context, opts Options) (*Dockerfile, er
 
 		// Process RUN commands
 		if line.Run != nil && line.Run.Shell != nil && line.Run.Shell.Before != nil {
-			err := processRunLineWithConverter(newLine, line, stagePackages, mappings.Packages, opts.RunLineConverter)
+			err := processRunLineWithConverter(newLine, line, stagePackages, mappings.Packages, opts.RunLineConverter, opts.Strict)
 			if err != nil {
 				return nil, err
 			}
@@ -956,7 +957,7 @@ func buildImageReference(baseFilename string, tag string, opts Options) string {
 }
 
 // processRunLineWithConverter handles the conversion of RUN lines but supports a RunLineConverter.
-func processRunLineWithConverter(newLine *DockerfileLine, line *DockerfileLine, stagePackages map[int][]string, packageMap PackageMap, runLineConverter RunLineConverter) error {
+func processRunLineWithConverter(newLine *DockerfileLine, line *DockerfileLine, stagePackages map[int][]string, packageMap PackageMap, runLineConverter RunLineConverter, strict bool) error {
 	beforeShell := line.Run.Shell.Before
 
 	// Initialize RunDetails with Before shell
@@ -967,8 +968,11 @@ func processRunLineWithConverter(newLine *DockerfileLine, line *DockerfileLine, 
 	}
 
 	// First check for package manager commands
-	modifiedPMCommands, distro, manager, packages, mappedPackages, afterShell :=
-		convertPackageManagerCommands(beforeShell, packageMap)
+	modifiedPMCommands, distro, manager, packages, mappedPackages, afterShell, err :=
+		convertPackageManagerCommands(beforeShell, packageMap, strict)
+	if err != nil {
+		return err
+	}
 	newLine.Run.Distro = distro
 	newLine.Run.Manager = manager
 	newLine.Run.Packages = packages
@@ -1126,9 +1130,9 @@ func convertImageTag(tag string, _ bool) string {
 
 // convertPackageManagerCommands converts package manager commands in a shell command
 // to the Alpine equivalent (apk add)
-func convertPackageManagerCommands(shell *ShellCommand, packageMap PackageMap) (bool, Distro, Manager, []string, []string, *ShellCommand) {
+func convertPackageManagerCommands(shell *ShellCommand, packageMap PackageMap, strict bool) (bool, Distro, Manager, []string, []string, *ShellCommand, error) {
 	if shell == nil {
-		return false, "", "", nil, nil, nil
+		return false, "", "", nil, nil, nil, nil
 	}
 
 	// Determine which distro/package manager we're going to focus on
@@ -1177,7 +1181,10 @@ func convertPackageManagerCommands(shell *ShellCommand, packageMap PackageMap) (
 						if !strings.HasPrefix(arg, "-") {
 							packagesDetected = append(packagesDetected, arg)
 							packageSpec := parsePackageSpec(firstPM, arg)
-							packages := convertPackage(packageSpec, distro, packageMap)
+							packages, err := convertPackage(packageSpec, distro, packageMap, strict)
+							if err != nil {
+								return false, "", "", nil, nil, nil, err
+							}
 							packagesToInstall = append(packagesToInstall, packages...)
 						}
 					}
@@ -1191,7 +1198,7 @@ func convertPackageManagerCommands(shell *ShellCommand, packageMap PackageMap) (
 
 	// If we don't have any package manager commands, return the original shell
 	if !hasPackageManager {
-		return false, distro, firstPM, nil, nil, shell
+		return false, distro, firstPM, nil, nil, shell, nil
 	}
 
 	// Sort and deduplicate packages
@@ -1225,7 +1232,7 @@ func convertPackageManagerCommands(shell *ShellCommand, packageMap PackageMap) (
 					Args:    append([]string{SubcommandAdd, ApkNoCacheFlag}, packagesToInstall...),
 				},
 			},
-		}
+		}, nil
 	}
 
 	// If we only have package manager commands but no packages to install,
@@ -1237,7 +1244,7 @@ func convertPackageManagerCommands(shell *ShellCommand, packageMap PackageMap) (
 					Command: "true",
 				},
 			},
-		}
+		}, nil
 	}
 
 	// Create a new shell command with parts
@@ -1305,7 +1312,7 @@ func convertPackageManagerCommands(shell *ShellCommand, packageMap PackageMap) (
 		})
 	}
 
-	return true, distro, firstPM, packagesDetected, packagesToInstall, &ShellCommand{Parts: newParts}
+	return true, distro, firstPM, packagesDetected, packagesToInstall, &ShellCommand{Parts: newParts}, nil
 }
 
 // Helper function to clone a shell part
@@ -1532,16 +1539,18 @@ func parsePackageSpec(manager Manager, packageArg string) (spec PackageSpec) {
 }
 
 // convertPackage performs a lookup of a given package in the package map and returns a valid apk package parameter.
-func convertPackage(spec PackageSpec, distro Distro, packageMap PackageMap) []string {
+func convertPackage(spec PackageSpec, distro Distro, packageMap PackageMap, strict bool) ([]string, error) {
 	var packages []string
 	if distroMap, exists := packageMap[distro]; exists && distroMap[spec.Name] != nil {
 		for _, pkg := range distroMap[spec.Name] {
 			packages = append(packages, createApkPackageSpec(pkg, spec))
 		}
+	} else if strict {
+		return nil, fmt.Errorf("%s has no mapping", spec.Name)
 	} else {
 		packages = append(packages, createApkPackageSpec(spec.Name, spec))
 	}
-	return packages
+	return packages, nil
 }
 
 // createApkPackageSpec formats an apk package parameter. The following adjustments will be made to align with

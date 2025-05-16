@@ -1933,6 +1933,41 @@ RUN apt-get update && apt-get install -y nano`
 		t.Errorf("Expected error from RunLineConverter to be propagated, got: %v", err)
 	}
 }
+func TestStrictMode(t *testing.T) {
+	convertTests := []struct {
+		name    string
+		raw     string
+		wantErr bool
+	}{
+		{
+			name:    "does not have mapping",
+			raw:     "RUN apt-get install -y saesidon",
+			wantErr: true,
+		},
+		{
+			name:    "has mapping",
+			raw:     "RUN apt-get install -y awscli",
+			wantErr: false,
+		},
+	}
+	for _, tt := range convertTests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			parsed, err := ParseDockerfile(ctx, []byte(tt.raw))
+			if err != nil {
+				t.Fatalf("Failed to parse Dockerfile: %v", err)
+			}
+
+			_, convertErr := parsed.Convert(ctx, Options{
+				Strict: true,
+			})
+			gotErr := convertErr != nil
+			if gotErr != tt.wantErr {
+				t.Errorf("%s: wanted %t got %t", tt.name, tt.wantErr, gotErr)
+			}
+		})
+	}
+}
 
 func TestParsePackageSpec(t *testing.T) {
 	type args struct {
@@ -2137,7 +2172,11 @@ func TestConvertPackage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := convertPackage(tt.args.spec, tt.args.distro, pm); !reflect.DeepEqual(got, tt.want) {
+			got, err := convertPackage(tt.args.spec, tt.args.distro, pm, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("convertPackage() = %v, want %v", got, tt.want)
 			}
 		})
