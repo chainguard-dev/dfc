@@ -1,0 +1,6 @@
+FROM cgr.dev/example/chainguard-base:latest
+USER root
+RUN apk add --no-cache curl gcc python3 wget
+WORKDIR /app
+COPY . .
+CMD ["python3", "app.py"]
