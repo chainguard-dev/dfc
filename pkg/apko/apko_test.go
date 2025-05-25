@@ -1,3 +1,8 @@
+/*
+Copyright 2025 Chainguard, Inc.
+SPDX-License-Identifier: Apache-2.0
+*/
+
 package apko
 
 import (
@@ -65,10 +70,22 @@ func TestConvertDockerfileToApko(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := ConvertDockerfileToApko(tt.dockerfile)
+			gotMap, err := ConvertDockerfileToApko(tt.dockerfile)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ConvertDockerfileToApko() error = %v, wantErr %v", err, tt.wantErr)
 				return
+			}
+
+			// Since we expect a single stage, get the first (and should be only) stage
+			if len(gotMap) != 1 {
+				t.Errorf("ConvertDockerfileToApko() returned %d stages, expected 1", len(gotMap))
+				return
+			}
+
+			var got *ApkoConfig
+			for _, config := range gotMap {
+				got = config
+				break
 			}
 
 			// Compare repositories

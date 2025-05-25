@@ -1,3 +1,8 @@
+/*
+Copyright 2025 Chainguard, Inc.
+SPDX-License-Identifier: Apache-2.0
+*/
+
 package apko
 
 import (
@@ -328,6 +333,9 @@ func ConvertDockerfileToApko(dockerfile *dfc.Dockerfile) (map[string]*ApkoConfig
 			// For now, we just note the base. Apko doesn't directly support FROM like Docker.
 			// We can add common packages based on image name if desired.
 			if strings.Contains(base, "alpine") && !strings.Contains(base, "distroless") && !strings.Contains(base, "static") {
+				// Add alpine repositories
+				currentConfig.Contents.Repositories = append(currentConfig.Contents.Repositories, "https://dl-cdn.alpinelinux.org/alpine/edge/main")
+
 				if _, ok := seenPackages["alpine-base"]; !ok {
 					currentConfig.Contents.Packages = append(currentConfig.Contents.Packages, "alpine-base")
 					seenPackages["alpine-base"] = true
@@ -357,6 +365,110 @@ func ConvertDockerfileToApko(dockerfile *dfc.Dockerfile) (map[string]*ApkoConfig
 		}
 
 		// Process instructions based on line.Raw, as specific fields might not exist for all commands
+		// Also handle cases where specific instruction fields exist without Raw content
+
+		// Handle RUN instructions directly if RunDetails exists
+		if line.Run != nil {
+			// First check if there are packages directly in RunDetails.Packages
+			if len(line.Run.Packages) > 0 {
+				for _, pkg := range line.Run.Packages {
+					if _, ok := seenPackages[pkg]; !ok {
+						currentConfig.Contents.Packages = append(currentConfig.Contents.Packages, pkg)
+						seenPackages[pkg] = true
+					}
+				}
+			}
+
+			// Then check shell commands for package installation
+			if line.Run != nil && line.Run.Shell != nil && line.Run.Shell.Before != nil {
+				// Build the command string - use the converted command if available
+				var cmdBuilder strings.Builder
+				if line.Converted != "" {
+					// Use the converted command string, skipping the "RUN " prefix
+					if strings.HasPrefix(line.Converted, "RUN ") {
+						cmdBuilder.WriteString(strings.TrimPrefix(line.Converted, "RUN "))
+					} else {
+						cmdBuilder.WriteString(line.Converted)
+					}
+				} else {
+					// Fall back to original command if no conversion available
+					for _, part := range line.Run.Shell.Before.Parts {
+						cmdBuilder.WriteString(part.Command)
+						if len(part.Args) > 0 {
+							cmdBuilder.WriteString(" ")
+							cmdBuilder.WriteString(strings.Join(part.Args, " "))
+						}
+						if part.Delimiter != "" {
+							cmdBuilder.WriteString(" ")
+							cmdBuilder.WriteString(part.Delimiter)
+							cmdBuilder.WriteString(" ")
+						}
+					}
+				}
+				cmd := cmdBuilder.String()
+
+				if Debug {
+					log.Printf("DEBUG: Using command for package parsing: [%s]", cmd)
+				}
+
+				pkgs := parsePackageInstall(cmd)
+				for _, pkg := range pkgs {
+					if _, ok := seenPackages[pkg]; !ok {
+						currentConfig.Contents.Packages = append(currentConfig.Contents.Packages, pkg)
+						seenPackages[pkg] = true
+					}
+				}
+
+				if strings.Contains(cmd, "adduser") {
+					// Simplified: assumes 'adduser <username>' or similar
+					cmdParts := strings.Fields(cmd) // Re-split the reconstructed command
+					var username string
+					var shell string
+
+					for i, p := range cmdParts {
+						if strings.ToLower(p) == "adduser" && i+1 < len(cmdParts) {
+							// Check for options like -s or --shell
+							if cmdParts[i+1] == "-s" || cmdParts[i+1] == "--shell" {
+								if i+2 < len(cmdParts) { // shell path
+									shell = cmdParts[i+2]
+									if i+3 < len(cmdParts) { // username after shell
+										username = cmdParts[i+3]
+									}
+								}
+							} else if cmdParts[i+1] == "-D" { // Common busybox adduser flag
+								if i+2 < len(cmdParts) {
+									username = cmdParts[i+2]
+								}
+							} else {
+								username = cmdParts[i+1] // simple 'adduser username'
+							}
+							break // Found adduser and processed
+						}
+					}
+					if username == "" && len(cmdParts) > 1 && strings.ToLower(cmdParts[0]) == "adduser" { // fallback
+						username = cmdParts[len(cmdParts)-1]
+					}
+
+					if username != "" {
+						userExists := false
+						for _, u := range currentConfig.Accounts.Users {
+							if u.Username == username {
+								userExists = true
+								break
+							}
+						}
+						if !userExists {
+							newUser := User{Username: username, UID: 1000 + len(currentConfig.Accounts.Users)}
+							if shell != "" {
+								newUser.Shell = shell
+							}
+							currentConfig.Accounts.Users = append(currentConfig.Accounts.Users, newUser)
+						}
+					}
+				}
+			}
+		}
+
 		parts := strings.Fields(line.Raw)
 		if len(parts) == 0 {
 			continue
@@ -365,6 +477,17 @@ func ConvertDockerfileToApko(dockerfile *dfc.Dockerfile) (map[string]*ApkoConfig
 
 		switch instruction {
 		case "RUN":
+			// First check if there are packages directly in RunDetails.Packages
+			if line.Run != nil && len(line.Run.Packages) > 0 {
+				for _, pkg := range line.Run.Packages {
+					if _, ok := seenPackages[pkg]; !ok {
+						currentConfig.Contents.Packages = append(currentConfig.Contents.Packages, pkg)
+						seenPackages[pkg] = true
+					}
+				}
+			}
+
+			// Then check shell commands for package installation
 			if line.Run != nil && line.Run.Shell != nil && line.Run.Shell.Before != nil {
 				// Build the command string - use the converted command if available
 				var cmdBuilder strings.Builder
