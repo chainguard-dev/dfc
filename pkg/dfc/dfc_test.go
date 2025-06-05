@@ -2218,3 +2218,118 @@ func TestCreateApkPackageSpec(t *testing.T) {
 		})
 	}
 }
+
+func TestConvertToMultistage(t *testing.T) {
+	tests := []struct {
+		name                  string
+		raw                   string
+		convertToMultistage   bool
+		expectedStages        int
+		expectBuilderAlias    bool
+		expectCopyFromBuilder bool
+	}{
+		{
+			name: "single-stage with package installation converts to multistage",
+			raw: `FROM python:3.9
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["python", "app.py"]`,
+			convertToMultistage:   true,
+			expectedStages:        2,
+			expectBuilderAlias:    true,
+			expectCopyFromBuilder: true,
+		},
+		{
+			name: "single-stage without package installation remains single-stage",
+			raw: `FROM python:3.9
+WORKDIR /app
+COPY . .
+CMD ["python", "app.py"]`,
+			convertToMultistage:   true,
+			expectedStages:        1,
+			expectBuilderAlias:    false,
+			expectCopyFromBuilder: false,
+		},
+		{
+			name: "multistage conversion disabled keeps original structure",
+			raw: `FROM python:3.9
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["python", "app.py"]`,
+			convertToMultistage:   false,
+			expectedStages:        1,
+			expectBuilderAlias:    false,
+			expectCopyFromBuilder: false,
+		},
+		{
+			name: "dockerfile with apt-get converts to multistage",
+			raw: `FROM ubuntu:20.04
+RUN apt-get update && apt-get install -y python3
+COPY app.py /app/
+CMD ["python3", "/app/app.py"]`,
+			convertToMultistage:   true,
+			expectedStages:        2,
+			expectBuilderAlias:    true,
+			expectCopyFromBuilder: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+
+			parsed, err := ParseDockerfile(ctx, []byte(tt.raw))
+			if err != nil {
+				t.Fatalf("Failed to parse Dockerfile: %v", err)
+			}
+
+			converted, err := parsed.Convert(ctx, Options{
+				ConvertToMultistage: tt.convertToMultistage,
+				ExtraMappings: MappingsConfig{
+					Images: map[string]string{
+						"python": "python",
+						"ubuntu": "chainguard-base",
+					},
+					Packages: PackageMap{},
+				},
+				NoBuiltIn: true,
+			})
+			if err != nil {
+				t.Fatalf("Failed to convert Dockerfile: %v", err)
+			}
+
+			// Count stages and check for builder alias and COPY --from=builder
+			stageCount := 0
+			hasBuilderAlias := false
+			hasCopyFromBuilder := false
+
+			for _, line := range converted.Lines {
+				if line.From != nil {
+					stageCount++
+					if line.From.Alias == "builder" {
+						hasBuilderAlias = true
+					}
+				}
+				if strings.Contains(line.Raw, "COPY --from=builder") || strings.Contains(line.Converted, "COPY --from=builder") {
+					hasCopyFromBuilder = true
+				}
+			}
+
+			if stageCount != tt.expectedStages {
+				t.Errorf("Expected %d stages, got %d", tt.expectedStages, stageCount)
+			}
+
+			if hasBuilderAlias != tt.expectBuilderAlias {
+				t.Errorf("Expected builder alias: %v, got: %v", tt.expectBuilderAlias, hasBuilderAlias)
+			}
+
+			if hasCopyFromBuilder != tt.expectCopyFromBuilder {
+				t.Errorf("Expected COPY --from=builder: %v, got: %v", tt.expectCopyFromBuilder, hasCopyFromBuilder)
+			}
+		})
+	}
+}
