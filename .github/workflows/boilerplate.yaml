@@ -64,7 +64,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: technote-space/workflow-conclusion-action@45ce8e0eb155657ab8ccf346ade734257fd196a5 # v3.0.3
+      - uses: step-security/workflow-conclusion-action@3854991aedf48f496a83c417ee559f5e28ec57ad # v3.0.7
 
       - if: ${{ env.WORKFLOW_CONCLUSION == 'success' }}
         working-directory: /tmp

@@ -527,6 +527,19 @@ RUN pip install -r requirements.txt
 
 This approach gives you full control over image reference conversion while preserving DFC's package manager and command conversion capabilities.
 
+## Usage via AI Agent (MCP Server)
+
+While `dfc` operates completely offline and does not in itself use AI to
+perform conversion of Dockerfiles, it can be leveraged as an [MCP Server](https://modelcontextprotocol.io/) to integrate with an AI-based prompt engineering workflow.
+
+For example, after configuring the `dfc` MCP server, you could ask an AI coding agent "Please convert this Dockerfile to use Chainguard Images: ...", and the MCP server will perform the same conversion as the `dfc` CLI (by using it as a Go library as described above).
+
+This may provide powerful functionality for converting Dockerfiles that are highly specific to your organization's use case, for example using `dfc` for 90% of the conversion effort, and tailored AI prompts for the other 10%.
+
+This being said, this work is **highly experimental** and is purposely not packaged as part of the `dfc` release (for now). Please use at your own risk.
+
+For more information on using `dfc` as an MCP server, please see the README in the [mcp-server/](./mcp-server/) directory at the root of this repo.
+
 ## Limitations
 
 - **Incomplete Conversion**: The tool makes a best effort to convert Dockerfiles but does not guarantee that the converted Dockerfiles will be buildable by Docker.

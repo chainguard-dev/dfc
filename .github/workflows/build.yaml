@@ -41,3 +41,9 @@ jobs:
         run: |
           set -x
           go test -v -cover ./...
+
+      - name: build mcp-server
+        run: |
+          set -x
+          cd mcp-server/
+          go build -o mcp-server .

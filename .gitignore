@@ -4,3 +4,4 @@ coverage.*
 *.yaml
 .idea
 .DS_Store
+mcp-server/mcp-server
