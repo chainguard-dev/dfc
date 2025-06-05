@@ -467,13 +467,14 @@ type RunLineConverter func(run *RunDetails, converted string, stage int) (string
 
 // Options defines the configuration options for the conversion
 type Options struct {
-	Organization      string
-	Registry          string
-	ExtraMappings     MappingsConfig
-	Update            bool              // When true, update cached mappings before conversion
-	NoBuiltIn         bool              // When true, don't use built-in mappings, only ExtraMappings
-	FromLineConverter FromLineConverter // Optional custom converter for FROM lines
-	RunLineConverter  RunLineConverter  // Optional custom converter for RUN lines
+	Organization        string
+	Registry            string
+	ExtraMappings       MappingsConfig
+	Update              bool              // When true, update cached mappings before conversion
+	NoBuiltIn           bool              // When true, don't use built-in mappings, only ExtraMappings
+	FromLineConverter   FromLineConverter // Optional custom converter for FROM lines
+	RunLineConverter    RunLineConverter  // Optional custom converter for RUN lines
+	ConvertToMultistage bool              // When true, convert single-stage builds to multistage for security
 }
 
 // MappingsConfig represents the structure of builtin-mappings.yaml
@@ -496,6 +497,15 @@ func parseImageReference(imageRef string) (base, tag string) {
 
 // Convert applies the conversion to the Dockerfile and returns a new converted Dockerfile
 func (d *Dockerfile) Convert(ctx context.Context, opts Options) (*Dockerfile, error) {
+	var dockerfileToConvert *Dockerfile = d
+	if opts.ConvertToMultistage && shouldConvertToMultistage(d.Lines) {
+		converted, err := convertSingleStageToMultistage(d, opts)
+		if err != nil {
+			return nil, fmt.Errorf("converting to multistage: %w", err)
+		}
+		dockerfileToConvert = converted
+	}
+
 	// Initialize mappings
 	var mappings MappingsConfig
 
@@ -529,7 +539,7 @@ func (d *Dockerfile) Convert(ctx context.Context, opts Options) (*Dockerfile, er
 
 	// Create a new Dockerfile for the converted content
 	converted := &Dockerfile{
-		Lines: make([]*DockerfileLine, len(d.Lines)),
+		Lines: make([]*DockerfileLine, len(dockerfileToConvert.Lines)),
 	}
 
 	// Track packages installed per stage
@@ -540,13 +550,13 @@ func (d *Dockerfile) Convert(ctx context.Context, opts Options) (*Dockerfile, er
 	argsUsedAsBase := make(map[string]bool)
 
 	// Track stages with RUN commands for determining if we need -dev suffix
-	stagesWithRunCommands := detectStagesWithRunCommands(d.Lines)
+	stagesWithRunCommands := detectStagesWithRunCommands(dockerfileToConvert.Lines)
 
 	// First pass: collect all ARG definitions and identify which ones are used as base images
-	identifyArgsUsedAsBaseImages(d.Lines, argNameToDockerfileLine, argsUsedAsBase)
+	identifyArgsUsedAsBaseImages(dockerfileToConvert.Lines, argNameToDockerfileLine, argsUsedAsBase)
 
 	// Convert each line
-	for i, line := range d.Lines {
+	for i, line := range dockerfileToConvert.Lines {
 		// Create a deep copy of the line
 		newLine := &DockerfileLine{
 			Raw:   line.Raw,
@@ -581,7 +591,7 @@ func (d *Dockerfile) Convert(ctx context.Context, opts Options) (*Dockerfile, er
 				FromLineConverter: opts.FromLineConverter,
 				RunLineConverter:  opts.RunLineConverter,
 			}
-			argLine, argDetails := convertArgLine(line.Arg, d.Lines, stagesWithRunCommands, optsWithMappings)
+			argLine, argDetails := convertArgLine(line.Arg, dockerfileToConvert.Lines, stagesWithRunCommands, optsWithMappings)
 			newLine.Converted = argLine
 			newLine.Arg = argDetails
 		}
@@ -1563,4 +1573,145 @@ func createApkPackageSpec(name string, spec PackageSpec) string {
 	}
 
 	return pkg
+}
+
+// shouldConvertToMultistage determines if a single-stage Dockerfile should be converted to multistage
+func shouldConvertToMultistage(lines []*DockerfileLine) bool {
+	stageCount := 0
+	hasPackageInstallCommands := false
+
+	for _, line := range lines {
+		if line.From != nil {
+			stageCount++
+		}
+
+		// Check for RUN commands that contain package manager commands
+		if line.Run != nil && line.Run.Shell != nil && line.Run.Shell.Before != nil {
+			for _, part := range line.Run.Shell.Before.Parts {
+				switch part.Command {
+				case "apt-get", "apt", "yum", "dnf", "microdnf", "apk", "pip", "pip3":
+					for _, arg := range part.Args {
+						if arg == "install" || arg == "add" {
+							hasPackageInstallCommands = true
+							break
+						}
+					}
+				}
+				if hasPackageInstallCommands {
+					break
+				}
+			}
+		}
+
+		if hasPackageInstallCommands {
+			break
+		}
+	}
+
+	// Convert to multistage if:
+	// 1. It's a single-stage build (only one FROM)
+	// 2. It has RUN commands that install packages
+	return stageCount == 1 && hasPackageInstallCommands
+}
+
+// convertSingleStageToMultistage converts a single-stage Dockerfile to a secure multistage build
+func convertSingleStageToMultistage(d *Dockerfile, opts Options) (*Dockerfile, error) {
+	if len(d.Lines) == 0 {
+		return d, nil
+	}
+
+	// Find the FROM line and split the Dockerfile into build and runtime sections
+	var fromLineIndex int = -1
+	var buildLines []*DockerfileLine
+	var runtimeLines []*DockerfileLine
+	var copyLines []*DockerfileLine
+
+	inBuildSection := true
+
+	for i, line := range d.Lines {
+		if line.From != nil {
+			fromLineIndex = i
+			buildFromLine := &DockerfileLine{
+				Raw:   line.Raw,
+				Extra: line.Extra,
+				Stage: 1,
+				From: &FromDetails{
+					Base:        line.From.Base,
+					Tag:         line.From.Tag,
+					Digest:      line.From.Digest,
+					Alias:       "builder",
+					Parent:      line.From.Parent,
+					BaseDynamic: line.From.BaseDynamic,
+					TagDynamic:  line.From.TagDynamic,
+					Orig:        line.From.Orig,
+				},
+			}
+			buildLines = append(buildLines, buildFromLine)
+			continue
+		}
+
+		// Categorize lines based on their purpose
+		if inBuildSection {
+			if line.Run != nil && line.Run.Manager != "" {
+				buildLines = append(buildLines, line)
+			} else if strings.Contains(strings.ToUpper(line.Raw), "COPY") &&
+				!strings.Contains(strings.ToUpper(line.Raw), "--FROM=") {
+				inBuildSection = false
+				copyLines = append(copyLines, line)
+			} else if strings.Contains(strings.ToUpper(line.Raw), "WORKDIR") ||
+				strings.Contains(strings.ToUpper(line.Raw), "ENV") ||
+				strings.Contains(strings.ToUpper(line.Raw), "ARG") {
+				buildLines = append(buildLines, line)
+			} else {
+				buildLines = append(buildLines, line)
+			}
+		} else {
+			runtimeLines = append(runtimeLines, line)
+		}
+	}
+
+	// Create the new multistage Dockerfile
+	var newLines []*DockerfileLine
+
+	newLines = append(newLines, buildLines...)
+
+	if fromLineIndex >= 0 {
+		originalFrom := d.Lines[fromLineIndex]
+
+		runtimeFromLine := &DockerfileLine{
+			Raw:   "",
+			Extra: "\n# Runtime stage with minimal image\n",
+			Stage: 2,
+			From: &FromDetails{
+				Base:        originalFrom.From.Base,
+				Tag:         originalFrom.From.Tag,
+				Digest:      originalFrom.From.Digest,
+				Alias:       "",
+				Parent:      0,
+				BaseDynamic: originalFrom.From.BaseDynamic,
+				TagDynamic:  originalFrom.From.TagDynamic,
+				Orig:        originalFrom.From.Orig,
+			},
+		}
+		newLines = append(newLines, runtimeFromLine)
+
+		// Add COPY --from=builder for built artifacts
+		if len(copyLines) > 0 {
+			for _, copyLine := range copyLines {
+				newCopyLine := &DockerfileLine{
+					Raw:   strings.Replace(copyLine.Raw, "COPY", "COPY --from=builder", 1),
+					Extra: copyLine.Extra,
+					Stage: 2,
+				}
+				newLines = append(newLines, newCopyLine)
+			}
+		}
+
+		for _, line := range runtimeLines {
+			line.Stage = 2
+			newLines = append(newLines, line)
+		}
+	}
+
+	return &Dockerfile{Lines: newLines}, nil
 }
