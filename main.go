@@ -53,6 +53,7 @@ func cli() *cobra.Command {
 	var mappingsFile string
 	var updateFlag bool
 	var noBuiltInFlag bool
+	var multistageFlag bool
 
 	// Default log level is info
 	var level = slag.Level(slog.LevelInfo)
@@ -124,10 +125,11 @@ func cli() *cobra.Command {
 
 			// Setup conversion options
 			opts := dfc.Options{
-				Organization: org,
-				Registry:     registry,
-				Update:       updateFlag,
-				NoBuiltIn:    noBuiltInFlag,
+				Organization:        org,
+				Registry:            registry,
+				Update:              updateFlag,
+				NoBuiltIn:           noBuiltInFlag,
+				ConvertToMultistage: multistageFlag,
 			}
 
 			// If custom mappings file is provided, load it as ExtraMappings
@@ -214,6 +216,7 @@ func cli() *cobra.Command {
 	cmd.Flags().StringVarP(&mappingsFile, "mappings", "m", "", "path to a custom package mappings YAML file (instead of the default)")
 	cmd.Flags().BoolVar(&updateFlag, "update", false, "check for and apply available updates")
 	cmd.Flags().BoolVar(&noBuiltInFlag, "no-builtin", false, "skip built-in package/image mappings, still apply default conversion logic")
+	cmd.Flags().BoolVar(&multistageFlag, "multistage", false, "convert single-stage Dockerfiles to secure multistage builds")
 	cmd.Flags().Var(&level, "log-level", "log level (e.g. debug, info, warn, error)")
 
 	return cmd
