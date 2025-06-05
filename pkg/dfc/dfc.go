@@ -498,7 +498,7 @@ type Options struct {
 	FromLineConverter   FromLineConverter // Optional custom converter for FROM lines
 	RunLineConverter    RunLineConverter  // Optional custom converter for RUN lines
 	ConvertToMultistage bool              // When true, convert single-stage builds to multistage for security
-	Strict            bool              // When true, fail if any package is unknown
+	Strict              bool              // When true, fail if any package is unknown
 }
 
 // MappingsConfig represents the structure of builtin-mappings.yaml
@@ -521,7 +521,7 @@ func parseImageReference(imageRef string) (base, tag string) {
 
 // Convert applies the conversion to the Dockerfile and returns a new converted Dockerfile
 func (d *Dockerfile) Convert(ctx context.Context, opts Options) (*Dockerfile, error) {
-	var dockerfileToConvert *Dockerfile = d
+	dockerfileToConvert := d
 	if opts.ConvertToMultistage && shouldConvertToMultistage(d.Lines) {
 		converted, err := convertSingleStageToMultistage(d, opts)
 		if err != nil {
@@ -1666,7 +1666,7 @@ func convertSingleStageToMultistage(d *Dockerfile, opts Options) (*Dockerfile, e
 	}
 
 	// Find the FROM line and split the Dockerfile into build and runtime sections
-	var fromLineIndex int = -1
+	fromLineIndex := -1
 	var buildLines []*DockerfileLine
 	var runtimeLines []*DockerfileLine
 	var copyLines []*DockerfileLine
