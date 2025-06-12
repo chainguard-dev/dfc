@@ -523,7 +523,12 @@ func parseImageReference(imageRef string) (base, tag string) {
 func (d *Dockerfile) Convert(ctx context.Context, opts Options) (*Dockerfile, error) {
 	dockerfileToConvert := d
 	if opts.ConvertToMultistage && shouldConvertToMultistage(d.Lines) {
-		converted, err := convertSingleStageToMultistage(d, opts)
+		converted, err := convertSingleStageToMultistageGeneric(d, MultistageOptions{
+			BuildAlias:      "builder",
+			RuntimeAlias:    "",
+			PreserveAliases: true,
+			CopyStrategy:    DefaultCopyStrategy,
+		})
 		if err != nil {
 			return nil, fmt.Errorf("converting to multistage: %w", err)
 		}
@@ -1659,23 +1664,51 @@ func shouldConvertToMultistage(lines []*DockerfileLine) bool {
 	return stageCount == 1 && hasPackageInstallCommands
 }
 
-// convertSingleStageToMultistage converts a single-stage Dockerfile to a secure multistage build
-func convertSingleStageToMultistage(d *Dockerfile, opts Options) (*Dockerfile, error) {
+// MultistageOptions allows customization of multistage conversion
+type MultistageOptions struct {
+	BuildAlias      string
+	RuntimeAlias    string
+	PreserveAliases bool
+	CopyStrategy    func(line string, buildAlias string) string
+}
+
+// DefaultCopyStrategy adds --from=buildAlias if not present
+func DefaultCopyStrategy(line string, buildAlias string) string {
+	if strings.Contains(line, "--from=") {
+		return line
+	}
+	if strings.HasPrefix(strings.TrimSpace(line), "COPY ") {
+		return strings.Replace(line, "COPY ", "COPY --from="+buildAlias+" ", 1)
+	}
+	return line
+}
+
+func convertSingleStageToMultistageGeneric(
+	d *Dockerfile,
+	opts MultistageOptions,
+) (*Dockerfile, error) {
 	if len(d.Lines) == 0 {
 		return d, nil
 	}
 
-	// Find the FROM line and split the Dockerfile into build and runtime sections
 	fromLineIndex := -1
 	var buildLines []*DockerfileLine
 	var runtimeLines []*DockerfileLine
 	var copyLines []*DockerfileLine
 
 	inBuildSection := true
+	buildAlias := opts.BuildAlias
+	if buildAlias == "" {
+		buildAlias = "builder"
+	}
 
 	for i, line := range d.Lines {
 		if line.From != nil {
 			fromLineIndex = i
+			alias := buildAlias
+			if opts.PreserveAliases && line.From.Alias != "" {
+				alias = line.From.Alias
+			}
 			buildFromLine := &DockerfileLine{
 				Raw:   line.Raw,
 				Extra: line.Extra,
@@ -1684,18 +1717,18 @@ func convertSingleStageToMultistage(d *Dockerfile, opts Options) (*Dockerfile, e
 					Base:        line.From.Base,
 					Tag:         line.From.Tag,
 					Digest:      line.From.Digest,
-					Alias:       "builder",
+					Alias:       alias,
 					Parent:      line.From.Parent,
 					BaseDynamic: line.From.BaseDynamic,
 					TagDynamic:  line.From.TagDynamic,
 					Orig:        line.From.Orig,
+					Platform:    line.From.Platform,
 				},
 			}
 			buildLines = append(buildLines, buildFromLine)
 			continue
 		}
 
-		// Categorize lines based on their purpose
 		if inBuildSection {
 			if line.Run != nil && line.Run.Manager != "" {
 				buildLines = append(buildLines, line)
@@ -1715,36 +1748,36 @@ func convertSingleStageToMultistage(d *Dockerfile, opts Options) (*Dockerfile, e
 		}
 	}
 
-	// Create the new multistage Dockerfile
 	var newLines []*DockerfileLine
-
 	newLines = append(newLines, buildLines...)
 
 	if fromLineIndex >= 0 {
 		originalFrom := d.Lines[fromLineIndex]
-
 		runtimeFromLine := &DockerfileLine{
 			Raw:   "",
-			Extra: "\n# Runtime stage with minimal image\n",
 			Stage: 2,
 			From: &FromDetails{
 				Base:        originalFrom.From.Base,
 				Tag:         originalFrom.From.Tag,
 				Digest:      originalFrom.From.Digest,
-				Alias:       "",
+				Alias:       opts.RuntimeAlias,
 				Parent:      0,
 				BaseDynamic: originalFrom.From.BaseDynamic,
 				TagDynamic:  originalFrom.From.TagDynamic,
 				Orig:        originalFrom.From.Orig,
+				Platform:    originalFrom.From.Platform,
 			},
 		}
 		newLines = append(newLines, runtimeFromLine)
 
-		// Add COPY --from=builder for built artifacts
 		if len(copyLines) > 0 {
 			for _, copyLine := range copyLines {
+				newCopyRaw := copyLine.Raw
+				if opts.CopyStrategy != nil {
+					newCopyRaw = opts.CopyStrategy(copyLine.Raw, buildAlias)
+				}
 				newCopyLine := &DockerfileLine{
-					Raw:   strings.Replace(copyLine.Raw, "COPY", "COPY --from=builder", 1),
+					Raw:   newCopyRaw,
 					Extra: copyLine.Extra,
 					Stage: 2,
 				}
