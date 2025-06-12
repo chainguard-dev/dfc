@@ -12,6 +12,8 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+
+	"github.com/chainguard-dev/clog"
 )
 
 // Distro represents a Linux distribution
@@ -499,6 +501,7 @@ type Options struct {
 	RunLineConverter    RunLineConverter  // Optional custom converter for RUN lines
 	ConvertToMultistage bool              // When true, convert single-stage builds to multistage for security
 	Strict              bool              // When true, fail if any package is unknown
+	WarnMissingPackages bool              // When true, warn about missing package mappings instead of using the original package name
 }
 
 // MappingsConfig represents the structure of builtin-mappings.yaml
@@ -627,7 +630,7 @@ func (d *Dockerfile) Convert(ctx context.Context, opts Options) (*Dockerfile, er
 
 		// Process RUN commands
 		if line.Run != nil && line.Run.Shell != nil && line.Run.Shell.Before != nil {
-			err := processRunLineWithConverter(newLine, line, stagePackages, mappings.Packages, opts.RunLineConverter, opts.Strict)
+			err := processRunLineWithConverter(ctx, newLine, line, stagePackages, mappings.Packages, opts.RunLineConverter, opts.Strict, opts.WarnMissingPackages)
 			if err != nil {
 				return nil, err
 			}
@@ -1008,7 +1011,7 @@ func buildImageReference(baseFilename string, tag string, opts Options) string {
 }
 
 // processRunLineWithConverter handles the conversion of RUN lines but supports a RunLineConverter.
-func processRunLineWithConverter(newLine *DockerfileLine, line *DockerfileLine, stagePackages map[int][]string, packageMap PackageMap, runLineConverter RunLineConverter, strict bool) error {
+func processRunLineWithConverter(ctx context.Context, newLine *DockerfileLine, line *DockerfileLine, stagePackages map[int][]string, packageMap PackageMap, runLineConverter RunLineConverter, strict bool, warnMissingPackages bool) error {
 	beforeShell := line.Run.Shell.Before
 
 	// Initialize RunDetails with Before shell
@@ -1020,7 +1023,7 @@ func processRunLineWithConverter(newLine *DockerfileLine, line *DockerfileLine, 
 
 	// First check for package manager commands
 	modifiedPMCommands, distro, manager, packages, mappedPackages, afterShell, err :=
-		convertPackageManagerCommands(beforeShell, packageMap, strict)
+		convertPackageManagerCommands(ctx, beforeShell, packageMap, strict, warnMissingPackages)
 	if err != nil {
 		return err
 	}
@@ -1181,7 +1184,7 @@ func convertImageTag(tag string, _ bool) string {
 
 // convertPackageManagerCommands converts package manager commands in a shell command
 // to the Alpine equivalent (apk add)
-func convertPackageManagerCommands(shell *ShellCommand, packageMap PackageMap, strict bool) (bool, Distro, Manager, []string, []string, *ShellCommand, error) {
+func convertPackageManagerCommands(ctx context.Context, shell *ShellCommand, packageMap PackageMap, strict bool, warnMissingPackages bool) (bool, Distro, Manager, []string, []string, *ShellCommand, error) {
 	if shell == nil {
 		return false, "", "", nil, nil, nil, nil
 	}
@@ -1232,7 +1235,7 @@ func convertPackageManagerCommands(shell *ShellCommand, packageMap PackageMap, s
 						if !strings.HasPrefix(arg, "-") {
 							packagesDetected = append(packagesDetected, arg)
 							packageSpec := parsePackageSpec(firstPM, arg)
-							packages, err := convertPackage(packageSpec, distro, packageMap, strict)
+							packages, err := convertPackage(ctx, packageSpec, distro, packageMap, strict, warnMissingPackages)
 							if err != nil {
 								return false, "", "", nil, nil, nil, err
 							}
@@ -1590,7 +1593,7 @@ func parsePackageSpec(manager Manager, packageArg string) (spec PackageSpec) {
 }
 
 // convertPackage performs a lookup of a given package in the package map and returns a valid apk package parameter.
-func convertPackage(spec PackageSpec, distro Distro, packageMap PackageMap, strict bool) ([]string, error) {
+func convertPackage(ctx context.Context, spec PackageSpec, distro Distro, packageMap PackageMap, strict bool, warnMissingPackages bool) ([]string, error) {
 	var packages []string
 	if distroMap, exists := packageMap[distro]; exists && distroMap[spec.Name] != nil {
 		for _, pkg := range distroMap[spec.Name] {
@@ -1599,6 +1602,10 @@ func convertPackage(spec PackageSpec, distro Distro, packageMap PackageMap, stri
 	} else if strict {
 		return nil, fmt.Errorf("%s has no mapping", spec.Name)
 	} else {
+		if warnMissingPackages {
+			log := clog.FromContext(ctx)
+			log.Warn("Package has no mapping, using original package name", "package", spec.Name, "distro", distro)
+		}
 		packages = append(packages, createApkPackageSpec(spec.Name, spec))
 	}
 	return packages, nil

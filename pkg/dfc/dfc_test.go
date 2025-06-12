@@ -2179,7 +2179,8 @@ func TestConvertPackage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := convertPackage(tt.args.spec, tt.args.distro, pm, false)
+			ctx := context.Background()
+			got, err := convertPackage(ctx, tt.args.spec, tt.args.distro, pm, false, false)
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -55,6 +55,7 @@ func cli() *cobra.Command {
 	var noBuiltInFlag bool
 	var multistageFlag bool
 	var strictFlag bool
+	var warnMissingPackagesFlag bool
 
 	// Default log level is info
 	var level = slag.Level(slog.LevelInfo)
@@ -132,6 +133,7 @@ func cli() *cobra.Command {
 				NoBuiltIn:           noBuiltInFlag,
 				ConvertToMultistage: multistageFlag,
 				Strict:       strictFlag,
+				WarnMissingPackages: warnMissingPackagesFlag,
 			}
 
 			// If custom mappings file is provided, load it as ExtraMappings
@@ -221,8 +223,7 @@ func cli() *cobra.Command {
 	cmd.Flags().BoolVar(&multistageFlag, "multistage", false, "convert single-stage Dockerfiles to secure multistage builds")
 	cmd.Flags().Var(&level, "log-level", "log level (e.g. debug, info, warn, error)")
 	cmd.Flags().BoolVar(&strictFlag, "strict", false, "when true, fail if any package is unknown")
-	// nolint:errcheck
-	cmd.Flags().MarkHidden("strict")
+	cmd.Flags().BoolVar(&warnMissingPackagesFlag, "warn-missing-packages", false, "when true, warn about missing package mappings")
 
 	return cmd
 }
