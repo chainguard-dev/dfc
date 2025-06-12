@@ -1,11 +1,13 @@
-FROM alpine:3.18
+FROM cgr.dev/ORG/chainguard-base:latest AS builder
+USER root
 
-RUN apk add --no-cache \
-    nodejs \
-    npm \
-    git
+RUN apk add --no-cache git nodejs npm
 
-COPY package.json package-lock.json ./
+FROM cgr.dev/ORG/chainguard-base:latest
+
+RUN apk add --no-cache nodejs npm
+
+COPY --from=builder package.json package-lock.json ./
 RUN npm ci --only=production
 
 COPY src/ ./src/

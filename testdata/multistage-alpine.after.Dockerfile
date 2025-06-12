@@ -5,6 +5,8 @@ RUN apk add --no-cache git nodejs npm
 
 FROM cgr.dev/ORG/chainguard-base:latest
 
+RUN apk add --no-cache nodejs npm
+
 COPY --from=builder package.json package-lock.json ./
 RUN npm ci --only=production
 
