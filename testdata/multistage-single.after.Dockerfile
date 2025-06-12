@@ -2,7 +2,6 @@ FROM cgr.dev/ORG/chainguard-base:latest AS builder
 USER root
 
 RUN apk add --no-cache curl git py3-pip python-3
-
 FROM cgr.dev/ORG/chainguard-base:latest
 
 COPY --from=builder requirements.txt /app/requirements.txt
