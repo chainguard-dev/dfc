@@ -1690,7 +1690,7 @@ func DefaultCopyStrategy(line string, buildAlias string) string {
 	return line
 }
 
-// convertSingleStageToMultistageGeneric conveerts a single-stage Dockerfile to a multistage build
+// convertSingleStageToMultistageGeneric converts a single-stage Dockerfile to a multistage build
 func convertSingleStageToMultistageGeneric(
 	d *Dockerfile,
 	opts MultistageOptions,
