@@ -1089,8 +1089,8 @@ func addUserRootDirectives(lines []*DockerfileLine) {
 
 	// First pass - identify stages with converted RUN lines and existing USER root directives
 	for _, line := range lines {
-		// Check if this is a converted RUN line
-		if line.Run != nil && line.Converted != "" {
+		// Check if this is a converted RUN line with a package manager
+		if line.Run != nil && line.Converted != "" && line.Run.Manager != "" {
 			stagesWithConvertedRuns[line.Stage] = true
 		}
 
@@ -1098,14 +1098,20 @@ func addUserRootDirectives(lines []*DockerfileLine) {
 		raw := line.Raw
 		converted := line.Converted
 
-		if strings.HasPrefix(strings.ToUpper(strings.TrimSpace(raw)), DirectiveUser+" ") &&
-			strings.Contains(strings.ToLower(raw), DefaultUser) {
-			stagesWithUserRoot[line.Stage] = true
+		if strings.HasPrefix(strings.ToUpper(strings.TrimSpace(raw)), DirectiveUser+" ") {
+			// Extract the user name after "USER "
+			userPart := strings.TrimSpace(raw[len(DirectiveUser)+1:])
+			if strings.ToLower(userPart) == DefaultUser {
+				stagesWithUserRoot[line.Stage] = true
+			}
 		}
 
-		if strings.HasPrefix(strings.ToUpper(strings.TrimSpace(converted)), DirectiveUser+" ") &&
-			strings.Contains(strings.ToLower(converted), DefaultUser) {
-			stagesWithUserRoot[line.Stage] = true
+		if strings.HasPrefix(strings.ToUpper(strings.TrimSpace(converted)), DirectiveUser+" ") {
+			// Extract the user name after "USER "
+			userPart := strings.TrimSpace(converted[len(DirectiveUser)+1:])
+			if strings.ToLower(userPart) == DefaultUser {
+				stagesWithUserRoot[line.Stage] = true
+			}
 		}
 	}
 
@@ -1114,10 +1120,18 @@ func addUserRootDirectives(lines []*DockerfileLine) {
 		for _, line := range lines {
 			// Check if this is a FROM line in a stage that has converted RUN lines
 			if line.From != nil && stagesWithConvertedRuns[line.Stage] {
-				// If the FROM line was converted and there's no USER root directive in this stage already
-				if line.Converted != "" && !stagesWithUserRoot[line.Stage] {
+				// Skip parent stages (FROM base AS dependencies)
+				if line.From.Parent > 0 {
+					continue
+				}
+				// If there's no USER root directive in this stage already
+				if !stagesWithUserRoot[line.Stage] {
 					// Add a USER root directive after this FROM line
-					line.Converted += "\n" + DirectiveUser + " " + DefaultUser
+					if line.Converted != "" {
+						line.Converted += "\n" + DirectiveUser + " " + DefaultUser
+					} else {
+						line.Converted = line.Raw + "\n" + DirectiveUser + " " + DefaultUser
+					}
 					// Mark this stage as having a USER root directive
 					stagesWithUserRoot[line.Stage] = true
 				}
