@@ -52,7 +52,4 @@ jobs:
         HOMEBREW_TAP_GITHUB_TOKEN: ${{ steps.octo-sts.outputs.token }}
       run: |
         set -x
-        VERSION="${GITHUB_REF#refs/tags/}"
-        REVISION="$(git rev-parse HEAD)"
-        export LDFLAGS="-X main.Version=$VERSION -X main.Revision=$REVISION"
         goreleaser release --clean

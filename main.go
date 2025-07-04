@@ -24,14 +24,6 @@ import (
 	"github.com/chainguard-dev/dfc/pkg/dfc"
 )
 
-var (
-	// Version is the semantic version (added at compile time via -X main.Version=$VERSION)
-	Version string
-
-	// Revision is the git commit id (added at compile time via -X main.Revision=$REVISION)
-	Revision string
-)
-
 func main() {
 	ctx := context.Background()
 	if err := mainE(ctx); err != nil {
@@ -60,19 +52,11 @@ func cli() *cobra.Command {
 	// Default log level is info
 	var level = slag.Level(slog.LevelInfo)
 
-	v := "dev"
-	if Version != "" {
-		v = Version
-		if Revision != "" {
-			v += fmt.Sprintf(" (%s)", Revision)
-		}
-	}
-
 	cmd := &cobra.Command{
 		Use:     "dfc",
 		Example: "dfc <path_to_dockerfile>",
 		Args:    cobra.MaximumNArgs(1),
-		Version: v,
+		Version: dfc.Version(),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Setup logging
 			slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: &level})))
@@ -84,10 +68,8 @@ func cli() *cobra.Command {
 				// Set up update options
 				updateOpts := dfc.UpdateOptions{}
 
-				// Set UserAgent if version info is available
-				if Version != "" {
-					updateOpts.UserAgent = "dfc/" + Version
-				}
+				// Set UserAgent
+				updateOpts.UserAgent = fmt.Sprintf("dfc/%s", dfc.Version())
 
 				if err := dfc.Update(ctx, updateOpts); err != nil {
 					return fmt.Errorf("failed to update: %w", err)

@@ -233,6 +233,7 @@ func Update(ctx context.Context, opts UpdateOptions) error {
 	if userAgent == "" {
 		userAgent = "dfc/dev"
 	}
+	log.Debug("Using user agent", "user_agent", userAgent)
 	req.Header.Set("User-Agent", userAgent)
 
 	// Send the request

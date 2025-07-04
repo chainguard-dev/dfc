@@ -29,7 +29,6 @@ builds:
   mod_timestamp: '{{ .CommitTimestamp }}'
   ldflags:
     - -extldflags "-static"
-    - "{{ .Env.LDFLAGS }}"
 
 signs:
   - id: dfc-cosign
