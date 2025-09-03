@@ -8,6 +8,7 @@ package dfc
 import (
 	"fmt"
 	"runtime/debug"
+	"strings"
 	"sync"
 )
 
@@ -26,7 +27,9 @@ func Version() string {
 
 		// Get the main module version
 		if bi.Main.Version != "" && bi.Main.Version != "(devel)" {
-			dfcVersion = bi.Main.Version
+			// TODO: Something related to GoReleaser is leaving files in git workspace
+			// once that is resolved, this should be removed
+			dfcVersion = strings.Replace(bi.Main.Version, "+dirty", "", 1)
 		}
 
 		// Get the vcs revision from build settings

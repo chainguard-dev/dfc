@@ -203,6 +203,8 @@ packages:
             - sqlite-libs
         libssl-dev:
             - libssl3
+        libvshadow-utils:
+            - shadow
         libxi6:
             - libxi
         libxmlsec1:
@@ -255,4 +257,6 @@ packages:
             - xz
         zlib1g-dev:
             - zlib-dev
-    fedora: {}
+    fedora:
+        shadow-utils:
+            - shadow

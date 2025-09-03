@@ -1,4 +1,4 @@
-# dfc
+# DFC
 
 <p align="center">
 <img align="center" alt="dfc" width="250" src="./dfc.png">
@@ -14,7 +14,7 @@
 ---
 ## About
 
-The `dfc` tool helps you migrate your Dockerfiles to use Chainguard Images. For comprehensive guides on migration, check out:
+The `dfc` tool (DFC) helps you migrate your Dockerfiles to use Chainguard Images. For comprehensive guides on migration, check out:
 - [Dockerfile Conversion Guide](https://edu.chainguard.dev/chainguard/migration/dockerfile-conversion/)
 - [Chainguard Migration Overview](https://edu.chainguard.dev/chainguard/migration/migrations-overview/)
 
@@ -30,6 +30,12 @@ You can also install `dfc` from source:
 
 ```sh
 go install github.com/chainguard-dev/dfc@latest
+```
+
+If that does not work, make sure the PATH environment variable is properly set:
+
+```sh
+export PATH="$PATH:$(go env GOPATH)/bin"
 ```
 
 You can also use the `dfc` container image (from Docker Hub or `cgr.dev`):
