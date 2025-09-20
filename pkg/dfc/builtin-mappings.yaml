@@ -260,3 +260,5 @@ packages:
     fedora:
         shadow-utils:
             - shadow
+        libpq-devel:
+            - postgresql-devel
