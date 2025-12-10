@@ -259,1855 +259,1854 @@ packages:
             - zlib-dev
     fedora:
         apr:
-            -  apr-util
+            - apr-util
         apr-devel:
-            -  apr-util-dev
+            - apr-util-dev
         apr-util:
-            -  apr-util
+            - apr-util
         apr-util-devel:
-            -  apr-util-dev
+            - apr-util-dev
         apr-util-ldap:
-            -  apr-util-ldap
+            - apr-util-ldap
         aspnetcore-runtime-10.0:
-            -  aspnet-10-runtime
+            - aspnet-10-runtime
         aspnetcore-runtime-8.0:
-            -  aspnet-8-runtime
+            - aspnet-8-runtime
         aspnetcore-runtime-9.0:
-            -  aspnet-9-runtime
+            - aspnet-9-runtime
         aspnetcore-targeting-pack-10.0:
-            -  aspnet-10-targeting-pack
+            - aspnet-10-targeting-pack
         aspnetcore-targeting-pack-8.0:
-            -  aspnet-8-targeting-pack
+            - aspnet-8-targeting-pack
         aspnetcore-targeting-pack-9.0:
-            -  aspnet-9-targeting-pack
+            - aspnet-9-targeting-pack
         audit-libs:
-            -  audit
+            - audit
         augeas-libs:
-            -  augeas
+            - augeas
         autoconf:
-            -  autoconf
+            - autoconf
         autoconf-archive:
-            -  autoconf-archive
+            - autoconf-archive
         automake:
-            -  automake
+            - automake
         avahi:
-            -  avahi
+            - avahi
         avahi-libs:
-            -  avahi
+            - avahi
         babel:
-            -  py3-babel
+            - py3-babel
         bash-completion:
-            -  bash-completion
+            - bash-completion
         bc:
-            -  bc
+            - bc
         bind-libs:
-            -  bind-libs
+            - bind-libs
         bind-license:
-            -  bind
+            - bind
         bind-utils:
-            -  bind-tools
+            - bind-tools
         binutils:
-            -  binutils
+            - binutils
         binutils-gold:
-            -  binutils-gold
+            - binutils-gold
         boost-python3:
-            -  boost-python3
+            - boost-python3
         boost-regex:
-            -  boost-regex
+            - boost-regex
         brotli:
-            -  brotli
+            - brotli
         brotli-devel:
-            -  brotli-dev
+            - brotli-dev
         bsdtar:
-            -  libarchive-tools
+            - libarchive-tools
         buildah:
-            -  buildah
+            - buildah
         bzip2:
-            -  bzip2
+            - bzip2
         bzip2-devel:
-            -  bzip2-dev
+            - bzip2-dev
         bzip2-libs:
-            -  bzip2
+            - bzip2
         ca-certificates:
-            -  ca-certificates
+            - ca-certificates
         cairo:
-            -  cairo
+            - cairo
         cairo-gobject:
-            -  cairo-gobject
+            - cairo-gobject
         capstone:
-            -  capstone-5
+            - capstone-5
         cargo:
-            -  cargo-c
+            - cargo-c
         cargo-doc:
-            -  cargo-c
+            - cargo-c
         checkpolicy:
-            -  checkpolicy
+            - checkpolicy
         chrpath:
-            -  chrpath
+            - chrpath
         cjose:
-            -  cjose
+            - cjose
         clang:
-            -  clang
+            - clang
         clang-analyzer:
-            -  clang-analyzer
+            - clang-analyzer
         clang-devel:
-            -  clang-17-dev
+            - clang-17-dev
         clang-libs:
-            -  clang
+            - clang
         cmake:
-            -  cmake
+            - cmake
         compat-openssl11:
-            -  openssl
+            - openssl
         compiler-rt:
-            -  compiler-rt
+            - compiler-rt
         composefs:
-            -  composefs
+            - composefs
         composefs-libs:
-            -  composefs
+            - composefs
         conmon:
-            -  conmon
+            - conmon
         container-tools:
-            -  containerd
+            - containerd
         containernetworking-plugins:
-            -  cni-plugins
+            - cni-plugins
         containers-common:
-            -  containers-common
+            - containers-common
         containers-common-extra:
-            -  containers-common
+            - containers-common
         coreutils:
-            -  coreutils
+            - coreutils
         coreutils-common:
-            -  coreutils
+            - coreutils
         cpio:
-            -  cpio
+            - cpio
         cpp:
-            -  gcc
+            - gcc
         cracklib:
-            -  cracklib
+            - cracklib
         criu:
-            -  crac-criu
+            - crac-criu
         criu-libs:
-            -  crac-criu
+            - crac-criu
         cronie:
-            -  cronie
+            - cronie
         cronie-anacron:
-            -  cronie
+            - cronie
         crun:
-            -  crun
+            - crun
         cryptsetup:
-            -  cryptsetup
+            - cryptsetup
         cryptsetup-libs:
-            -  cryptsetup
+            - cryptsetup
         curl:
-            -  curl
+            - curl
         cyrus-sasl:
-            -  cyrus-sasl
+            - cyrus-sasl
         cyrus-sasl-devel:
-            -  cyrus-sasl-dev
+            - cyrus-sasl-dev
         cyrus-sasl-gssapi:
-            -  cyrus-sasl
+            - cyrus-sasl
         cyrus-sasl-lib:
-            -  cyrus-sasl
+            - cyrus-sasl
         cyrus-sasl-plain:
-            -  cyrus-sasl
+            - cyrus-sasl
         dbus-daemon:
-            -  dbus
+            - dbus
         dbus-glib:
-            -  dbus-glib
+            - dbus-glib
         dbus-libs:
-            -  dbus-libs
+            - dbus-libs
         dbus-tools:
-            -  dbus
+            - dbus
         delve:
-            -  delve
+            - delve
         device-mapper:
-            -  device-mapper
+            - device-mapper
         device-mapper-devel:
-            -  device-mapper
+            - device-mapper
         device-mapper-event:
-            -  device-mapper-event-libs
+            - device-mapper-event-libs
         device-mapper-event-libs:
-            -  device-mapper-event-libs
+            - device-mapper-event-libs
         device-mapper-libs:
-            -  device-mapper-libs
+            - device-mapper-libs
         diffutils:
-            -  diffutils
+            - diffutils
         dnsmasq:
-            -  dnsmasq
+            - dnsmasq
         dotnet-runtime-10.0:
-            -  dotnet-10-runtime
+            - dotnet-10-runtime
         dotnet-runtime-8.0:
-            -  dotnet-8-runtime
+            - dotnet-8-runtime
         dotnet-runtime-9.0:
-            -  dotnet-9-runtime
+            - dotnet-9-runtime
         dotnet-sdk-10.0:
-            -  dotnet-10-sdk
+            - dotnet-10-sdk
         dotnet-sdk-8.0:
-            -  dotnet-8-sdk
+            - dotnet-8-sdk
         dotnet-sdk-9.0:
-            -  dotnet-9-sdk
+            - dotnet-9-sdk
         dotnet-sdk-aot-10.0:
-            -  dotnet-10-aot
+            - dotnet-10-aot
         dotnet-sdk-aot-9.0:
-            -  dotnet-9-aot
+            - dotnet-9-aot
         dotnet-targeting-pack-10.0:
-            -  dotnet-10-targeting-pack
+            - dotnet-10-targeting-pack
         dotnet-targeting-pack-8.0:
-            -  dotnet-8-targeting-pack
+            - dotnet-8-targeting-pack
         dotnet-targeting-pack-9.0:
-            -  dotnet-9-targeting-pack
+            - dotnet-9-targeting-pack
         dracut:
-            -  dracut-ng
+            - dracut-ng
         ed:
-            -  ed
+            - ed
         elfutils:
-            -  elfutils
+            - elfutils
         elfutils-debuginfod-client:
-            -  elfutils
+            - elfutils
         elfutils-libelf:
-            -  elfutils
+            - elfutils
         elfutils-libs:
-            -  elfutils
+            - elfutils
         enchant:
-            -  enchant2
+            - enchant2
         enchant2:
-            -  enchant2
+            - enchant2
         ethtool:
-            -  ethtool
+            - ethtool
         expat:
-            -  expat
+            - expat
         expat-devel:
-            -  expat-dev
+            - expat-dev
         expect:
-            -  py3-pexpect
+            - py3-pexpect
         fftw:
-            -  fftw
+            - fftw
         fftw-devel:
-            -  fftw-dev
+            - fftw-dev
         fftw-libs:
-            -  fftw
+            - fftw
         fftw-libs-double:
-            -  fftw-double-libs
+            - fftw-double-libs
         fftw-libs-single:
-            -  fftw-single-libs
+            - fftw-single-libs
         file:
-            -  file
+            - file
         file-libs:
-            -  file
+            - file
         flac-libs:
-            -  flac
+            - flac
         freetype:
-            -  freetype
+            - freetype
         freetype-devel:
-            -  freetype-dev
+            - freetype-dev
         fribidi:
-            -  fribidi
+            - fribidi
         fribidi-devel:
-            -  fribidi-dev
+            - fribidi-dev
         fstrm:
-            -  fstrm
+            - fstrm
         fuse:
-            -  fuse3
+            - fuse3
         fuse-common:
-            -  fuse-common
+            - fuse-common
         fuse-devel:
-            -  fuse2
+            - fuse2
         fuse-libs:
-            -  fuse2
+            - fuse2
         fuse-overlayfs:
-            -  fuse-overlayfs
+            - fuse-overlayfs
         fuse3:
-            -  fuse3
+            - fuse3
         fuse3-devel:
-            -  fuse3-dev
+            - fuse3-dev
         fuse3-libs:
-            -  fuse3-libs
+            - fuse3-libs
         gc:
-            -  gc
+            - gc
         gcc:
-            -  gcc
+            - gcc
         gcc-c++:
-            -  gcc
+            - gcc
         gcc-gfortran:
-            -  gfortran
+            - gfortran
         gcc-toolset-12:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-annobin-annocheck:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-annobin-docs:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-annobin-plugin-gcc:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-binutils:
-            -  binutils
+            - binutils
         gcc-toolset-12-binutils-devel:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-binutils-gold:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-build:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-dwz:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-gcc:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-gcc-c++:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-gcc-gfortran:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-gcc-plugin-annobin:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-gcc-plugin-devel:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-gdb:
-            -  gdb
+            - gdb
         gcc-toolset-12-libasan-devel:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-libatomic-devel:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-libgccjit:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-libgccjit-devel:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-libgccjit-docs:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-libitm-devel:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-liblsan-devel:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-libquadmath-devel:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-libstdc++-devel:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-libstdc++-docs:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-libtsan-devel:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-libubsan-devel:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-offload-nvptx:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-12-runtime:
-            -  gcc-12
+            - gcc-12
         gcc-toolset-13:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-annobin-annocheck:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-annobin-docs:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-annobin-plugin-gcc:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-binutils:
-            -  binutils
+            - binutils
         gcc-toolset-13-binutils-devel:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-binutils-gold:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-dwz:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-gcc:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-gcc-c++:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-gcc-gfortran:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-gcc-plugin-annobin:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-gcc-plugin-devel:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-gdb:
-            -  gdb
+            - gdb
         gcc-toolset-13-libasan-devel:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-libatomic-devel:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-libgccjit:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-libgccjit-devel:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-libitm-devel:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-liblsan-devel:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-libquadmath-devel:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-libstdc++-devel:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-libstdc++-docs:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-libtsan-devel:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-libubsan-devel:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-offload-nvptx:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-13-runtime:
-            -  gcc-13
+            - gcc-13
         gcc-toolset-14:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-annobin-annocheck:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-annobin-docs:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-annobin-plugin-gcc:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-binutils:
-            -  binutils
+            - binutils
         gcc-toolset-14-binutils-devel:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-binutils-gold:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-dwz:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-gcc:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-gcc-c++:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-gcc-gfortran:
-            -  gfortran-14
+            - gfortran-14
         gcc-toolset-14-gcc-plugin-annobin:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-gcc-plugin-devel:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-libasan-devel:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-libatomic-devel:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-libgccjit:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-libgccjit-devel:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-libitm-devel:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-liblsan-devel:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-libquadmath-devel:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-libstdc++-devel:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-libstdc++-docs:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-libtsan-devel:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-libubsan-devel:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-offload-nvptx:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-14-runtime:
-            -  gcc-14
+            - gcc-14
         gcc-toolset-15:
-            -  gcc
+            - gcc
         gcc-toolset-15-binutils:
-            -  binutils
+            - binutils
         gcc-toolset-15-gcc:
-            -  gcc
+            - gcc
         gcc-toolset-15-libgccjit:
-            -  libgccjit
+            - libgccjit
         gd:
-            -  gd
+            - gd
         gd-devel:
-            -  gd-dev
+            - gd-dev
         gdb:
-            -  gdb
+            - gdb
         gdb-headless:
-            -  gdb
+            - gdb
         gdbm:
-            -  gdbm
+            - gdbm
         gdbm-libs:
-            -  gdbm
+            - gdbm
         gettext:
-            -  gettext
+            - gettext
         gettext-libs:
-            -  gettext
+            - gettext
         giflib:
-            -  giflib
+            - giflib
         git:
-            -  git
+            - git
         git-core:
-            -  git
+            - git
         git-lfs:
-            -  git-lfs
+            - git-lfs
         glib2:
-            -  glib
+            - glib
         glib2-devel:
-            -  glib-dev
+            - glib-dev
         glibc:
-            -  glibc
+            - glibc
         glibc-devel:
-            -  glibc-dev
+            - glibc-dev
         glibc-headers:
-            -  glibc-dev
+            - glibc-dev
         gmp:
-            -  gmp
+            - gmp
         gmp-devel:
-            -  gmp-dev
+            - gmp-dev
         gnutls:
-            -  gnutls
+            - gnutls
         gnutls-utils:
-            -  gnutls-utils
+            - gnutls-utils
         go-toolset:
-            -  go-1.25
+            - go-1.25
         gobject-introspection:
-            -  gobject-introspection
+            - gobject-introspection
         golang:
-            -  golangci-lint
+            - golangci-lint
         golang-docs:
-            -  golangci-lint
+            - golangci-lint
         gpgme:
-            -  gpgme
+            - gpgme
         gpgme-devel:
-            -  gpgme-dev
+            - gpgme-dev
         graphene:
-            -  graphene
+            - graphene
         graphite2:
-            -  graphite2
+            - graphite2
         graphite2-devel:
-            -  graphite2-dev
+            - graphite2-dev
         graphviz:
-            -  graphviz
+            - graphviz
         groff-base:
-            -  groff-base
+            - groff-base
         gsm:
-            -  gsm
+            - gsm
         haproxy:
-            -  haproxy-3.0
+            - haproxy-3.0
         harfbuzz:
-            -  harfbuzz
+            - harfbuzz
         harfbuzz-devel:
-            -  harfbuzz-dev
+            - harfbuzz-dev
         harfbuzz-icu:
-            -  harfbuzz-icu
+            - harfbuzz-icu
         hostname:
-            -  hostname
+            - hostname
         httpd:
-            -  apache2
+            - apache2
         httpd-core:
-            -  apache2
+            - apache2
         httpd-devel:
-            -  apache2-dev
+            - apache2-dev
         httpd-tools:
-            -  apache2-utils
+            - apache2-utils
         hunspell:
-            -  hunspell
+            - hunspell
         hunspell-en:
-            -  hunspell-dictionary-en
+            - hunspell-dictionary-en
         hunspell-en-US:
-            -  hunspell-dictionary-en
+            - hunspell-dictionary-en
         hwdata:
-            -  hwdata
+            - hwdata
         imath:
-            -  imath
+            - imath
         info:
-            -  texinfo
+            - texinfo
         ipset:
-            -  ipset
+            - ipset
         ipset-libs:
-            -  ipset
+            - ipset
         iptables-libs:
-            -  iptables
+            - iptables
         iputils:
-            -  iputils
+            - iputils
         jansson:
-            -  jansson
+            - jansson
         jasper-libs:
-            -  jasper
+            - jasper
         java-1.8.0-openjdk:
-            -  openjdk-8
+            - openjdk-8
         java-1.8.0-openjdk-devel:
-            -  openjdk-8
+            - openjdk-8
         java-1.8.0-openjdk-headless:
-            -  openjdk-8
+            - openjdk-8
         java-11-openjdk:
-            -  openjdk-11
+            - openjdk-11
         java-11-openjdk-devel:
-            -  openjdk-11-default-jdk
+            - openjdk-11-default-jdk
         java-11-openjdk-headless:
-            -  openjdk-11
+            - openjdk-11
         java-11-openjdk-jmods:
-            -  openjdk-11-jmods
+            - openjdk-11-jmods
         java-17-openjdk:
-            -  openjdk-17
+            - openjdk-17
         java-17-openjdk-devel:
-            -  openjdk-17-default-jdk
+            - openjdk-17-default-jdk
         java-17-openjdk-headless:
-            -  openjdk-17
+            - openjdk-17
         java-17-openjdk-jmods:
-            -  openjdk-17-jmods
+            - openjdk-17-jmods
         java-21-openjdk:
-            -  openjdk-21
+            - openjdk-21
         java-21-openjdk-devel:
-            -  openjdk-21-default-jdk
+            - openjdk-21-default-jdk
         java-21-openjdk-headless:
-            -  openjdk-21
+            - openjdk-21
         java-21-openjdk-jmods:
-            -  openjdk-21-jmods
+            - openjdk-21-jmods
         jbig2dec-libs:
-            -  jbig2dec
+            - jbig2dec
         jq:
-            -  jq
+            - jq
         json-c:
-            -  json-c
+            - json-c
         json-glib:
-            -  json-glib
+            - json-glib
         kbd:
-            -  kbd
+            - kbd
         kbd-misc:
-            -  kbd
+            - kbd
         kernel-headers:
-            -  linux-headers
+            - linux-headers
         keyutils-libs:
-            -  keyutils-libs
+            - keyutils-libs
         keyutils-libs-devel:
-            -  keyutils-libs
+            - keyutils-libs
         kmod:
-            -  kmod
+            - kmod
         kmod-libs:
-            -  kmod-libs
+            - kmod-libs
         krb5-devel:
-            -  krb5-dev
+            - krb5-dev
         krb5-libs:
-            -  krb5-libs
+            - krb5-libs
         krb5-pkinit:
-            -  krb5-pkinit
+            - krb5-pkinit
         lcms2:
-            -  lcms2
+            - lcms2
         lcms2-devel:
-            -  lcms2-dev
+            - lcms2-dev
         less:
-            -  less
+            - less
         libICE:
-            -  libice
+            - libice
         libSM:
-            -  libsm
+            - libsm
         libX11:
-            -  libx11
+            - libx11
         libX11-common:
-            -  libxt
+            - libxt
         libX11-devel:
-            -  libx11-dev
+            - libx11-dev
         libXScrnSaver:
-            -  libxscrnsaver
+            - libxscrnsaver
         libXau:
-            -  libxau
+            - libxau
         libXau-devel:
-            -  libxau-dev
+            - libxau-dev
         libXaw:
-            -  libxaw
+            - libxaw
         libXcomposite:
-            -  libxcomposite
+            - libxcomposite
         libXcursor:
-            -  libxcursor
+            - libxcursor
         libXdamage:
-            -  libxdamage
+            - libxdamage
         libXext:
-            -  libxext
+            - libxext
         libXfixes:
-            -  libxfixes
+            - libxfixes
         libXft:
-            -  libxft
+            - libxft
         libXft-devel:
-            -  libxft-dev
+            - libxft-dev
         libXi:
-            -  libxi
+            - libxi
         libXinerama:
-            -  libxinerama
+            - libxinerama
         libXmu:
-            -  libxmu
+            - libxmu
         libXpm:
-            -  libxpm
+            - libxpm
         libXpm-devel:
-            -  libxpm-dev
+            - libxpm-dev
         libXrandr:
-            -  libxrandr
+            - libxrandr
         libXrender:
-            -  libxrender
+            - libxrender
         libXrender-devel:
-            -  libxrender-dev
+            - libxrender-dev
         libXt:
-            -  libxt
+            - libxt
         libXtst:
-            -  libxtst
+            - libxtst
         libXv:
-            -  libxv
+            - libxv
         libXxf86vm:
-            -  libxxf86vm
+            - libxxf86vm
         libacl:
-            -  acl
+            - acl
         libaio:
-            -  libaio
+            - libaio
         libarchive:
-            -  libarchive
+            - libarchive
         libassuan:
-            -  libassuan
+            - libassuan
         libassuan-devel:
-            -  libassuan-dev
+            - libassuan-dev
         libasyncns:
-            -  libasyncns
+            - libasyncns
         libatomic:
-            -  libatomic
+            - libatomic
         libattr:
-            -  attr
+            - attr
         libblkid:
-            -  libblkid
+            - libblkid
         libblkid-devel:
-            -  libblkid
+            - libblkid
         libbpf:
-            -  libbpf
+            - libbpf
         libbrotli:
-            -  brotli
+            - brotli
         libcap:
-            -  libcap
+            - libcap
         libcap-devel:
-            -  libcap-dev
+            - libcap-dev
         libcap-ng:
-            -  libcap-ng
+            - libcap-ng
         libcap-ng-devel:
-            -  libcap-ng-dev
+            - libcap-ng-dev
         libcbor:
-            -  libcbor
+            - libcbor
         libcom_err:
-            -  libcom_err
+            - libcom_err
         libcom_err-devel:
-            -  libcom_err
+            - libcom_err
         libcurl:
-            -  curl
+            - curl
         libcurl-devel:
-            -  curl-dev
+            - curl-dev
         libdaemon:
-            -  libdaemon
+            - libdaemon
         libdb:
-            -  db
+            - db
         libdb-devel:
-            -  db-dev
+            - db-dev
         libdb-utils:
-            -  db-utils
+            - db-utils
         libeconf:
-            -  libeconf
+            - libeconf
         libedit:
-            -  libedit
+            - libedit
         libedit-devel:
-            -  libedit-dev
+            - libedit-dev
         libepoxy:
-            -  libepoxy
+            - libepoxy
         libestr:
-            -  libestr
+            - libestr
         libevent:
-            -  libevent
+            - libevent
         libevent-devel:
-            -  libevent-dev
+            - libevent-dev
         libexif:
-            -  libexif
+            - libexif
         libexif-devel:
-            -  libexif-dev
+            - libexif-dev
         libfastjson:
-            -  libfastjson
+            - libfastjson
         libfdisk:
-            -  libfdisk
+            - libfdisk
         libffi:
-            -  libffi
+            - libffi
         libffi-devel:
-            -  libffi-dev
+            - libffi-dev
         libfido2:
-            -  libfido2
+            - libfido2
         libgcc:
-            -  libgcc
+            - libgcc
         libgcrypt:
-            -  libgcrypt
+            - libgcrypt
         libgcrypt-devel:
-            -  libgcrypt-dev
+            - libgcrypt-dev
         libgfortran:
-            -  libgfortran
+            - libgfortran
         libglvnd:
-            -  libglvnd
+            - libglvnd
         libgomp:
-            -  libgomp
+            - libgomp
         libgpg-error:
-            -  libgpg-error
+            - libgpg-error
         libgpg-error-devel:
-            -  libgpg-error-dev
+            - libgpg-error-dev
         libgs:
-            -  libgsf
+            - libgsf
         libgsf:
-            -  libgsf
+            - libgsf
         libicu:
-            -  icu
+            - icu
         libicu-devel:
-            -  icu-dev
+            - icu-dev
         libidn2:
-            -  libidn2
+            - libidn2
         libjpeg-turbo:
-            -  libjpeg-turbo
+            - libjpeg-turbo
         libjpeg-turbo-devel:
-            -  libjpeg-turbo-dev
+            - libjpeg-turbo-dev
         libkcapi:
-            -  libkcapi
+            - libkcapi
         libksba:
-            -  libksba
+            - libksba
         libmaxminddb:
-            -  libmaxminddb
+            - libmaxminddb
         libmicrohttpd:
-            -  libmicrohttpd
+            - libmicrohttpd
         libmnl:
-            -  libmnl
+            - libmnl
         libmnl-devel:
-            -  libmnl-dev
+            - libmnl-dev
         libmount:
-            -  libmount
+            - libmount
         libmount-devel:
-            -  libmount
+            - libmount
         libmpc:
-            -  mpc
+            - mpc
         libmpc-devel:
-            -  mpc-dev
+            - mpc-dev
         libnet:
-            -  libnet
+            - libnet
         libnetfilter_conntrack:
-            -  libnetfilter_conntrack
+            - libnetfilter_conntrack
         libnfnetlink:
-            -  libnfnetlink
+            - libnfnetlink
         libnftnl:
-            -  libnftnl
+            - libnftnl
         libnghttp2:
-            -  nghttp2
+            - nghttp2
         libnghttp2-devel:
-            -  nghttp2-dev
+            - nghttp2-dev
         libnl3:
-            -  libnl3
+            - libnl3
         libnsl2:
-            -  libnsl
+            - libnsl
         libnvme:
-            -  libnvme
+            - libnvme
         libogg:
-            -  libogg
+            - libogg
         libpaper:
-            -  libpaper
+            - libpaper
         libpcap:
-            -  libpcap
+            - libpcap
         libpcap-devel:
-            -  libpcap-dev
+            - libpcap-dev
         libpciaccess:
-            -  libpciaccess
+            - libpciaccess
         libpciaccess-devel:
-            -  libpciaccess-dev
+            - libpciaccess-dev
         libpipeline:
-            -  libpipeline
+            - libpipeline
         libpkgconf:
-            -  pkgconf
+            - pkgconf
         libpng:
-            -  libpng
+            - libpng
         libpng-devel:
-            -  libpng-dev
+            - libpng-dev
         libpq:
-            -  libpq-18
+            - libpq-18
         libpq-devel:
             - postgresql-devel
         libpsl:
-            -  libpsl
+            - libpsl
         libpwquality:
-            -  libpwquality
+            - libpwquality
         libquadmath:
-            -  libquadmath
+            - libquadmath
         libquadmath-devel:
-            -  libquadmath
+            - libquadmath
         librdkafka:
-            -  librdkafka
+            - librdkafka
         librdkafka-devel:
-            -  librdkafka-dev
+            - librdkafka-dev
         librsvg2:
-            -  librsvg
+            - librsvg
         libseccomp:
-            -  libseccomp
+            - libseccomp
         libseccomp-devel:
-            -  libseccomp-dev
+            - libseccomp-dev
         libsecret:
-            -  libsecret
+            - libsecret
         libsecret-devel:
-            -  libsecret-dev
+            - libsecret-dev
         libselinux:
-            -  libselinux
+            - libselinux
         libselinux-devel:
-            -  libselinux-dev
+            - libselinux-dev
         libselinux-utils:
-            -  libselinux
+            - libselinux
         libsemanage:
-            -  libsemanage
+            - libsemanage
         libsepol:
-            -  libsepol
+            - libsepol
         libsepol-devel:
-            -  libsepol-dev
+            - libsepol-dev
         libserf:
-            -  serf
+            - serf
         libslirp:
-            -  libslirp
+            - libslirp
         libsmartcols:
-            -  libsmartcols
+            - libsmartcols
         libsndfile:
-            -  libsndfile
+            - libsndfile
         libsolv:
-            -  libsolv
+            - libsolv
         libsrtp:
-            -  libsrtp
+            - libsrtp
         libss:
-            -  libssp
+            - libssp
         libssh:
-            -  libssh
+            - libssh
         libssh-devel:
-            -  libssh-dev
+            - libssh-dev
         libstdc++:
-            -  libstdc++
+            - libstdc++
         libstdc++-devel:
-            -  libstdc++-dev
+            - libstdc++-dev
         libtalloc:
-            -  talloc
+            - talloc
         libtasn1:
-            -  libtasn1
+            - libtasn1
         libtdb:
-            -  tdb
+            - tdb
         libtheora:
-            -  libtheora
+            - libtheora
         libtiff:
-            -  tiff
+            - tiff
         libtiff-devel:
-            -  tiff-dev
+            - tiff-dev
         libtirpc:
-            -  libtirpc
+            - libtirpc
         libtool:
-            -  libtool
+            - libtool
         libtool-ltdl:
-            -  libtool
+            - libtool
         libunistring:
-            -  libunistring
+            - libunistring
         liburing:
-            -  liburing
+            - liburing
         liburing-devel:
-            -  liburing-dev
+            - liburing-dev
         libutempter:
-            -  libutempter
+            - libutempter
         libuuid:
-            -  libuuid
+            - libuuid
         libuuid-devel:
-            -  libuuid
+            - libuuid
         libuv:
-            -  libuv
+            - libuv
         libverto:
-            -  libverto
+            - libverto
         libverto-devel:
-            -  libverto-dev
+            - libverto-dev
         libvorbis:
-            -  libvorbis
+            - libvorbis
         libwebp:
-            -  libwebp
+            - libwebp
         libwebp-devel:
-            -  libwebp-dev
+            - libwebp-dev
         libxcb:
-            -  libxcb
+            - libxcb
         libxcb-devel:
-            -  libxcb-dev
+            - libxcb-dev
         libxcrypt:
-            -  libxcrypt
+            - libxcrypt
         libxcrypt-devel:
-            -  libxcrypt-dev
+            - libxcrypt-dev
         libxkbcommon:
-            -  libxkbcommon
+            - libxkbcommon
         libxkbfile:
-            -  libxkbfile
+            - libxkbfile
         libxml2:
-            -  libxml2
+            - libxml2
         libxml2-devel:
-            -  libxml2-dev
+            - libxml2-dev
         libxshmfence:
-            -  libxshmfence
+            - libxshmfence
         libxslt:
-            -  libxslt
+            - libxslt
         libxslt-devel:
-            -  libxslt-dev
+            - libxslt-dev
         libyaml:
-            -  yaml
+            - yaml
         libyaml-devel:
-            -  yaml-dev
+            - yaml-dev
         libzip:
-            -  libzip
+            - libzip
         libzip-devel:
-            -  libzip
+            - libzip
         libzstd:
-            -  zstd
+            - zstd
         libzstd-devel:
-            -  zstd-dev
+            - zstd-dev
         lksctp-tools:
-            -  lksctp-tools
+            - lksctp-tools
         lld:
-            -  lld-21
+            - lld-21
         llvm:
-            -  llvm
+            - llvm
         llvm-devel:
-            -  llvm-dev
+            - llvm-dev
         llvm-doc:
-            -  llvm
+            - llvm
         llvm-libs:
-            -  llvm
+            - llvm
         llvm-toolset:
-            -  llvm-21
+            - llvm-21
         lmdb-libs:
-            -  lmdb
+            - lmdb
         logrotate:
-            -  logrotate
+            - logrotate
         lshw:
-            -  lshw
+            - lshw
         lsof:
-            -  lsof
+            - lsof
         lttng-ust:
-            -  lttng-ust
+            - lttng-ust
         lua:
-            -  lua5.4
+            - lua5.4
         lua-libs:
-            -  lua5.4-libs
+            - lua5.4-libs
         lvm2:
-            -  lvm2
+            - lvm2
         lvm2-libs:
-            -  lvm2
+            - lvm2
         lz4:
-            -  lz4
+            - lz4
         lz4-devel:
-            -  lz4-dev
+            - lz4-dev
         lz4-libs:
-            -  lz4
+            - lz4
         lzo:
-            -  lzo
+            - lzo
         m4:
-            -  m4
+            - m4
         mailcap:
-            -  mailcap
+            - mailcap
         make:
-            -  make
+            - make
         man-db:
-            -  man-db
+            - man-db
         mariadb:
-            -  mariadb
+            - mariadb
         mariadb-common:
-            -  mariadb
+            - mariadb
         mariadb-connector-c:
-            -  mariadb-connector-c
+            - mariadb-connector-c
         mariadb-connector-c-devel:
-            -  mariadb-connector-c-dev
+            - mariadb-connector-c-dev
         maven:
-            -  maven-3.8
+            - maven-3.8
         memcached:
-            -  memcached
+            - memcached
         meson:
-            -  meson
+            - meson
         mkfontscale:
-            -  mkfontscale
+            - mkfontscale
         mpdecimal:
-            -  mpdecimal
+            - mpdecimal
         mpfr:
-            -  mpfr
+            - mpfr
         mpfr-devel:
-            -  mpfr-dev
+            - mpfr-dev
         mtr:
-            -  mtr
+            - mtr
         mysql:
-            -  mysql-8.4
+            - mysql-8.4
         mysql-common:
-            -  mysql-8.4
+            - mysql-8.4
         mysql-libs:
-            -  mariadb-connector-c
+            - mariadb-connector-c
         nano:
-            -  nano
+            - nano
         ncurses:
-            -  ncurses
+            - ncurses
         ncurses-c++-libs:
-            -  ncurses
+            - ncurses
         ncurses-devel:
-            -  ncurses-dev
+            - ncurses-dev
         ncurses-libs:
-            -  ncurses
+            - ncurses
         net-snmp:
-            -  net-snmp
+            - net-snmp
         net-snmp-agent-libs:
-            -  net-snmp-agent-libs
+            - net-snmp-agent-libs
         net-snmp-libs:
-            -  net-snmp-libs
+            - net-snmp-libs
         net-snmp-utils:
-            -  net-snmp
+            - net-snmp
         net-tools:
-            -  net-tools
+            - net-tools
         netavark:
-            -  netavark
+            - netavark
         nettle:
-            -  nettle
+            - nettle
         nftables:
-            -  nftables
+            - nftables
         nginx:
-            -  nginx-stable
+            - nginx-stable
         nginx-core:
-            -  nginx-mainline
+            - nginx-mainline
         nginx-mod-http-image-filter:
-            -  nginx-mainline-mod-http_image_filter
+            - nginx-mainline-mod-http_image_filter
         nginx-mod-http-perl:
-            -  nginx-mainline-mod-http_perl
+            - nginx-mainline-mod-http_perl
         nginx-mod-http-xslt-filter:
-            -  nginx-mainline-mod-http_xslt_filter
+            - nginx-mainline-mod-http_xslt_filter
         nginx-mod-mail:
-            -  nginx-mainline-mod-mail
+            - nginx-mainline-mod-mail
         nginx-mod-stream:
-            -  nginx-mainline-mod-stream
+            - nginx-mainline-mod-stream
         ninja-build:
-            -  ninja-build
+            - ninja-build
         nmap:
-            -  nmap
+            - nmap
         nodejs:
-            -  nodejs-25
+            - nodejs-25
         nodejs-docs:
-            -  nodejs-22
+            - nodejs-22
         nodejs-libs:
-            -  nodejs-22
+            - nodejs-22
         npm:
-            -  npm
+            - npm
         npth:
-            -  npth
+            - npth
         nspr:
-            -  libnspr
+            - libnspr
         nss:
-            -  nss
+            - nss
         nss-tools:
-            -  nss
+            - nss
         nss_wrapper:
-            -  nss_wrapper
+            - nss_wrapper
         nss_wrapper-libs:
-            -  nss_wrapper
+            - nss_wrapper
         numactl:
-            -  numactl
+            - numactl
         numactl-libs:
-            -  numactl
+            - numactl
         oniguruma:
-            -  oniguruma
+            - oniguruma
         openblas:
-            -  openblas
+            - openblas
         openblas-devel:
-            -  openblas-dev
+            - openblas-dev
         openexr-libs:
-            -  openexr
+            - openexr
         openjpeg2:
-            -  openjpeg
+            - openjpeg
         openjpeg2-devel:
-            -  openjpeg-dev
+            - openjpeg-dev
         openjpeg2-tools:
-            -  openjpeg-tools
+            - openjpeg-tools
         openldap:
-            -  openldap
+            - openldap
         openldap-clients:
-            -  openldap-clients
+            - openldap-clients
         openldap-devel:
-            -  openldap-dev
+            - openldap-dev
         openscap:
-            -  openscap
+            - openscap
         openssh:
-            -  openssh
+            - openssh
         openssh-clients:
-            -  openssh-client
+            - openssh-client
         openssh-server:
-            -  openssh-server
+            - openssh-server
         openssl-devel:
-            -  openssl-dev
+            - openssl-dev
         openssl-libs:
-            -  openssl
+            - openssl
         opus:
-            -  opus
+            - opus
         orc:
-            -  orc
+            - orc
         ostree:
-            -  ostree
+            - ostree
         ostree-libs:
-            -  ostree
+            - ostree
         p11-kit:
-            -  p11-kit
+            - p11-kit
         p11-kit-trust:
-            -  p11-kit-trust
+            - p11-kit-trust
         pam:
-            -  linux-pam
+            - linux-pam
         pango:
-            -  pango
+            - pango
         passt:
-            -  passt
+            - passt
         patch:
-            -  patch
+            - patch
         pcre:
-            -  pcre
+            - pcre
         pcre-cpp:
-            -  pcre
+            - pcre
         pcre-devel:
-            -  pcre-dev
+            - pcre-dev
         pcre-utf16:
-            -  pcre
+            - pcre
         pcre-utf32:
-            -  pcre
+            - pcre
         pcre2:
-            -  pcre2
+            - pcre2
         pcre2-devel:
-            -  pcre2-dev
+            - pcre2-dev
         pcre2-utf16:
-            -  pcre2
+            - pcre2
         pcre2-utf32:
-            -  pcre2
+            - pcre2
         perl:
-            -  perl
+            - perl
         perl-Algorithm-Diff:
-            -  perl-algorithm-diff
+            - perl-algorithm-diff
         perl-App-cpanminus:
-            -  perl-app-cpanminus
+            - perl-app-cpanminus
         perl-B:
-            -  perl-b-hooks-endofscope
+            - perl-b-hooks-endofscope
         perl-Benchmark:
-            -  benchmark
+            - benchmark
         perl-CPAN:
-            -  perl-cpan-distnameinfo
+            - perl-cpan-distnameinfo
         perl-CPAN-DistnameInfo:
-            -  perl-cpan-distnameinfo
+            - perl-cpan-distnameinfo
         perl-CPAN-Meta:
-            -  perl-cpan-meta-requirements
+            - perl-cpan-meta-requirements
         perl-CPAN-Meta-Requirements:
-            -  perl-cpan-meta-requirements
+            - perl-cpan-meta-requirements
         perl-Clone:
-            -  perl-clone
+            - perl-clone
         perl-DBD-MySQL:
-            -  perl-dbd-mysql
+            - perl-dbd-mysql
         perl-DBI:
-            -  perl-dbi
+            - perl-dbi
         perl-Devel-PPPort:
-            -  perl-devel-ppport
+            - perl-devel-ppport
         perl-Digest:
-            -  perl-digest-md5
+            - perl-digest-md5
         perl-Digest-MD5:
-            -  perl-digest-md5
+            - perl-digest-md5
         perl-Encode:
-            -  perl-encode-locale
+            - perl-encode-locale
         perl-Encode-Locale:
-            -  perl-encode-locale
+            - perl-encode-locale
         perl-Encode-devel:
-            -  perl-encode-locale
+            - perl-encode-locale
         perl-ExtUtils-Install:
-            -  perl-extutils-installpaths
+            - perl-extutils-installpaths
         perl-ExtUtils-MakeMaker:
-            -  perl-extutils-makemaker-cpanfile
+            - perl-extutils-makemaker-cpanfile
         perl-File-Copy:
-            -  perl-file-copy-recursive
+            - perl-file-copy-recursive
         perl-File-Listing:
-            -  perl-file-listing
+            - perl-file-listing
         perl-File-Which:
-            -  perl-file-which
+            - perl-file-which
         perl-File-pushd:
-            -  perl-file-pushd
+            - perl-file-pushd
         perl-Git:
-            -  git
+            - git
         perl-HTML-Parser:
-            -  perl-html-parser
+            - perl-html-parser
         perl-HTML-Tagset:
-            -  perl-html-tagset
+            - perl-html-tagset
         perl-HTTP-Cookies:
-            -  perl-http-cookies
+            - perl-http-cookies
         perl-HTTP-Date:
-            -  perl-http-date
+            - perl-http-date
         perl-HTTP-Message:
-            -  perl-http-message
+            - perl-http-message
         perl-HTTP-Negotiate:
-            -  perl-http-negotiate
+            - perl-http-negotiate
         perl-HTTP-Tiny:
-            -  perl-http-tinyish
+            - perl-http-tinyish
         perl-IO:
-            -  perl-io-gzip
+            - perl-io-gzip
         perl-IO-HTML:
-            -  perl-io-html
+            - perl-io-html
         perl-IO-Socket-SSL:
-            -  perl-io-socket-ssl
+            - perl-io-socket-ssl
         perl-Importer:
-            -  perl-importer
+            - perl-importer
         perl-LWP-MediaTypes:
-            -  perl-lwp-mediatypes
+            - perl-lwp-mediatypes
         perl-LWP-Protocol-https:
-            -  perl-lwp-protocol-https
+            - perl-lwp-protocol-https
         perl-MRO-Compat:
-            -  perl-mro-compat
+            - perl-mro-compat
         perl-Module-Build:
-            -  perl-module-build
+            - perl-module-build
         perl-Module-CPANfile:
-            -  perl-module-cpanfile
+            - perl-module-cpanfile
         perl-Mozilla-CA:
-            -  perl-mozilla-ca
+            - perl-mozilla-ca
         perl-Net:
-            -  perl-net-snmp
+            - perl-net-snmp
         perl-Net-HTTP:
-            -  perl-net-http
+            - perl-net-http
         perl-Net-SSLeay:
-            -  perl-net-ssleay
+            - perl-net-ssleay
         perl-Parse-PMFile:
-            -  perl-parse-pmfile
+            - perl-parse-pmfile
         perl-String-ShellQuote:
-            -  perl-string-shellquote
+            - perl-string-shellquote
         perl-Sub-Exporter:
-            -  perl-sub-exporter-progressive
+            - perl-sub-exporter-progressive
         perl-Term-Table:
-            -  perl-term-table
+            - perl-term-table
         perl-Test:
-            -  perl-test-pod
+            - perl-test-pod
         perl-Test-Simple:
-            -  perl-test-simple
+            - perl-test-simple
         perl-Text-Diff:
-            -  perl-text-diff
+            - perl-text-diff
         perl-Time:
-            -  perl-time-hires
+            - perl-time-hires
         perl-Time-HiRes:
-            -  perl-time-hires
+            - perl-time-hires
         perl-Try-Tiny:
-            -  perl-try-tiny
+            - perl-try-tiny
         perl-URI:
-            -  perl-uri
+            - perl-uri
         perl-WWW-RobotRules:
-            -  perl-www-robotrules
+            - perl-www-robotrules
         perl-YAML:
-            -  yaml
+            - yaml
         perl-devel:
-            -  perl-dev
+            - perl-dev
         perl-doc:
-            -  perl-doc
+            - perl-doc
         perl-inc-latest:
-            -  perl-inc-latest
+            - perl-inc-latest
         perl-interpreter:
-            -  perl
+            - perl
         perl-less:
-            -  less
+            - less
         perl-lib:
-            -  perl-libwww
+            - perl-libwww
         perl-libnet:
-            -  libnet
+            - libnet
         perl-libs:
-            -  perl
+            - perl
         perl-local-lib:
-            -  perl-local-lib
+            - perl-local-lib
         perl-macros:
-            -  perl
+            - perl
         perl-mro:
-            -  perl-mro-compat
+            - perl-mro-compat
         perl-utils:
-            -  perl-utils
+            - perl-utils
         php:
-            -  php-8.5
+            - php-8.5
         php-bcmath:
-            -  php-8.3-bcmath
+            - php-8.3-bcmath
         php-dbg:
-            -  php-8.3-dbg
+            - php-8.3-dbg
         php-fpm:
-            -  php-8.3-fpm
+            - php-8.3-fpm
         php-gd:
-            -  php-8.3-gd
+            - php-8.3-gd
         php-gmp:
-            -  php-8.3-gmp
+            - php-8.3-gmp
         php-intl:
-            -  php-8.3-intl
+            - php-8.3-intl
         php-ldap:
-            -  php-8.3-ldap
+            - php-8.3-ldap
         php-mbstring:
-            -  php-8.3-mbstring
+            - php-8.3-mbstring
         php-mysqlnd:
-            -  php-8.3-mysqlnd
+            - php-8.3-mysqlnd
         php-odbc:
-            -  php-8.3-odbc
+            - php-8.3-odbc
         php-opcache:
-            -  php-8.3-opcache
+            - php-8.3-opcache
         php-pdo:
-            -  php-8.3-pdo
+            - php-8.3-pdo
         php-pear:
-            -  php-8.3-pear
+            - php-8.3-pear
         php-pecl-apcu:
-            -  php-8.3-apcu
+            - php-8.3-apcu
         php-pecl-zip:
-            -  php-8.3-zip
+            - php-8.3-zip
         php-pgsql:
-            -  php-8.3-pgsql
+            - php-8.3-pgsql
         php-soap:
-            -  php-8.3-soap
+            - php-8.3-soap
         php-xml:
-            -  php-8.3-xml
+            - php-8.3-xml
         pigz:
-            -  pigz
+            - pigz
         pinentry:
-            -  pinentry
+            - pinentry
         pixman:
-            -  pixman
+            - pixman
         pkgconf:
-            -  pkgconf
+            - pkgconf
         podman:
-            -  podman
+            - podman
         podman-docker:
-            -  podman
+            - podman
         podman-remote:
-            -  podman
+            - podman
         policycoreutils:
-            -  policycoreutils
+            - policycoreutils
         poppler:
-            -  poppler
+            - poppler
         poppler-glib:
-            -  poppler-glib
+            - poppler-glib
         poppler-utils:
-            -  poppler-utils
+            - poppler-utils
         popt:
-            -  popt
+            - popt
         postfix:
-            -  postfix
+            - postfix
         postgresql:
-            -  postgresql-18
+            - postgresql-18
         procps-ng:
-            -  procps
+            - procps
         protobuf-c:
-            -  protobuf-c
+            - protobuf-c
         pybind11-devel:
-            -  py3-pybind11
+            - py3-pybind11
         python3:
-            -  python-3.9
+            - python-3.9
         python3-Cython:
-            -  py3-cython
+            - py3-cython
         python3-PyMySQL:
-            -  py3-pymysql
+            - py3-pymysql
         python3-appdirs:
-            -  py3-appdirs
+            - py3-appdirs
         python3-argcomplete:
-            -  py3-argcomplete
+            - py3-argcomplete
         python3-attrs:
-            -  py3-attrs
+            - py3-attrs
         python3-audit:
-            -  py3-audit
+            - py3-audit
         python3-augeas:
-            -  py3-augeas
+            - py3-augeas
         python3-babel:
-            -  py3-babel
+            - py3-babel
         python3-bind:
-            -  bind
+            - bind
         python3-cairo:
-            -  py3-cairo
+            - py3-cairo
         python3-cffi:
-            -  py3-cffi
+            - py3-cffi
         python3-clang:
-            -  py3-clang
+            - py3-clang
         python3-configobj:
-            -  py3-configobj
+            - py3-configobj
         python3-cryptography:
-            -  py3-cryptography
+            - py3-cryptography
         python3-debug:
-            -  py3-debugpy
+            - py3-debugpy
         python3-devel:
-            -  python-3.9
+            - python-3.9
         python3-distro:
-            -  py3-distro
+            - py3-distro
         python3-dmidecode:
-            -  dmidecode
+            - dmidecode
         python3-docutils:
-            -  py3-docutils
+            - py3-docutils
         python3-ethtool:
-            -  ethtool
+            - ethtool
         python3-gssapi:
-            -  py3-gssapi
+            - py3-gssapi
         python3-imagesize:
-            -  py3-imagesize
+            - py3-imagesize
         python3-imath:
-            -  py3-imath
+            - py3-imath
         python3-iniconfig:
-            -  py3-iniconfig
+            - py3-iniconfig
         python3-jinja2:
-            -  py3-jinja2
+            - py3-jinja2
         python3-jmespath:
-            -  py3-jmespath
+            - py3-jmespath
         python3-jsonpatch:
-            -  py3-jsonpatch
+            - py3-jsonpatch
         python3-jsonpointer:
-            -  py3-jsonpointer
+            - py3-jsonpointer
         python3-jsonschema:
-            -  py3-jsonschema
+            - py3-jsonschema
         python3-jwcrypto:
-            -  py3-jwcrypto
+            - py3-jwcrypto
         python3-kmod:
-            -  kmod
+            - kmod
         python3-ldap:
-            -  py3-ldap
+            - py3-ldap
         python3-lesscpy:
-            -  py3-lesscpy
+            - py3-lesscpy
         python3-libmount:
-            -  libmount
+            - libmount
         python3-libs:
-            -  python-3.9
+            - python-3.9
         python3-libselinux:
-            -  libselinux
+            - libselinux
         python3-libsemanage:
-            -  libsemanage
+            - libsemanage
         python3-libxml2:
-            -  libxml2
+            - libxml2
         python3-lxml:
-            -  py3-lxml
+            - py3-lxml
         python3-mako:
-            -  py3-mako
+            - py3-mako
         python3-markdown:
-            -  py3-markdown
+            - py3-markdown
         python3-markupsafe:
-            -  py3-markupsafe
+            - py3-markupsafe
         python3-net-snmp:
-            -  net-snmp
+            - net-snmp
         python3-netaddr:
-            -  py3-netaddr
+            - py3-netaddr
         python3-netifaces:
-            -  py3-netifaces
+            - py3-netifaces
         python3-nftables:
-            -  nftables
+            - nftables
         python3-oauthlib:
-            -  py3-oauthlib
+            - py3-oauthlib
         python3-packaging:
-            -  py3-packaging
+            - py3-packaging
         python3-pexpect:
-            -  py3-pexpect
+            - py3-pexpect
         python3-pip:
-            -  py3-pip
+            - py3-pip
         python3-pluggy:
-            -  py3-pluggy
+            - py3-pluggy
         python3-ply:
-            -  py3-ply
+            - py3-ply
         python3-podman:
-            -  podman
+            - podman
         python3-policycoreutils:
-            -  policycoreutils
+            - policycoreutils
         python3-prettytable:
-            -  py3-prettytable
+            - py3-prettytable
         python3-protobuf:
-            -  py3-protobuf
+            - py3-protobuf
         python3-psutil:
-            -  py3-psutil
+            - py3-psutil
         python3-psycopg2:
-            -  py3-psycopg2
+            - py3-psycopg2
         python3-ptyprocess:
-            -  py3-ptyprocess
+            - py3-ptyprocess
         python3-pyasn1:
-            -  py3-pyasn1
+            - py3-pyasn1
         python3-pyasn1-modules:
-            -  py3-pyasn1-modules
+            - py3-pyasn1-modules
         python3-pybind11:
-            -  py3-pybind11
+            - py3-pybind11
         python3-pycparser:
-            -  py3-pycparser
+            - py3-pycparser
         python3-pycurl:
-            -  py3-pycurl
+            - py3-pycurl
         python3-pyelftools:
-            -  py3-pyelftools
+            - py3-pyelftools
         python3-pygments:
-            -  py3-pygments
+            - py3-pygments
         python3-pyparsing:
-            -  py3-pyparsing
+            - py3-pyparsing
         python3-pyrsistent:
-            -  py3-pyrsistent
+            - py3-pyrsistent
         python3-pyserial:
-            -  py3-pyserial
+            - py3-pyserial
         python3-pytest:
-            -  py3-pytest
+            - py3-pytest
         python3-pytest-timeout:
-            -  py3-pytest-timeout
+            - py3-pytest-timeout
         python3-pytz:
-            -  py3-pytz
+            - py3-pytz
         python3-pyyaml:
-            -  py3-pyyaml
+            - py3-pyyaml
         python3-requests-oauthlib:
-            -  py3-requests-oauthlib
+            - py3-requests-oauthlib
         python3-resolvelib:
-            -  py3-resolvelib
+            - py3-resolvelib
         python3-rrdtool:
-            -  rrdtool
+            - rrdtool
         python3-ruamel-yaml:
-            -  py3-ruamel-yaml
+            - py3-ruamel-yaml
         python3-ruamel-yaml-clib:
-            -  py3-ruamel-yaml-clib
+            - py3-ruamel-yaml-clib
         python3-scipy:
-            -  py3-scipy
+            - py3-scipy
         python3-snowballstemmer:
-            -  py3-snowballstemmer
+            - py3-snowballstemmer
         python3-talloc:
-            -  py3-talloc
+            - py3-talloc
         python3-toml:
-            -  py3-toml
+            - py3-toml
         python3-tomli:
-            -  py3-tomli
+            - py3-tomli
         python3-unbound:
-            -  unbound
+            - unbound
         python3-wcwidth:
-            -  py3-wcwidth
+            - py3-wcwidth
         python3-wheel:
-            -  py3-wheel
+            - py3-wheel
         python3.11:
-            -  python-3.11
+            - python-3.11
         python3.11-Cython:
-            -  py3.11-cython
+            - py3.11-cython
         python3.11-PyMySQL:
-            -  py3.11-pymysql
+            - py3.11-pymysql
         python3.11-attrs:
-            -  py3.11-attrs
+            - py3.11-attrs
         python3.11-cffi:
-            -  py3.11-cffi
+            - py3.11-cffi
         python3.11-charset-normalizer:
-            -  py3.11-charset-normalizer
+            - py3.11-charset-normalizer
         python3.11-cryptography:
-            -  py3.11-cryptography
+            - py3.11-cryptography
         python3.11-devel:
-            -  python-3.9
+            - python-3.9
         python3.11-idna:
-            -  py3.11-idna
+            - py3.11-idna
         python3.11-iniconfig:
-            -  py3.11-iniconfig
+            - py3.11-iniconfig
         python3.11-libs:
-            -  python-3.9
+            - python-3.9
         python3.11-lxml:
-            -  py3.11-lxml
+            - py3.11-lxml
         python3.11-packaging:
-            -  py3.11-packaging
+            - py3.11-packaging
         python3.11-pip:
-            -  py3.11-pip
+            - py3.11-pip
         python3.11-pip-wheel:
-            -  py3-pip-wheel
+            - py3-pip-wheel
         python3.11-pluggy:
-            -  py3.11-pluggy
+            - py3.11-pluggy
         python3.11-ply:
-            -  py3.11-ply
+            - py3.11-ply
         python3.11-psycopg2:
-            -  py3.11-psycopg2
+            - py3.11-psycopg2
         python3.11-pybind11:
-            -  py3.11-pybind11
+            - py3.11-pybind11
         python3.11-pycparser:
-            -  py3.11-pycparser
+            - py3.11-pycparser
         python3.11-pyparsing:
-            -  py3.11-pyparsing
+            - py3.11-pyparsing
         python3.11-pytest:
-            -  py3.11-pytest
+            - py3.11-pytest
         python3.11-pyyaml:
-            -  py3.11-pyyaml
+            - py3.11-pyyaml
         python3.11-requests:
-            -  py3.11-requests
+            - py3.11-requests
         python3.11-scipy:
-            -  py3.11-scipy
+            - py3.11-scipy
         python3.11-setuptools:
-            -  py3.11-setuptools
+            - py3.11-setuptools
         python3.11-setuptools-rust:
-            -  py3.11-setuptools-rust
+            - py3.11-setuptools-rust
         python3.11-setuptools-wheel:
-            -  py3-setuptools-wheel
+            - py3-setuptools-wheel
         python3.11-six:
-            -  py3.11-six
+            - py3.11-six
         python3.11-urllib3:
-            -  py3.11-urllib3
+            - py3.11-urllib3
         python3.11-wheel:
-            -  py3.11-wheel
+            - py3.11-wheel
         python3.12:
-            -  python-3.12
+            - python-3.12
         python3.12-Cython:
-            -  py3.12-cython
+            - py3.12-cython
         python3.12-PyMySQL:
-            -  py3.12-pymysql
+            - py3.12-pymysql
         python3.12-cffi:
-            -  py3.12-cffi
+            - py3.12-cffi
         python3.12-charset-normalizer:
-            -  py3.12-charset-normalizer
+            - py3.12-charset-normalizer
         python3.12-cryptography:
-            -  py3.12-cryptography
+            - py3.12-cryptography
         python3.12-devel:
-            -  python-3.9
+            - python-3.9
         python3.12-flit-core:
-            -  py3.12-flit-core
+            - py3.12-flit-core
         python3.12-idna:
-            -  py3.12-idna
+            - py3.12-idna
         python3.12-iniconfig:
-            -  py3.12-iniconfig
+            - py3.12-iniconfig
         python3.12-libs:
-            -  python-3.9
+            - python-3.9
         python3.12-lxml:
-            -  py3.12-lxml
+            - py3.12-lxml
         python3.12-packaging:
-            -  py3.12-packaging
+            - py3.12-packaging
         python3.12-pip:
-            -  py3.12-pip
+            - py3.12-pip
         python3.12-pip-wheel:
-            -  py3-pip-wheel
+            - py3-pip-wheel
         python3.12-pluggy:
-            -  py3.12-pluggy
+            - py3.12-pluggy
         python3.12-ply:
-            -  py3.12-ply
+            - py3.12-ply
         python3.12-psycopg2:
-            -  py3.12-psycopg2
+            - py3.12-psycopg2
         python3.12-pybind11:
-            -  py3.12-pybind11
+            - py3.12-pybind11
         python3.12-pycparser:
-            -  py3.12-pycparser
+            - py3.12-pycparser
         python3.12-pytest:
-            -  py3.12-pytest
+            - py3.12-pytest
         python3.12-pyyaml:
-            -  py3.12-pyyaml
+            - py3.12-pyyaml
         python3.12-requests:
-            -  py3.12-requests
+            - py3.12-requests
         python3.12-scipy:
-            -  py3.12-scipy
+            - py3.12-scipy
         python3.12-setuptools:
-            -  py3.12-setuptools
+            - py3.12-setuptools
         python3.12-setuptools-rust:
-            -  py3.12-setuptools-rust
+            - py3.12-setuptools-rust
         python3.12-setuptools-wheel:
-            -  py3-setuptools-wheel
+            - py3-setuptools-wheel
         python3.12-urllib3:
-            -  py3.12-urllib3
+            - py3.12-urllib3
         python3.12-wheel:
-            -  py3.12-wheel
+            - py3.12-wheel
         qpdf-libs:
-            -  qpdf
+            - qpdf
         rdma-core-devel:
-            -  rdma-core-dev
+            - rdma-core-dev
         readline:
-            -  readline
+            - readline
         rest:
-            -  restic
+            - restic
         rrdtool:
-            -  rrdtool
+            - rrdtool
         rsync:
-            -  rsync
+            - rsync
         rsyslog:
-            -  rsyslog
+            - rsyslog
         ruby:
-            -  ruby-3.3
+            - ruby-3.3
         ruby-devel:
-            -  ruby-3.3
+            - ruby-3.3
         ruby-libs:
-            -  ruby-3.3
+            - ruby-3.3
         rubygem-bundler:
-            -  ruby3.4-bundler
+            - ruby3.4-bundler
         rubygem-io-console:
-            -  ruby3.4-io-console
+            - ruby3.4-io-console
         rubygem-json:
-            -  ruby3.4-json
+            - ruby3.4-json
         rubygem-pg:
-            -  ruby3.4-pg
+            - ruby3.4-pg
         rubygem-psych:
-            -  ruby3.4-psych
+            - ruby3.4-psych
         rubygem-rexml:
-            -  ruby3.4-rexml
+            - ruby3.4-rexml
         rubygems:
-            -  ruby-3.4
+            - ruby-3.4
         rubygems-devel:
-            -  ruby-3.4-dev
+            - ruby-3.4-dev
         runc:
-            -  runc
+            - runc
         rust:
-            -  rustup
+            - rustup
         rust-doc:
-            -  rustup
+            - rustup
         rust-toolset:
-            -  rust-1.91
+            - rust-1.91
         shadow-utils:
             - shadow
         shadow-utils-subid:
-            -  shadow
+            - shadow
         sisu:
-            -  basisu
+            - basisu
         skopeo:
-            -  skopeo
+            - skopeo
         slirp4netns:
-            -  slirp4netns
+            - slirp4netns
         socat:
-            -  socat
+            - socat
         spirv-tools-libs:
-            -  spirv-tools
+            - spirv-tools
         sqlite:
-            -  sqlite
+            - sqlite
         sqlite-devel:
-            -  sqlite-dev
+            - sqlite-dev
         sqlite-libs:
-            -  sqlite-libs
+            - sqlite-libs
         squid:
-            -  squid
+            - squid
         sshpass:
-            -  sshpass
+            - sshpass
         strace:
-            -  strace
+            - strace
         stunnel:
-            -  stunnel
+            - stunnel
         subversion:
-            -  subversion
+            - subversion
         subversion-devel:
-            -  subversion-dev
+            - subversion-dev
         subversion-libs:
-            -  subversion-libs
+            - subversion-libs
         subversion-tools:
-            -  subversion
+            - subversion
         sudo:
-            -  sudo
+            - sudo
         systemd:
-            -  systemd
+            - systemd
         systemd-devel:
-            -  systemd-dev
+            - systemd-dev
         systemd-libs:
-            -  systemd
+            - systemd
         tcl:
-            -  tcl
+            - tcl
         tcl-devel:
-            -  tcl-dev
+            - tcl-dev
         time:
-            -  timescaledb-tune
+            - timescaledb-tune
         tk:
-            -  tk
+            - tk
         tk-devel:
-            -  tk-dev
+            - tk-dev
         toolbox:
-            -  gitlab-toolbox-ce-18.2
+            - gitlab-toolbox-ce-18.2
         tpm2-tss:
-            -  tpm2-tss
+            - tpm2-tss
         unbound-libs:
-            -  unbound-libs
+            - unbound-libs
         unixODBC:
-            -  unixodbc
+            - unixodbc
         unixODBC-devel:
-            -  unixodbc-dev
+            - unixodbc-dev
         unzip:
-            -  unzip
+            - unzip
         userspace-rcu:
-            -  userspace-rcu
+            - userspace-rcu
         utf8proc:
-            -  utf8proc
+            - utf8proc
         util-linux-user:
-            -  util-linux
+            - util-linux
         uuid:
-            -  uuidgen
+            - uuidgen
         valgrind:
-            -  valgrind
+            - valgrind
         valgrind-devel:
-            -  valgrind-dev
+            - valgrind-dev
         varnish:
-            -  varnish
+            - varnish
         varnish-docs:
-            -  varnish
+            - varnish
         varnish-modules:
-            -  varnish-modules
+            - varnish-modules
         vim-common:
-            -  vim
+            - vim
         wget:
-            -  wget
+            - wget
         xmlsec1:
-            -  xmlsec
+            - xmlsec
         xmlsec1-openssl:
-            -  xmlsec-openssl
+            - xmlsec-openssl
         xmlstarlet:
-            -  xmlstarlet
+            - xmlstarlet
         xz:
-            -  xz
+            - xz
         xz-devel:
-            -  xz-dev
+            - xz-dev
         xz-libs:
-            -  xz
+            - xz
         yajl:
-            -  yajl
+            - yajl
         zip:
-            -  zip
+            - zip
         zlib:
-            -  zlib
+            - zlib
         zlib-devel:
-            -  zlib-dev
+            - zlib-dev
         zsh:
-            -  zsh
+            - zsh
         zstd:
-            -  zstd
-
+            - zstd
