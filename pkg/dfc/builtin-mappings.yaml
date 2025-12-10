@@ -1305,9 +1305,9 @@ packages:
         mtr:
             - mtr
         mysql:
-            - mysql-8.4
+            - mysql
         mysql-common:
-            - mysql-8.4
+            - mysql
         mysql-libs:
             - mariadb-connector-c
         nano:
@@ -1337,7 +1337,7 @@ packages:
         nftables:
             - nftables
         nginx:
-            - nginx-stable
+            - nginx
         nginx-core:
             - nginx-mainline
         nginx-mod-http-image-filter:
@@ -1355,11 +1355,11 @@ packages:
         nmap:
             - nmap
         nodejs:
-            - nodejs-25
+            - nodejs
         nodejs-docs:
-            - nodejs-22
+            - nodejs
         nodejs-libs:
-            - nodejs-22
+            - nodejs
         npm:
             - npm
         npth:
