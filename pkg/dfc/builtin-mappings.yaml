@@ -1589,43 +1589,43 @@ packages:
         perl-utils:
             - perl-utils
         php:
-            - php-8.5
+            - php
         php-bcmath:
-            - php-8.3-bcmath
+            - php-bcmath
         php-dbg:
-            - php-8.3-dbg
+            - php-dbg
         php-fpm:
-            - php-8.3-fpm
+            - php-fpm
         php-gd:
-            - php-8.3-gd
+            - php-gd
         php-gmp:
-            - php-8.3-gmp
+            - php-gmp
         php-intl:
-            - php-8.3-intl
+            - php-intl
         php-ldap:
-            - php-8.3-ldap
+            - php-ldap
         php-mbstring:
-            - php-8.3-mbstring
+            - php-mbstring
         php-mysqlnd:
-            - php-8.3-mysqlnd
+            - php-mysqlnd
         php-odbc:
-            - php-8.3-odbc
+            - php-odbc
         php-opcache:
-            - php-8.3-opcache
+            - php-opcache
         php-pdo:
-            - php-8.3-pdo
+            - php-pdo
         php-pear:
-            - php-8.3-pear
+            - php-pear
         php-pecl-apcu:
-            - php-8.3-apcu
+            - php-apcu
         php-pecl-zip:
-            - php-8.3-zip
+            - php-zip
         php-pgsql:
-            - php-8.3-pgsql
+            - php-pgsql
         php-soap:
-            - php-8.3-soap
+            - php-soap
         php-xml:
-            - php-8.3-xml
+            - php-xml
         pigz:
             - pigz
         pinentry:
