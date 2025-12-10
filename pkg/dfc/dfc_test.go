@@ -408,7 +408,7 @@ RUN echo hello world
 				Lines: []*DockerfileLine{
 					{
 						Raw:       `RUN dnf install -y nginx httpd php`,
-						Converted: `RUN apk add --no-cache httpd nginx php`,
+						Converted: `RUN apk add --no-cache apache2 nginx php`,
 						Run: &RunDetails{
 							Distro:   DistroFedora,
 							Manager:  ManagerDnf,
@@ -426,7 +426,7 @@ RUN echo hello world
 									Parts: []*ShellPart{
 										{
 											Command: "apk",
-											Args:    []string{"add", "--no-cache", "httpd", "nginx", "php"},
+											Args:    []string{"add", "--no-cache", "apache2", "nginx", "php"},
 										},
 									},
 								},
