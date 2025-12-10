@@ -258,11 +258,6 @@ packages:
         zlib1g-dev:
             - zlib-dev
     fedora:
-        shadow-utils:
-            - shadow
-        libpq-devel:
-            - postgresql-devel
-    rhel:
         apr:
             -  apr-util
         apr-devel:
@@ -1104,7 +1099,7 @@ packages:
         libpq:
             -  libpq-18
         libpq-devel:
-            -  libpq-13
+            - postgresql-devel
         libpsl:
             -  libpsl
         libpwquality:
@@ -2003,6 +1998,8 @@ packages:
             -  rustup
         rust-toolset:
             -  rust-1.91
+        shadow-utils:
+            - shadow
         shadow-utils-subid:
             -  shadow
         sisu:
