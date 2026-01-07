@@ -3,263 +3,263 @@
 
 # NOTE: this file is managed by automation and should not be edited directly
 images:
-  alpine: chainguard-base:latest
-  amazon/cloudwatch-agent: amazon-cloudwatch-agent-operator
-  apache/airflow: airflow-core
-  apache/beam_python3.7_sdk: apache-beam-python-sdk
-  apache/nifi: apache-nifi
-  apache/tika: apache-tika
-  apache/yunikorn: yunikorn-scheduler
-  argoproj/argo-rollouts: kubectl-argo-rollouts
-  argoproj/argocd: argocd-repo-server
-  atmoz/sftp: atmoz-sftp
-  banzaicloud/logging-operator: kube-logging-operator
-  calico/node: calico-typha
-  camunda/zeebe: camunda-zeebe
-  cfssl/cfssl: cfssl-self-sign
-  chartmuseum/chartmuseum: helm-chartmuseum
-  cilium/cilium: cilium-operator-aws
-  clickhouse/clickhouse-server: clickhouse
-  confluentinc/cp-kafka: confluent-kafka
-  cr.l5d.io/linkerd/extension-init: linkerd-extension-init
-  crossplane/provider-aws: crossplane-aws-dynamodb
-  crossplane/provider-azure: crossplane-azure-storage
-  crossplane/provider-sql: crossplane-sql
-  cybertecpostgresql/pg_timetable: pg-timetable
-  cypress/base: cypress-base
-  dart: dart-runtime
-  daskgateway/dask-gateway: dask-gateway-server
-  datadog/agent: datadog-agent
-  debezium/connect: debezium-connect
-  debian: chainguard-base:latest
-  dependencytrack/bundled: dependency-track
-  dopplerhq/kubernetes-operator: doppler-kubernetes-operator
-  dragonflyoss/dfdaemon: dragonfly
-  eclipse-temurin: jdk
-  envoyproxy/gateway: envoy-gateway
-  envoyproxy/ratelimit: envoy-ratelimit
-  fedora: chainguard-base:latest
-  fluxcd/flux: flux-image-automation-controller
-  gcc: gcc-glibc
-  gcr.io/kaniko-project/executor: kaniko
-  gcr.io/kaniko-project/warmer: kaniko-warmer
-  gcr.io/knative-releases/knative.dev/operator/cmd/operator: knative-operator-webhook
-  gcr.io/knative-releases/knative.dev/serving/cmd/queue: knative-serving-queue
-  ghcr.io/kyverno/kyverno: kyvernopre
-  ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator: opentelemetry-operator-target-allocator
-  ghcr.io/opencost/opencost: opencost-ui
-  ghcr.io/opencost/opencost-ui: opencost
-  goharbor/harbor-core: harbor-jobservice
-  golang*: go
-  google/cloud-sdk: google-cloud-sdk
-  grafana/agent-operator: grafana-agent-operator
-  grafana/alloy: grafana-alloy
-  grafana/mimir: grafana-mimir
-  grafana/oncall: grafana-oncall
-  grafana/rollout-operator: grafana-rollout-operator
-  guacamole/guacamole: guacamole-server
-  hashicorp/vault: vault-k8s
-  istio/install-cni: istio-pilot
-  istio/operator: istio-pilot
-  istio/pilot: istio-pilot
-  istio/proxyv2: istio-pilot
-  jaegertracing/all-in-one: jaeger-query
-  jitsucom/bulker: jitsucom-syncctl
-  jitsucom/jitsu: jitsucom-console
-  jupyterhub/k8s-hub: jupyterhub-k8s-hub
-  jupyterhub/k8s-network-tools: jupyterhub-k8s-network-tools
-  justwatch/elasticsearch_exporter: prometheus-elasticsearch-exporter
-  kedacore/keda: keda-admission-webhooks
-  kubernetesui/dashboard: kubernetes-dashboard
-  kubernetesui/dashboard-api: kubernetes-dashboard-api
-  kubernetesui/dashboard-auth: kubernetes-dashboard-auth
-  kubernetesui/dashboard-metrics-scraper: kubernetes-dashboard-metrics-scraper
-  kubernetesui/dashboard-web: kubernetes-dashboard-web
-  library/docker: docker-dind
-  library/tomcat: tomcat-jdk8
-  mailcow/unbound: unbound-mailcow
-  mattermost/mattermost-team-edition: mattermost
-  mcr.microsoft.com/dotnet/aspnet: aspnet-runtime
-  mcr.microsoft.com/dotnet/runtime: dotnet-runtime
-  mcr.microsoft.com/dotnet/sdk: dotnet-runtime
-  minio/minio: minio-client
-  minio/operator: minio-operator
-  mongo: mongodb
-  neuvector/controller: neuvector-manager
-  newrelic/infrastructure-bundle: newrelic-infrastructure-bundle
-  newrelic/infrastructure-k8s: newrelic-infrastructure-k8s
-  newrelic/k8s-events-forwarder: newrelic-k8s-events-forwarder
-  newrelic/nri-kube-events: newrelic-kube-events
-  newrelic/nri-kubernetes: newrelic-kubernetes
-  newrelic/nri-prometheus: newrelic-prometheus
-  newrelic/nri-statsd: newrelic-nri-statsd
-  nodejs*: node
-  nvidia/container-toolkit: nvidia-container-toolkit
-  nvidia/k8s-device-plugin: nvidia-device-plugin
-  oliver006/redis_exporter: prometheus-redis-exporter
-  openbao/openbao: openbao-k8s
-  openebs/provisioner-localpv: dynamic-localpv-provisioner
-  openjdk: jdk
-  prom/alertmanager: prometheus-alertmanager
-  prom/blackbox-exporter: prometheus-blackbox-exporter
-  prom/cloudwatch-exporter: prometheus-cloudwatch-exporter
-  prom/mysqld-exporter: prometheus-mysqld-exporter
-  prom/node-exporter: prometheus-node-exporter
-  prom/pushgateway: prometheus-pushgateway
-  prom/statsd-exporter: prometheus-statsd-exporter
-  public.ecr.aws/karpenter/controller: karpenter
-  public.ecr.aws/mountpoint-s3-csi-driver/aws-mountpoint-s3-csi-driver: mountpoint-s3-csi-driver
-  quay.io/debezium/connect: debezium-connect
-  quay.io/jetstack/cert-manager-controller: cert-manager-webhook
-  quay.io/jupyter/base-notebook: jupyterhub-base-notebook
-  quay.io/prometheus/cloudwatch-exporter: prometheus-cloudwatch-exporter
-  quay.io/prometheuscommunity/yet-another-cloudwatch-exporter: yace
-  rancher/agent: rancher-agent
-  rancher/fleet: rancher-fleet-agent
-  rancher/k3s: k3s-static
-  redis: redis-sentinel
-  redpandadata/console: redpanda-data-console
-  registry.k8s.io/provider-aws/cloud-controller-manager: cloud-provider-aws
-  registryk8s: cluster-api-clusterctl
-  rook/ceph: rook-ceph
-  s3-controller: aws-s3-controller
-  selenium/hub: docker-selenium-hub
-  stakater/reloader: stakater-reloader
-  static*: static:latest
-  strimzi/kafka: strimzi-kafka
-  strimzi/operator: strimzi-kafka-operator
-  temporalio/admin-tools: temporal-admin-tools
-  temporalio/server: temporal-server
-  thingsboard/tb: thingsboard-tb-js-executor
-  ubuntu: chainguard-base:latest
-  upstream-image: dapr-sentry
-  vault: vault-k8s
-  victoriametrics/operator: victoriametrics-operator
-  victoriametrics/victoria-metrics: victoriametrics-vmstorage
-  vmware/kube-fluentd-operator: kube-logging-operator-fluentd
-  wrouesnel/postgres_exporter: prometheus-postgres-exporter
-  xpkg.upbound.io/crossplane-contrib/provider-keycloak: crossplane-keycloak
+    alpine: chainguard-base:latest
+    amazon/cloudwatch-agent: amazon-cloudwatch-agent-operator
+    apache/airflow: airflow-core
+    apache/beam_python3.7_sdk: apache-beam-python-sdk
+    apache/nifi: apache-nifi
+    apache/tika: apache-tika
+    apache/yunikorn: yunikorn-scheduler
+    argoproj/argo-rollouts: kubectl-argo-rollouts
+    argoproj/argocd: argocd-repo-server
+    atmoz/sftp: atmoz-sftp
+    banzaicloud/logging-operator: kube-logging-operator
+    calico/node: calico-typha
+    camunda/zeebe: camunda-zeebe
+    cfssl/cfssl: cfssl-self-sign
+    chartmuseum/chartmuseum: helm-chartmuseum
+    cilium/cilium: cilium-operator-aws
+    clickhouse/clickhouse-server: clickhouse
+    confluentinc/cp-kafka: confluent-kafka
+    cr.l5d.io/linkerd/extension-init: linkerd-extension-init
+    crossplane/provider-aws: crossplane-aws-dynamodb
+    crossplane/provider-azure: crossplane-azure-storage
+    crossplane/provider-sql: crossplane-sql
+    cybertecpostgresql/pg_timetable: pg-timetable
+    cypress/base: cypress-base
+    dart: dart-runtime
+    daskgateway/dask-gateway: dask-gateway-server
+    datadog/agent: datadog-agent
+    debezium/connect: debezium-connect
+    debian: chainguard-base:latest
+    dependencytrack/bundled: dependency-track
+    dopplerhq/kubernetes-operator: doppler-kubernetes-operator
+    dragonflyoss/dfdaemon: dragonfly
+    eclipse-temurin: jdk
+    envoyproxy/gateway: envoy-gateway
+    envoyproxy/ratelimit: envoy-ratelimit
+    fedora: chainguard-base:latest
+    fluxcd/flux: flux-image-automation-controller
+    gcc: gcc-glibc
+    gcr.io/kaniko-project/executor: kaniko
+    gcr.io/kaniko-project/warmer: kaniko-warmer
+    gcr.io/knative-releases/knative.dev/operator/cmd/operator: knative-operator-webhook
+    gcr.io/knative-releases/knative.dev/serving/cmd/queue: knative-serving-queue
+    ghcr.io/kyverno/kyverno: kyvernopre
+    ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator: opentelemetry-operator-target-allocator
+    ghcr.io/opencost/opencost: opencost-ui
+    ghcr.io/opencost/opencost-ui: opencost
+    goharbor/harbor-core: harbor-jobservice
+    golang*: go
+    google/cloud-sdk: google-cloud-sdk
+    grafana/agent-operator: grafana-agent-operator
+    grafana/alloy: grafana-alloy
+    grafana/mimir: grafana-mimir
+    grafana/oncall: grafana-oncall
+    grafana/rollout-operator: grafana-rollout-operator
+    guacamole/guacamole: guacamole-server
+    hashicorp/vault: vault-k8s
+    istio/install-cni: istio-pilot
+    istio/operator: istio-pilot
+    istio/pilot: istio-pilot
+    istio/proxyv2: istio-pilot
+    jaegertracing/all-in-one: jaeger-query
+    jitsucom/bulker: jitsucom-syncctl
+    jitsucom/jitsu: jitsucom-console
+    jupyterhub/k8s-hub: jupyterhub-k8s-hub
+    jupyterhub/k8s-network-tools: jupyterhub-k8s-network-tools
+    justwatch/elasticsearch_exporter: prometheus-elasticsearch-exporter
+    kedacore/keda: keda-admission-webhooks
+    kubernetesui/dashboard: kubernetes-dashboard
+    kubernetesui/dashboard-api: kubernetes-dashboard-api
+    kubernetesui/dashboard-auth: kubernetes-dashboard-auth
+    kubernetesui/dashboard-metrics-scraper: kubernetes-dashboard-metrics-scraper
+    kubernetesui/dashboard-web: kubernetes-dashboard-web
+    library/docker: docker-dind
+    library/tomcat: tomcat-jdk8
+    mailcow/unbound: unbound-mailcow
+    mattermost/mattermost-team-edition: mattermost
+    mcr.microsoft.com/dotnet/aspnet: aspnet-runtime
+    mcr.microsoft.com/dotnet/runtime: dotnet-runtime
+    mcr.microsoft.com/dotnet/sdk: dotnet-runtime
+    minio/minio: minio-client
+    minio/operator: minio-operator
+    mongo: mongodb
+    neuvector/controller: neuvector-manager
+    newrelic/infrastructure-bundle: newrelic-infrastructure-bundle
+    newrelic/infrastructure-k8s: newrelic-infrastructure-k8s
+    newrelic/k8s-events-forwarder: newrelic-k8s-events-forwarder
+    newrelic/nri-kube-events: newrelic-kube-events
+    newrelic/nri-kubernetes: newrelic-kubernetes
+    newrelic/nri-prometheus: newrelic-prometheus
+    newrelic/nri-statsd: newrelic-nri-statsd
+    nodejs*: node
+    nvidia/container-toolkit: nvidia-container-toolkit
+    nvidia/k8s-device-plugin: nvidia-device-plugin
+    oliver006/redis_exporter: prometheus-redis-exporter
+    openbao/openbao: openbao-k8s
+    openebs/provisioner-localpv: dynamic-localpv-provisioner
+    openjdk: jdk
+    prom/alertmanager: prometheus-alertmanager
+    prom/blackbox-exporter: prometheus-blackbox-exporter
+    prom/cloudwatch-exporter: prometheus-cloudwatch-exporter
+    prom/mysqld-exporter: prometheus-mysqld-exporter
+    prom/node-exporter: prometheus-node-exporter
+    prom/pushgateway: prometheus-pushgateway
+    prom/statsd-exporter: prometheus-statsd-exporter
+    public.ecr.aws/karpenter/controller: karpenter
+    public.ecr.aws/mountpoint-s3-csi-driver/aws-mountpoint-s3-csi-driver: mountpoint-s3-csi-driver
+    quay.io/debezium/connect: debezium-connect
+    quay.io/jetstack/cert-manager-controller: cert-manager-webhook
+    quay.io/jupyter/base-notebook: jupyterhub-base-notebook
+    quay.io/prometheus/cloudwatch-exporter: prometheus-cloudwatch-exporter
+    quay.io/prometheuscommunity/yet-another-cloudwatch-exporter: yace
+    rancher/agent: rancher-agent
+    rancher/fleet: rancher-fleet-agent
+    rancher/k3s: k3s-static
+    redis: redis-sentinel
+    redpandadata/console: redpanda-data-console
+    registry.k8s.io/provider-aws/cloud-controller-manager: cloud-provider-aws
+    registryk8s: cluster-api-clusterctl
+    rook/ceph: rook-ceph
+    s3-controller: aws-s3-controller
+    selenium/hub: docker-selenium-hub
+    stakater/reloader: stakater-reloader
+    static*: static:latest
+    strimzi/kafka: strimzi-kafka
+    strimzi/operator: strimzi-kafka-operator
+    temporalio/admin-tools: temporal-admin-tools
+    temporalio/server: temporal-server
+    thingsboard/tb: thingsboard-tb-js-executor
+    ubuntu: chainguard-base:latest
+    upstream-image: dapr-sentry
+    vault: vault-k8s
+    victoriametrics/operator: victoriametrics-operator
+    victoriametrics/victoria-metrics: victoriametrics-vmstorage
+    vmware/kube-fluentd-operator: kube-logging-operator-fluentd
+    wrouesnel/postgres_exporter: prometheus-postgres-exporter
+    xpkg.upbound.io/crossplane-contrib/provider-keycloak: crossplane-keycloak
 packages:
-  alpine: {}
-  debian:
-    awscli:
-      - aws-cli
-    build-essential:
-      - build-base
-    fonts-liberation:
-      - font-liberation
-    fonts-open-sans:
-      - font-opensans
-    fuse:
-      - fuse2
-      - fuse-common
-    g++:
-      - gcc
-    gettext-base:
-      - gettext
-    git-delta:
-      - delta
-    gnupg2:
-      - gnupg
-    google-chrome-stable:
-      - chromium
-    libbz2-dev:
-      - bzip2-dev
-    libc-client-dev:
-      - glibc-dev
-    libc6-dev:
-      - glibc-dev
-    libcairo2:
-      - cairo
-    libcups2:
-      - cups-libs
-    libcurl4-openssl-dev:
-      - curl-dev
-    libgssapi-krb5-2:
-      - krb5-libs
-    libicu-dev:
-      - icu-dev
-    libkrb5-dev:
-      - krb5-dev
-    liblzma-dev:
-      - xz-dev
-    libmagic1:
-      - libmagic
-      - libmagic-dev
-    libncurses5-dev:
-      - ncurses
-    libncursesw5-dev:
-      - ncurses-dev
-    libpq-dev:
-      - postgresql-dev
-    libpq5:
-      - libpq
-    librdkafka1:
-      - librdkafka
-    libreadline-dev:
-      - readline
-    libsqlite3-dev:
-      - sqlite-libs
-    libssl-dev:
-      - libssl3
-    libvshadow-utils:
-      - shadow
-    libxi6:
-      - libxi
-    libxmlsec1:
-      - xmlsec
-    libxmlsec1-dev:
-      - xmlsec-dev
-    libxmlsec1-openssl:
-      - xmlsec-openssl
-    locales:
-      - glibc-locales
-    netbase:
-      - wolfi-baselayout
-    netcat-traditional:
-      - netcat-openbsd
-    pcre2-utils:
-      - pcre2
-    pkg-config:
-      - pkgconf
-    postgresql-client-14:
-      - postgresql-14-client
-    postgresql-contrib:
-      - postgresql-14-contrib
-    protobuf-compiler:
-      - protobuf-c-compiler
-    python3:
-      - python-3
-    python3-pip:
-      - py3-pip
-    python3-virtualenv:
-      - py3-virtualenv
-    python3-wheel:
-      - py3-wheel
-    python3-openssl:
-      - py3-pyopenssl
-    s3fs:
-      - s3fs-fuse
-    ssh:
-      - openssh-client
-      - openssh-server
-    software-properties-common: []
-    uuid-runtime:
-      - util-linux-misc
-    watch:
-      - procps
-    xfonts-utils:
-      - font-util
-      - mkfontscale
-      - bdftopcf
-    xz-utils:
-      - xz
-    zlib1g-dev:
-      - zlib-dev
+    alpine: {}
+        debian:
+        awscli:
+            - aws-cli
+        build-essential:
+            - build-base
+        fonts-liberation:
+            - font-liberation
+        fonts-open-sans:
+            - font-opensans
+        fuse:
+            - fuse2
+            - fuse-common
+        g++:
+            - gcc
+        gettext-base:
+            - gettext
+        git-delta:
+            - delta
+        gnupg2:
+            - gnupg
+        google-chrome-stable:
+            - chromium
+        libbz2-dev:
+            - bzip2-dev
+        libc-client-dev:
+            - glibc-dev
+        libc6-dev:
+            - glibc-dev
+        libcairo2:
+            - cairo
+        libcups2:
+            - cups-libs
+        libcurl4-openssl-dev:
+            - curl-dev
+        libgssapi-krb5-2:
+            - krb5-libs
+        libicu-dev:
+            - icu-dev
+        libkrb5-dev:
+            - krb5-dev
+        liblzma-dev:
+            - xz-dev
+        libmagic1:
+            - libmagic
+            - libmagic-dev
+        libncurses5-dev:
+            - ncurses
+        libncursesw5-dev:
+            - ncurses-dev
+        libpq-dev:
+            - postgresql-dev
+        libpq5:
+            - libpq
+        librdkafka1:
+            - librdkafka
+        libreadline-dev:
+            - readline
+        libsqlite3-dev:
+            - sqlite-libs
+        libssl-dev:
+            - libssl3
+        libvshadow-utils:
+            - shadow
+        libxi6:
+            - libxi
+        libxmlsec1:
+            - xmlsec
+        libxmlsec1-dev:
+            - xmlsec-dev
+        libxmlsec1-openssl:
+            - xmlsec-openssl
+        locales:
+            - glibc-locales
+        netbase:
+            - wolfi-baselayout
+        netcat-traditional:
+            - netcat-openbsd
+        pcre2-utils:
+            - pcre2
+        pkg-config:
+            - pkgconf
+        postgresql-client-14:
+            - postgresql-14-client
+        postgresql-contrib:
+            - postgresql-14-contrib
+        protobuf-compiler:
+            - protobuf-c-compiler
+        python3:
+            - python-3
+        python3-pip:
+            - py3-pip
+        python3-virtualenv:
+            - py3-virtualenv
+        python3-wheel:
+            - py3-wheel
+        python3-openssl:
+            - py3-pyopenssl
+        s3fs:
+            - s3fs-fuse
+        ssh:
+            - openssh-client
+            - openssh-server
+        software-properties-common: []
+        uuid-runtime:
+            - util-linux-misc
+        watch:
+            - procps
+        xfonts-utils:
+            - font-util
+            - mkfontscale
+            - bdftopcf
+        xz-utils:
+            - xz
+        zlib1g-dev:
+            - zlib-dev
     fedora:
         apr:
             - apr-util
-                apr-devel:
+        apr-devel:
             - apr-util-dev
         apr-util-devel:
             - apr-util-dev
