@@ -141,7 +141,7 @@ images:
     xpkg.upbound.io/crossplane-contrib/provider-keycloak: crossplane-keycloak
 packages:
     alpine: {}
-        debian:
+    debian:
         awscli:
             - aws-cli
         build-essential:
