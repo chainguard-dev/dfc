@@ -1,0 +1,224 @@
+# Copyright 2026 Chainguard, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Publish MCP Server Container
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'mcp-server/**'
+      - '.github/workflows/publish-mcp-server.yaml'
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  publish:
+    name: Build and Publish MCP Server Container
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read # checkout code
+      packages: write # push to ghcr.io
+      id-token: write # cosign signing
+      security-events: write # upload SARIF results
+
+    steps:
+      - uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            ghcr.io:443
+            cgr.dev:443
+            dl-cdn.alpinelinux.org:443
+            packages.wolfi.dev:443
+            proxy.golang.org:443
+            sum.golang.org:443
+            storage.googleapis.com:443
+            fulcio.sigstore.dev:443
+            rekor.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@c47758b77c9736f4b2ef4073d4d51994fabfe349 # v3.7.1
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
+        with:
+          images: ghcr.io/chainguard-dev/dfc-mcp
+          tags: |
+            # Set latest tag for main branch
+            type=raw,value=latest,enable={{is_default_branch}}
+            # Tag with version on release
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            # Tag with sha for tracking
+            type=sha,prefix=,format=long
+
+      - name: Build and push container image
+        id: build-push
+        uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6.9.0
+        with:
+          context: ./mcp-server
+          file: ./mcp-server/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64,linux/arm64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@d7d6bc7722e3daa8354c50bcb52f4837da5e9b6a # v3.8.1
+
+      - name: Sign container image
+        env:
+          DIGEST: ${{ steps.build-push.outputs.digest }}
+        run: |
+          # Sign by digest with tag validation
+          IFS=$'\n'
+          for tag in ${{ steps.meta.outputs.tags }}; do
+            # Validate tag format to prevent injection
+            if [[ "$tag" =~ ^ghcr\.io/chainguard-dev/dfc-mcp ]]; then
+              echo "Signing ${tag}@${DIGEST}"
+              cosign sign --yes "${tag}@${DIGEST}"
+            else
+              echo "ERROR: Refusing to sign invalid tag: ${tag}"
+              exit 1
+            fi
+          done
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@0b82b0b1a22399a1c542d4d656f70cd903571b5c # v0.21.1
+        with:
+          image: ghcr.io/chainguard-dev/dfc-mcp@${{ steps.build-push.outputs.digest }}
+          format: spdx-json
+          output-file: sbom.spdx.json
+
+      - name: Attach SBOM to container image
+        env:
+          DIGEST: ${{ steps.build-push.outputs.digest }}
+        run: |
+          cosign attach sbom --sbom sbom.spdx.json \
+            "ghcr.io/chainguard-dev/dfc-mcp@${DIGEST}"
+
+      - name: Scan container for vulnerabilities
+        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # v0.33.1
+        with:
+          image-ref: ghcr.io/chainguard-dev/dfc-mcp@${{ steps.build-push.outputs.digest }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1' # Fail the build if vulnerabilities are found
+
+      - name: Upload vulnerability scan results to GitHub Security
+        uses: github/codeql-action/upload-sarif@5d4e8d1aca955e8d8589aabd499c5cae939e33c7 # v4.31.9
+        if: always() # Upload even if scan fails, so we can see results
+        with:
+          sarif_file: 'trivy-results.sarif'
+          category: 'container-scan'
+
+      - name: Generate and attach provenance
+        env:
+          DIGEST: ${{ steps.build-push.outputs.digest }}
+        run: |
+          # Create provenance predicate
+          cat > provenance-predicate.json <<EOF
+          {
+            "buildType": "https://github.com/chainguard-dev/dfc/mcp-server@v1",
+            "builder": {
+              "id": "https://github.com/actions/runner"
+            },
+            "invocation": {
+              "configSource": {
+                "uri": "git+https://github.com/${{ github.repository }}",
+                "digest": {
+                  "sha1": "${{ github.sha }}"
+                },
+                "entryPoint": ".github/workflows/publish-mcp-server.yaml"
+              }
+            },
+            "metadata": {
+              "buildInvocationId": "${{ github.run_id }}",
+              "buildStartedOn": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+              "completeness": {
+                "parameters": true,
+                "environment": true,
+                "materials": true
+              },
+              "reproducible": false
+            },
+            "materials": [
+              {
+                "uri": "git+https://github.com/${{ github.repository }}",
+                "digest": {
+                  "sha1": "${{ github.sha }}"
+                }
+              }
+            ]
+          }
+          EOF
+
+          # Attest provenance
+          cosign attest --yes \
+            --predicate provenance-predicate.json \
+            --type slsaprovenance \
+            "ghcr.io/chainguard-dev/dfc-mcp@${DIGEST}"
+
+      - name: Summary
+        run: |
+          echo "## Published MCP Server Container" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`ghcr.io/chainguard-dev/dfc-mcp\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Digest:** \`${{ steps.build-push.outputs.digest }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Tags:**" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Security Features" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Signed with Sigstore cosign (keyless)" >> $GITHUB_STEP_SUMMARY
+          echo "- SBOM attached (SPDX format)" >> $GITHUB_STEP_SUMMARY
+          echo "- SLSA provenance attestation" >> $GITHUB_STEP_SUMMARY
+          echo "- Vulnerability scanned (Trivy)" >> $GITHUB_STEP_SUMMARY
+          echo "- Built on Chainguard minimal images" >> $GITHUB_STEP_SUMMARY
+          echo "- Multi-architecture (amd64, arm64)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Usage:**" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "docker run --rm -i ghcr.io/chainguard-dev/dfc-mcp:latest" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Verification:**" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "# Verify signature" >> $GITHUB_STEP_SUMMARY
+          echo "cosign verify ghcr.io/chainguard-dev/dfc-mcp@${{ steps.build-push.outputs.digest }} \\" >> $GITHUB_STEP_SUMMARY
+          echo "  --certificate-identity-regexp '.*' \\" >> $GITHUB_STEP_SUMMARY
+          echo "  --certificate-oidc-issuer https://token.actions.githubusercontent.com" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# View SBOM" >> $GITHUB_STEP_SUMMARY
+          echo "cosign download sbom ghcr.io/chainguard-dev/dfc-mcp@${{ steps.build-push.outputs.digest }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# View provenance" >> $GITHUB_STEP_SUMMARY
+          echo "cosign download attestation ghcr.io/chainguard-dev/dfc-mcp@${{ steps.build-push.outputs.digest }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

@@ -33,9 +33,29 @@ This MCP server provides the following tools:
 
 ## Prerequisites
 
+### Using Published Containet
+- Docker installed
+
+### Building from Source
 - Go 1.20 or higher
 
 ## Installation
+
+### Option 1: Use Published Container 
+
+Pull and run the pre-built container from GitHub Container Registry:
+
+```bash
+docker pull ghcr.io/chainguard-dev/dfc-mcp:latest
+docker run --rm -i ghcr.io/chainguard-dev/dfc-mcp:latest
+```
+
+The container is built on Chainguard's minimal base images and is:
+- Signed with Sigstore Sosign
+- Includes an SBOM (Software Bill of Materials)
+- Automatically updated when the MCP server code changes
+
+### Option 2: Build from Source
 
 Clone the repository:
 
@@ -56,24 +76,35 @@ Run the server:
 ./mcp-server
 ```
 
-## Docker
-
-You can also run the server in a Docker container:
+### Option 3: Build Container Locally
 
 ```bash
+cd dfc/mcp-server
 docker build -t dfc-mcp-server .
-docker run -p 3000:3000 dfc-mcp-server
+docker run --rm -i dfc-mcp-server
 ```
 
 ## Configuring with AI Assistants
 
 ### Configuring in Claude Code
 
-To use this server with Claude Code, run the following:
+#### Using Published Container
 
+To use the published container with Claude Code, run:
+
+```bash
+claude mcp add dfc -- docker run --rm -i ghcr.io/chainguard-dev/dfc-mcp:latest
 ```
+
+#### Using Local Binary
+
+To use a locally built binary:
+
+```bash
 claude mcp add dfc -- /path/to/dfc/mcp-server/mcp-server
 ```
+
+#### Usage
 
 Then you can invoke the server by asking to convert a Dockerfile:
 
@@ -107,12 +138,26 @@ You can then invoke the Dockerfile converter tool from Cursor with commands like
 
 To use this server with Claude Desktop, add the following to your `claude_desktop_config.json` file (typically found in your home directory):
 
+#### Using Published Container
+
 ```json
 {
   "mcpServers": {
     "dfc": {
-      "command": "/path/to/dfc/mcp-server/mcp-server",
-      "transport": "stdio"
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "ghcr.io/chainguard-dev/dfc-mcp:latest"]
+    }
+  }
+}
+```
+
+#### Using Local Binary
+
+```json
+{
+  "mcpServers": {
+    "dfc": {
+      "command": "/path/to/dfc/mcp-server/mcp-server"
     }
   }
 }
