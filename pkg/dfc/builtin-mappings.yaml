@@ -237,7 +237,6 @@ images:
     kubernetesui/dashboard-auth: kubernetes-dashboard-auth
     kubernetesui/dashboard-metrics-scraper: kubernetes-dashboard-metrics-scraper
     kubernetesui/dashboard-web: kubernetes-dashboard-web
-    library/docker: docker-cli
     letsencrypt/trillian_log_server: trillian-logserver
     library/docker: docker-cli
     longhornio/support-bundle-kit: longhorn-support-bundle-kit
