@@ -62,7 +62,7 @@ images:
     dependencytrack/apiserver: dependency-track-apiserver
     dependencytrack/bundled: dependency-track
     dependencytrack/frontend: dependency-track-frontend
-    docker: docker-cli
+    docker: docker-dind
     docker.dragonflydb.io/dragonflydb/operator: dragonfly-operator
     docker/compose: docker-compose
     dopplerhq/kubernetes-operator: doppler-kubernetes-operator
@@ -238,7 +238,7 @@ images:
     kubernetesui/dashboard-metrics-scraper: kubernetes-dashboard-metrics-scraper
     kubernetesui/dashboard-web: kubernetes-dashboard-web
     letsencrypt/trillian_log_server: trillian-logserver
-    library/docker: docker-cli
+    library/docker: docker-dind
     longhornio/support-bundle-kit: longhorn-support-bundle-kit
     mailcow/unbound: unbound-mailcow
     martenseemann/quic-go-interop: quic-go
