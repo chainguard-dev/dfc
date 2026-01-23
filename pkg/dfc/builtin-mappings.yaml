@@ -266,6 +266,8 @@ packages:
             - py3-pyopenssl
         s3fs:
             - s3fs-fuse
+        sqlite3:
+            - sqlite
         ssh:
             - openssh-client
             - openssh-server
