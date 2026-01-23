@@ -179,6 +179,8 @@ packages:
             - curl-dev
         libdbd-mysql-perl:
             - perl-dbd-mysql
+        libdbi-perl:
+            - perl-dbi
         libfreetype6-dev:
             - freetype-dev
         libgssapi-krb5-2:
