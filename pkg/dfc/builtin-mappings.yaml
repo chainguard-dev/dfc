@@ -146,6 +146,8 @@ packages:
             - aws-cli
         build-essential:
             - build-base
+        default-mysql-client:
+            - mysql-client
         fonts-liberation:
             - font-liberation
         fonts-open-sans:
