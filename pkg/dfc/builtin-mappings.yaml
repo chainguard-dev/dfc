@@ -190,6 +190,8 @@ packages:
             - libmagic-dev
         libmariadb-dev:
             - mariadb-dev
+        libmariadb-dev-compat:
+            - mariadb-connector-c-dev
         libncurses5-dev:
             - ncurses
         libncursesw5-dev:
