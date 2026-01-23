@@ -220,6 +220,8 @@ packages:
             - xmlsec-openssl
         locales:
             - glibc-locales
+        lsb-release:
+            - lsb-release-minimal
         netbase:
             - wolfi-baselayout
         netcat-traditional:
