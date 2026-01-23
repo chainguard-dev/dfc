@@ -177,6 +177,8 @@ packages:
             - cups-libs
         libcurl4-openssl-dev:
             - curl-dev
+        libfreetype6-dev:
+            - freetype-dev
         libgssapi-krb5-2:
             - krb5-libs
         libicu-dev:
@@ -222,6 +224,8 @@ packages:
             - xmlsec-dev
         libxmlsec1-openssl:
             - xmlsec-openssl
+        libzip5:
+            - libzip
         locales:
             - glibc-locales
         lsb-release:
