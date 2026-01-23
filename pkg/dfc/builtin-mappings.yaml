@@ -177,6 +177,8 @@ packages:
             - cups-libs
         libcurl4-openssl-dev:
             - curl-dev
+        libdbd-mysql-perl:
+            - perl-dbd-mysql
         libfreetype6-dev:
             - freetype-dev
         libgssapi-krb5-2:
