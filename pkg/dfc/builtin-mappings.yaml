@@ -188,6 +188,8 @@ packages:
         libmagic1:
             - libmagic
             - libmagic-dev
+        libmariadb-dev:
+            - mariadb-dev
         libncurses5-dev:
             - ncurses
         libncursesw5-dev:
