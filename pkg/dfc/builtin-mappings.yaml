@@ -185,6 +185,8 @@ packages:
             - freetype-dev
         libgssapi-krb5-2:
             - krb5-libs
+        libheif1:
+            - libheif
         libicu-dev:
             - icu-dev
         libjpeg62-turbo:
