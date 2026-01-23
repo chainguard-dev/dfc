@@ -181,6 +181,10 @@ packages:
             - krb5-libs
         libicu-dev:
             - icu-dev
+        libjpeg62-turbo:
+            - libjpeg-turbo
+        libjpeg-dev:
+            - libjpeg-turbo-dev
         libkrb5-dev:
             - krb5-dev
         liblzma-dev:
