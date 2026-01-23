@@ -208,6 +208,8 @@ packages:
             - ncurses
         libncursesw5-dev:
             - ncurses-dev
+        libp11-kit0:
+            - p11-kit
         libpq-dev:
             - postgresql-dev
         libpq5:
