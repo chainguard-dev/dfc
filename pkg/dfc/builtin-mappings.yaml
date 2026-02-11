@@ -407,6 +407,8 @@ packages:
             - aws-cli
         build-essential:
             - build-base
+        default-mysql-client:
+            - mysql-client
         fonts-liberation:
             - font-liberation
         fonts-open-sans:
@@ -436,10 +438,22 @@ packages:
             - cups-libs
         libcurl4-openssl-dev:
             - curl-dev
+        libdbd-mysql-perl:
+            - perl-dbd-mysql
+        libdbi-perl:
+            - perl-dbi
+        libfreetype6-dev:
+            - freetype-dev
         libgssapi-krb5-2:
             - krb5-libs
+        libheif1:
+            - libheif
         libicu-dev:
             - icu-dev
+        libjpeg62-turbo:
+            - libjpeg-turbo
+        libjpeg-dev:
+            - libjpeg-turbo-dev
         libkrb5-dev:
             - krb5-dev
         liblzma-dev:
@@ -447,10 +461,16 @@ packages:
         libmagic1:
             - libmagic
             - libmagic-dev
+        libmariadb-dev:
+            - mariadb-dev
+        libmariadb-dev-compat:
+            - mariadb-connector-c-dev
         libncurses5-dev:
             - ncurses
         libncursesw5-dev:
             - ncurses-dev
+        libp11-kit0:
+            - p11-kit
         libpq-dev:
             - postgresql-dev
         libpq5:
@@ -459,6 +479,8 @@ packages:
             - librdkafka
         libreadline-dev:
             - readline
+        librtmp1:
+            - librtmp
         libsqlite3-dev:
             - sqlite-libs
         libssl-dev:
@@ -473,8 +495,12 @@ packages:
             - xmlsec-dev
         libxmlsec1-openssl:
             - xmlsec-openssl
+        libzip5:
+            - libzip
         locales:
             - glibc-locales
+        lsb-release:
+            - lsb-release-minimal
         netbase:
             - wolfi-baselayout
         netcat-traditional:
@@ -501,6 +527,8 @@ packages:
             - py3-pyopenssl
         s3fs:
             - s3fs-fuse
+        sqlite3:
+            - sqlite
         ssh:
             - openssh-client
             - openssh-server
