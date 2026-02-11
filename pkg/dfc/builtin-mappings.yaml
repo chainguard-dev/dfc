@@ -4,102 +4,283 @@
 # NOTE: this file is managed by automation and should not be edited directly
 images:
     alpine: chainguard-base:latest
-    amazon/cloudwatch-agent: amazon-cloudwatch-agent-operator
+    altinity/clickhouse-server: altinity-clickhouse-server
+    amazon/cloudwatch-agent: amazon-cloudwatch-agent
+    amazoncorretto: amazon-corretto-jdk
     apache/airflow: airflow-core
+    apache/apisix: apache-apisix
+    apache/beam_python3.11_sdk: apache-beam-python-sdk
     apache/beam_python3.7_sdk: apache-beam-python-sdk
+    apache/hop: apache-hop
+    apache/kvrocks: apache-kvrocks
     apache/nifi: apache-nifi
+    apache/nifi-registry: apache-nifi-registry
     apache/tika: apache-tika
     apache/yunikorn: yunikorn-scheduler
     argoproj/argo-rollouts: kubectl-argo-rollouts
-    argoproj/argocd: argocd-repo-server
     atmoz/sftp: atmoz-sftp
+    authentik/server: authentik
     banzaicloud/logging-operator: kube-logging-operator
-    calico/node: calico-typha
+    bitnami/mongodb-exporter: prometheus-mongodb-exporter
+    bitnami/pgpool: pgpool2
+    boky/postfix: boky-postfix
+    calico/node: calico-node
+    camunda/keycloak: camunda-keycloak
     camunda/zeebe: camunda-zeebe
-    cfssl/cfssl: cfssl-self-sign
     chartmuseum/chartmuseum: helm-chartmuseum
-    cilium/cilium: cilium-operator-aws
+    cilium/cilium: cilium-agent
+    cincan/virustotal: vt
     clickhouse/clickhouse-server: clickhouse
     confluentinc/cp-kafka: confluent-kafka
+    continuumio/miniconda3: conda
+    cr.l5d.io/linkerd/cni-plugin: linkerd-cni-plugin
+    cr.l5d.io/linkerd/controller: linkerd-controller
+    cr.l5d.io/linkerd/debug: linkerd-debug
     cr.l5d.io/linkerd/extension-init: linkerd-extension-init
-    crossplane/provider-aws: crossplane-aws-dynamodb
-    crossplane/provider-azure: crossplane-azure-storage
+    cr.l5d.io/linkerd/proxy: linkerd-proxy
+    cr.l5d.io/linkerd/proxy-init: linkerd-proxy-init
+    cr.l5d.io/linkerd/tap: linkerd-tap
+    cr.l5d.io/linkerd/web: linkerd-web
+    crossplane/provider-aws: crossplane-aws
+    crossplane/provider-azure: crossplane-azure
     crossplane/provider-sql: crossplane-sql
+    custompodautoscaler/operator: custom-pod-autoscaler-operator
+    cyberark/secrets-provider-for-k8s: cyberark-secrets-provider-for-k8s
     cybertecpostgresql/pg_timetable: pg-timetable
     cypress/base: cypress-base
+    daprio/daprd: dapr-daprd
+    daprio/injector: dapr-injector
+    daprio/operator: dapr-operator
+    daprio/placement: dapr-placement
+    daprio/scheduler: dapr-scheduler
+    daprio/sentry: dapr-sentry
     dart: dart-runtime
     daskgateway/dask-gateway: dask-gateway-server
     datadog/agent: datadog-agent
     debezium/connect: debezium-connect
     debian: chainguard-base:latest
+    dependencytrack/apiserver: dependency-track-apiserver
     dependencytrack/bundled: dependency-track
+    dependencytrack/frontend: dependency-track-frontend
+    docker: docker-dind
+    docker.dragonflydb.io/dragonflydb/operator: dragonfly-operator
+    docker/compose: docker-compose
     dopplerhq/kubernetes-operator: doppler-kubernetes-operator
     dragonflyoss/dfdaemon: dragonfly
     eclipse-temurin: jdk
     envoyproxy/gateway: envoy-gateway
     envoyproxy/ratelimit: envoy-ratelimit
     fedora: chainguard-base:latest
-    fluxcd/flux: flux-image-automation-controller
     gcc: gcc-glibc
+    gcr.io/datadoghq/operator: datadog-operator
+    gcr.io/k8s-staging-sig-storage/csi-external-health-monitor-controller: kubernetes-csi-external-health-monitor
+    gcr.io/k8s-staging-sig-storage/csi-provisioner: kubernetes-csi-external-provisioner
+    gcr.io/k8s-staging-sig-storage/csi-resizer: kubernetes-csi-external-resizer
     gcr.io/kaniko-project/executor: kaniko
     gcr.io/kaniko-project/warmer: kaniko-warmer
+    gcr.io/knative-releases/knative.dev/eventing/cmd/broker/filter: knative-eventing-filter
+    gcr.io/knative-releases/knative.dev/eventing/cmd/broker/ingress: knative-eventing-ingress
+    gcr.io/knative-releases/knative.dev/eventing/cmd/controller: knative-eventing-controller
+    gcr.io/knative-releases/knative.dev/eventing/cmd/in_memory/channel_controller: knative-eventing-channel-controller
+    gcr.io/knative-releases/knative.dev/eventing/cmd/in_memory/channel_dispatcher: knative-eventing-channel-dispatcher
+    gcr.io/knative-releases/knative.dev/eventing/cmd/jobsink: knative-eventing-jobsink
+    gcr.io/knative-releases/knative.dev/eventing/cmd/mtchannel_broker: knative-eventing-mtchannel-broker
+    gcr.io/knative-releases/knative.dev/eventing/cmd/webhook: knative-eventing-webhook
+    gcr.io/knative-releases/knative.dev/net-istio/cmd/webhook: knative-net-istio-webhook
+    gcr.io/knative-releases/knative.dev/net-kourier/cmd/kourier: net-kourier
     gcr.io/knative-releases/knative.dev/operator/cmd/operator: knative-operator-webhook
+    gcr.io/knative-releases/knative.dev/serving/cmd/activator: knative-serving-activator
+    gcr.io/knative-releases/knative.dev/serving/cmd/autoscaler: knative-serving-autoscaler
+    gcr.io/knative-releases/knative.dev/serving/cmd/controller: knative-serving-controller
     gcr.io/knative-releases/knative.dev/serving/cmd/queue: knative-serving-queue
-    ghcr.io/kyverno/kyverno: kyvernopre
+    gcr.io/knative-releases/knative.dev/serving/cmd/webhook: knative-serving-webhook
+    gcr.io/ml-pipeline/api-server: kubeflow-pipelines-api-server
+    gcr.io/ml-pipeline/cache-deployer: kubeflow-pipelines-cache-deployer
+    gcr.io/ml-pipeline/cache-server: kubeflow-pipelines-cache-server
+    gcr.io/ml-pipeline/frontend: kubeflow-pipelines-frontend
+    gcr.io/ml-pipeline/metadata-envoy: kubeflow-pipelines-metadata-envoy
+    gcr.io/ml-pipeline/metadata-writer: kubeflow-pipelines-metadata-writer
+    gcr.io/ml-pipeline/persistenceagent: kubeflow-pipelines-persistenceagent
+    gcr.io/ml-pipeline/scheduledworkflow: kubeflow-pipelines-scheduledworkflow
+    gcr.io/ml-pipeline/viewer-crd-controller: kubeflow-pipelines-viewer-crd-controller
+    gcr.io/ml-pipeline/visualization-server: kubeflow-pipelines-visualization-server
+    ghcr.io/apache/camel-karavan-devmode: apache-camel-karavan-devmode
+    ghcr.io/azure/azure-workload-identity/webhook: azure-workload-identity-webhook
+    ghcr.io/cloudnative-pg/postgresql: postgres-cloudnative-pg
+    ghcr.io/crossplane-contrib/function-auto-ready: crossplane-function-auto-ready
+    ghcr.io/crossplane-contrib/function-environment-configs: crossplane-function-environment-configs
+    ghcr.io/crossplane-contrib/function-go-templating: crossplane-function-go-templating
+    ghcr.io/crossplane-contrib/provider-aws: crossplane-aws-provider
+    ghcr.io/crossplane-contrib/provider-aws-cloudformation: crossplane-aws-cloudformation
+    ghcr.io/crossplane-contrib/provider-aws-cloudfront: crossplane-aws-cloudfront
+    ghcr.io/crossplane-contrib/provider-aws-cloudwatchlogs: crossplane-aws-cloudwatchlogs
+    ghcr.io/crossplane-contrib/provider-aws-dynamodb: crossplane-aws-dynamodb
+    ghcr.io/crossplane-contrib/provider-aws-ec2: crossplane-aws-ec2
+    ghcr.io/crossplane-contrib/provider-aws-eks: crossplane-aws-eks
+    ghcr.io/crossplane-contrib/provider-aws-elasticache: crossplane-aws-elasticache
+    ghcr.io/crossplane-contrib/provider-aws-firehose: crossplane-aws-firehose
+    ghcr.io/crossplane-contrib/provider-aws-iam: crossplane-aws-iam
+    ghcr.io/crossplane-contrib/provider-aws-kinesis: crossplane-aws-kinesis
+    ghcr.io/crossplane-contrib/provider-aws-kms: crossplane-aws-kms
+    ghcr.io/crossplane-contrib/provider-aws-lambda: crossplane-aws-lambda
+    ghcr.io/crossplane-contrib/provider-aws-memorydb: crossplane-aws-memorydb
+    ghcr.io/crossplane-contrib/provider-aws-rds: crossplane-aws-rds
+    ghcr.io/crossplane-contrib/provider-aws-route53: crossplane-aws-route53
+    ghcr.io/crossplane-contrib/provider-aws-s3: crossplane-aws-s3
+    ghcr.io/crossplane-contrib/provider-aws-sns: crossplane-aws-sns
+    ghcr.io/crossplane-contrib/provider-aws-sqs: crossplane-aws-sqs
+    ghcr.io/crossplane-contrib/provider-family-aws: crossplane-aws
+    ghcr.io/crossplane-contrib/provider-family-gcp: crossplane-gcp-provider-family
+    ghcr.io/crossplane-contrib/provider-gcp-compute: crossplane-gcp-compute
+    ghcr.io/crossplane-contrib/provider-gcp-container: crossplane-gcp-container
+    ghcr.io/crossplane-contrib/provider-gcp-dns: crossplane-gcp-dns
+    ghcr.io/crossplane-contrib/provider-gcp-kms: crossplane-gcp-kms
+    ghcr.io/crossplane-contrib/provider-gcp-pubsub: crossplane-gcp-pubsub
+    ghcr.io/crossplane-contrib/provider-gcp-storage: crossplane-gcp-storage
+    ghcr.io/crossplane-contrib/provider-gitlab: crossplane-provider-gitlab
+    ghcr.io/crossplane-contrib/provider-kubernetes: crossplane-provider-kubernetes
+    ghcr.io/crossplane-contrib/provider-terraform: crossplane-provider-terraform
+    ghcr.io/dask/dask-kubernetes-operator: dask-kubernetes
+    ghcr.io/flux-iac/tf-runner: tofu-controller-runner
+    ghcr.io/fluxcd/flux-cli: flux
+    ghcr.io/fluxcd/helm-controller: flux-helm-controller
+    ghcr.io/fluxcd/image-automation-controller: flux-image-automation-controller
+    ghcr.io/fluxcd/image-reflector-controller: flux-image-reflector-controller
+    ghcr.io/fluxcd/kustomize-controller: flux-kustomize-controller
+    ghcr.io/fluxcd/notification-controller: flux-notification-controller
+    ghcr.io/fluxcd/source-controller: flux-source-controller
+    ghcr.io/fluxcd/source-watcher: flux-source-watcher
+    ghcr.io/graalvm/graalvm-community: graalvm
+    ghcr.io/graalvm/jdk-community: graalvm
+    ghcr.io/graalvm/nodejs-community: graalvm
+    ghcr.io/grafana/alloy-operator: grafana-alloy-operator
+    ghcr.io/kube-logging/logging-operator/node-exporter: kube-logging-operator-node-exporter
+    ghcr.io/kubeflow/katib/earlystopping-medianstop: kubeflow-katib-earlystopping-medianstop
+    ghcr.io/kubeflow/katib/katib-controller: kubeflow-katib-controller
+    ghcr.io/kubeflow/katib/katib-db-manager: kubeflow-katib-db-manager
+    ghcr.io/kubeflow/kubeflow/central-dashboard: kubeflow-centraldashboard
+    ghcr.io/kubeflow/kubeflow/jupyter-web-app: kubeflow-jupyter-web-app
+    ghcr.io/kubeflow/kubeflow/kfam: kubeflow-access-management
+    ghcr.io/kubeflow/kubeflow/notebook-controller: kubeflow-notebook-controller
+    ghcr.io/kubeflow/kubeflow/poddefaults-webhook: kubeflow-admission-webhook
+    ghcr.io/kubeflow/kubeflow/profile-controller: kubeflow-profile-controller
+    ghcr.io/kubeflow/kubeflow/pvcviewer-controller: kubeflow-pvcviewer-controller
+    ghcr.io/kyverno/background-controller: kyverno-background-controller
+    ghcr.io/kyverno/cleanup-controller: kyverno-cleanup-controller
+    ghcr.io/kyverno/policy-reporter: kyverno-policy-reporter-plugin
+    ghcr.io/kyverno/policy-reporter/kyverno-plugin: kyverno-policy-reporter-plugin-kyverno
+    ghcr.io/kyverno/policy-reporter/trivy-plugin: kyverno-policy-reporter-plugin-trivy
+    ghcr.io/kyverno/reports-controller: kyverno-reports-controller
+    ghcr.io/kyverno/reports-server: kyverno-reports-server
+    ghcr.io/mesosphere/cloud-provider-vsphere/driver: mesosphere-vsphere-csi-driver
+    ghcr.io/mesosphere/cloud-provider-vsphere/syncer: mesosphere-vsphere-csi-syncer
+    ghcr.io/nginx/nginx-s3-gateway/nginx-oss-s3-gateway: nginx-s3-gateway
+    ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java: opentelemetry-java-instrumentation
     ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator: opentelemetry-operator-target-allocator
     ghcr.io/opencost/opencost: opencost-ui
     ghcr.io/opencost/opencost-ui: opencost
-    goharbor/harbor-core: harbor-jobservice
+    ghcr.io/shadowsocks/sslocal-rust: shadowsocks-rust-sslocal
+    ghcr.io/shadowsocks/ssserver-rust: shadowsocks-rust-ssserver
+    ghcr.io/sigstore/scaffolding/createctconfig: sigstore-scaffolding-ctlog-createctconfig
+    ghcr.io/sigstore/scaffolding/createdb: sigstore-scaffolding-trillian-createdb
+    ghcr.io/sigstore/scaffolding/createtree: sigstore-scaffolding-trillian-createtree
+    ghcr.io/sigstore/scaffolding/getoidctoken: sigstore-scaffolding-getoidctoken
+    ghcr.io/sigstore/scaffolding/managectroots: sigstore-scaffolding-ctlog-managectroots
+    ghcr.io/sigstore/scaffolding/rekor-createsecret: sigstore-scaffolding-rekor-createsecret
+    ghcr.io/sigstore/scaffolding/updatetree: sigstore-scaffolding-trillian-updatetree
+    ghcr.io/sigstore/timestamp-server: timestamp-authority-server
+    ghcr.io/spiffe/oidc-discovery-provider: spire-oidc-discovery-provider
+    ghcr.io/tektoncd/github.com/tektoncd/chains/cmd/controller: tekton-chains
     golang*: go
     google/cloud-sdk: google-cloud-sdk
     grafana/agent-operator: grafana-agent-operator
     grafana/alloy: grafana-alloy
+    grafana/beyla: grafana-beyla
     grafana/mimir: grafana-mimir
     grafana/oncall: grafana-oncall
+    grafana/pyroscope: grafana-pyroscope
     grafana/rollout-operator: grafana-rollout-operator
     guacamole/guacamole: guacamole-server
-    hashicorp/vault: vault-k8s
-    istio/install-cni: istio-pilot
-    istio/operator: istio-pilot
+    guacamole/guacd: guacamole-server
+    infinispan/operator: infinispan-operator
+    istio/install-cni: istio-install-cni
+    istio/operator: istio-operator
     istio/pilot: istio-pilot
-    istio/proxyv2: istio-pilot
-    jaegertracing/all-in-one: jaeger-query
-    jitsucom/bulker: jitsucom-syncctl
+    istio/proxyv2: istio-proxy
+    jaegertracing/all-in-one: jaeger-all-in-one
+    jenkins/inbound-agent: jenkins-inbound-agent
+    jitesoft/tesseract-ocr: tesseract
+    jitsucom/bulker: jitsucom-bulker
     jitsucom/jitsu: jitsucom-console
     jupyterhub/k8s-hub: jupyterhub-k8s-hub
+    jupyterhub/k8s-image-awaiter: jupyterhub-k8s-image-awaiter
     jupyterhub/k8s-network-tools: jupyterhub-k8s-network-tools
     justwatch/elasticsearch_exporter: prometheus-elasticsearch-exporter
-    kedacore/keda: keda-admission-webhooks
+    k8ssandra/medusa: cassandra-medusa
+    kafbat/kafka-ui: kafbat-ui
+    kserve/agent: kserve-agent
+    kserve/modelmesh: kserve-modelmesh
+    kserve/modelmesh-controller: kserve-modelmesh-controller
+    kserve/modelmesh-runtime-adapter: kserve-modelmesh-runtime-adapter
+    kserve/rest-proxy: kserve-rest-proxy
+    kserve/router: kserve-router
+    kserve/storage-initializer: kserve-storage-initializer
+    kubeflowkatib/file-metrics-collector: kubeflow-katib-file-metrics-collector
+    kubeflowkatib/suggestion-goptuna: kubeflow-katib-suggestion-goptuna
+    kubeflowkatib/suggestion-hyperband: kubeflow-katib-suggestion-hyperband
+    kubeflowkatib/suggestion-hyperopt: kubeflow-katib-suggestion-hyperopt
+    kubeflowkatib/suggestion-optuna: kubeflow-katib-suggestion-optuna
+    kubeflowkatib/suggestion-pbt: kubeflow-katib-suggestion-pbt
+    kubeflowkatib/suggestion-skopt: kubeflow-katib-suggestion-skopt
     kubernetesui/dashboard: kubernetes-dashboard
     kubernetesui/dashboard-api: kubernetes-dashboard-api
     kubernetesui/dashboard-auth: kubernetes-dashboard-auth
     kubernetesui/dashboard-metrics-scraper: kubernetes-dashboard-metrics-scraper
     kubernetesui/dashboard-web: kubernetes-dashboard-web
+    letsencrypt/trillian_log_server: trillian-logserver
     library/docker: docker-dind
-    library/tomcat: tomcat-jdk8
+    longhornio/support-bundle-kit: longhorn-support-bundle-kit
     mailcow/unbound: unbound-mailcow
+    martenseemann/quic-go-interop: quic-go
     mattermost/mattermost-team-edition: mattermost
+    mcr.microsoft.com/azure-cli: az
+    mcr.microsoft.com/azure-functions/node: azure-functions-node
+    mcr.microsoft.com/azure-functions/python: azure-functions-python
     mcr.microsoft.com/dotnet/aspnet: aspnet-runtime
     mcr.microsoft.com/dotnet/runtime: dotnet-runtime
-    mcr.microsoft.com/dotnet/sdk: dotnet-runtime
+    mcr.microsoft.com/dotnet/sdk: dotnet-sdk
+    mcr.microsoft.com/k8s/azureserviceoperator: azure-service-operator
+    mcr.microsoft.com/oss/kubernetes/azure-cloud-controller-manager: cloud-provider-azure-controller-manager
+    mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager: cloud-provider-azure-node-manager
+    mcr.microsoft.com/oss/v2/azure/secrets-store/provider-azure: secrets-store-csi-driver-provider-azure
     minio/minio: minio-client
     minio/operator: minio-operator
     mongo: mongodb
-    neuvector/controller: neuvector-manager
+    nacos/nacos-server: nacos
+    ncabatoff/process-exporter: prometheus-process-exporter
+    neuvector/controller: neuvector-controller
     newrelic/infrastructure-bundle: newrelic-infrastructure-bundle
     newrelic/infrastructure-k8s: newrelic-infrastructure-k8s
     newrelic/k8s-events-forwarder: newrelic-k8s-events-forwarder
+    newrelic/newrelic-fluentbit-output: newrelic-fluent-bit-output
     newrelic/nri-kube-events: newrelic-kube-events
     newrelic/nri-kubernetes: newrelic-kubernetes
     newrelic/nri-prometheus: newrelic-prometheus
     newrelic/nri-statsd: newrelic-nri-statsd
+    nextcloud: nextcloud-server
     nodejs*: node
+    nvcr.io/nvidia/driver: nvidia-gpu-driver
     nvidia/container-toolkit: nvidia-container-toolkit
     nvidia/k8s-device-plugin: nvidia-device-plugin
     oliver006/redis_exporter: prometheus-redis-exporter
     openbao/openbao: openbao-k8s
     openebs/provisioner-localpv: dynamic-localpv-provisioner
     openjdk: jdk
+    opensearchproject/opensearch-operator: opensearch-k8s-operator
+    pgpool/pgpool: pgpool2
+    powerdns/dnsdist-master: dnsdist
+    powerdns/pdns-auth-master: pdns-auth
+    powerdns/pdns-recursor-54: pdns-recursor
     prom/alertmanager: prometheus-alertmanager
     prom/blackbox-exporter: prometheus-blackbox-exporter
     prom/cloudwatch-exporter: prometheus-cloudwatch-exporter
@@ -107,36 +288,116 @@ images:
     prom/node-exporter: prometheus-node-exporter
     prom/pushgateway: prometheus-pushgateway
     prom/statsd-exporter: prometheus-statsd-exporter
+    prometheuscommunity/pgbouncer-exporter: prometheus-pgbouncer-exporter
+    public.ecr.aws/ebs-csi-driver/volume-modifier-for-k8s: aws-volume-modifier-for-k8s
+    public.ecr.aws/eks-distro/kubernetes-csi/external-attacher: kubernetes-csi-external-attacher
+    public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner: kubernetes-csi-external-provisioner
+    public.ecr.aws/eks-distro/kubernetes-csi/external-resizer: kubernetes-csi-external-resizer
+    public.ecr.aws/eks-distro/kubernetes-csi/external-snapshotter/csi-snapshotter: kubernetes-csi-external-snapshotter
+    public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe: kubernetes-csi-livenessprobe
+    public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar: kubernetes-csi-node-driver-registrar
+    public.ecr.aws/gravitational/teleport-distroless: teleport
+    public.ecr.aws/k1n1h4h4/cert-manager-aws-privateca-issuer: aws-privateca-issuer
     public.ecr.aws/karpenter/controller: karpenter
     public.ecr.aws/mountpoint-s3-csi-driver/aws-mountpoint-s3-csi-driver: mountpoint-s3-csi-driver
+    quay.io/argoproj/argocli: argo-cli
+    quay.io/argoproj/argoexec: argo-exec
+    quay.io/argoproj/workflow-controller: argo-workflowcontroller
+    quay.io/cilium/certgen: cilium-certgen
     quay.io/debezium/connect: debezium-connect
-    quay.io/jetstack/cert-manager-controller: cert-manager-webhook
-    quay.io/jupyter/base-notebook: jupyterhub-base-notebook
+    quay.io/infinispan/server: infinispan
+    quay.io/jetstack/cmctl: cert-manager-cmctl
+    quay.io/jupyter/base-notebook: jupyter-base-notebook
+    quay.io/kubescape/operator: kubescape-operator
+    quay.io/metallb/controller: metallb-controller
+    quay.io/metallb/speaker: metallb-speaker
+    quay.io/minio/mc: minio-client
+    quay.io/minio/operator: minio-operator
+    quay.io/minio/operator-sidecar: minio-operator-sidecar
+    quay.io/mongodb/mongodb-kubernetes-readinessprobe: mongodb-kubernetes-operator-readinessprobe
+    quay.io/prometheus-operator/admission-webhook: prometheus-admission-webhook
     quay.io/prometheus/cloudwatch-exporter: prometheus-cloudwatch-exporter
-    quay.io/prometheuscommunity/yet-another-cloudwatch-exporter: yace
+    quay.io/prometheus/node-exporter: prometheus-node-exporter
+    quay.io/prometheus/snmp-exporter: prometheus-snmp-exporter
+    quay.io/prometheuscommunity/pgbouncer-exporter: prometheus-pgbouncer-exporter
+    quay.io/prometheuscommunity/yet-another-cloudwatch-exporter: prometheus-yet-another-cloudwatch-exporter
+    quay.io/skopeo/stable: skopeo
+    quay.io/superq/chrony-exporter: chrony_exporter
+    quay.io/tigera/operator: tigera-operator
+    rabbitmqoperator/messaging-topology-operator: rabbitmq-messaging-topology-operator
     rancher/agent: rancher-agent
     rancher/fleet: rancher-fleet-agent
+    rancher/fleet-agent: rancher-fleet-agent
     rancher/k3s: k3s-static
+    rancher/rke2-runtime: rke2-runtime-airgap
+    rancher/security-scan: rancher-security-scan
+    rancher/shell: rancher-shell
+    rancher/system-upgrade-controller: rancher-system-upgrade-controller
     redis: redis-sentinel
-    redpandadata/console: redpanda-data-console
+    regclient/regbot: regclient-regbot
+    regclient/regctl: regclient-regctl
+    regclient/regsync: regclient-regsync
+    registry.gitlab.com/gitlab-org/build/cng/certificates: gitlab-certificates
+    registry.k8s.io/autoscaling/addon-resizer: kubernetes-autoscaler-addon-resizer
+    registry.k8s.io/autoscaling/vpa-admission-controller: vertical-pod-autoscaler-admission-controller
+    registry.k8s.io/autoscaling/vpa-recommender: vertical-pod-autoscaler-recommender
+    registry.k8s.io/autoscaling/vpa-updater: vertical-pod-autoscaler-updater
+    registry.k8s.io/capi-ipam-ic/cluster-api-ipam-in-cluster-controller: cluster-api-ipam-provider-in-cluster
+    registry.k8s.io/cloud-provider-gcp/cloud-controller-manager: cloud-provider-gcp-cloud-controller-manager
+    registry.k8s.io/conformance: kube-conformance
+    registry.k8s.io/csi-secrets-store/driver: secrets-store-csi-driver
+    registry.k8s.io/csi-secrets-store/driver-crds: secrets-store-csi-driver-crds
+    registry.k8s.io/defaultbackend: kubernetes-ingress-defaultbackend
+    registry.k8s.io/dns/k8s-dns-node-cache: kubernetes-dns-node-cache
+    registry.k8s.io/ingress-nginx/controller: ingress-nginx-controller
+    registry.k8s.io/kube-apiserver: kubernetes-kube-apiserver
+    registry.k8s.io/kube-controller-manager: kubernetes-kube-controller-manager
+    registry.k8s.io/kube-proxy: kubernetes-kube-proxy
+    registry.k8s.io/kube-scheduler: kubernetes-kube-scheduler
+    registry.k8s.io/pause: kubernetes-pause
     registry.k8s.io/provider-aws/cloud-controller-manager: cloud-provider-aws
-    registryk8s: cluster-api-clusterctl
+    registry.k8s.io/sig-storage/csi-attacher: kubernetes-csi-external-attacher
+    registry.k8s.io/sig-storage/csi-node-driver-registrar: kubernetes-csi-node-driver-registrar
+    registry.k8s.io/sig-storage/livenessprobe: kubernetes-csi-livenessprobe
+    registry.k8s.io/sig-storage/nfsplugin: kubernetes-csi-driver-nfs
+    registry.k8s.io/sig-storage/snapshot-controller: kubernetes-csi-external-snapshot-controller
+    registry.k8s.io/sig-storage/snapshotter: kubernetes-csi-external-snapshotter
     rook/ceph: rook-ceph
     s3-controller: aws-s3-controller
-    selenium/hub: docker-selenium-hub
+    sbtscala/scala-sbt: sbt
+    selenium/base: selenium-base
+    selenium/distributor: selenium-distributor
+    selenium/event-bus: selenium-event-bus
+    selenium/hub: selenium-hub
+    selenium/node-base: selenium-node-base
+    selenium/node-chromium: selenium-node-chromium
+    selenium/node-docker: selenium-node-docker
+    selenium/node-firefox: selenium-node-firefox
+    selenium/router: selenium-router
+    selenium/session-queue: selenium-session-queue
+    selenium/sessions: selenium-sessions
+    selenium/standalone-chromium: selenium-standalone-chromium
+    selenium/standalone-docker: selenium-standalone-docker
+    selenium/standalone-firefox: selenium-standalone-firefox
+    sonobuoy/systemd-logs: sonobuoy-systemd-logs
     stakater/reloader: stakater-reloader
     static*: static:latest
     strimzi/kafka: strimzi-kafka
     strimzi/operator: strimzi-kafka-operator
     temporalio/admin-tools: temporal-admin-tools
     temporalio/server: temporal-server
+    temporalio/ui: temporal-ui-server
     thingsboard/tb: thingsboard-tb-js-executor
+    timescale/timescaledb: timescaledb-compat
     ubuntu: chainguard-base:latest
-    upstream-image: dapr-sentry
-    vault: vault-k8s
+    ubuntu/squid: squid-proxy
+    us-docker.pkg.dev/secretmanager-csi/secrets-store-csi-driver-provider-gcp/plugin: secrets-store-csi-driver-provider-gcp
     victoriametrics/operator: victoriametrics-operator
     victoriametrics/victoria-metrics: victoriametrics-vmstorage
+    vitess/lite: vitess-lite
     vmware/kube-fluentd-operator: kube-logging-operator-fluentd
+    wavefronthq/proxy: wavefront-proxy
+    wavefronthq/wavefront-kubernetes-collector: wavefront-collector-for-kubernetes
     wrouesnel/postgres_exporter: prometheus-postgres-exporter
     xpkg.upbound.io/crossplane-contrib/provider-keycloak: crossplane-keycloak
 packages:
