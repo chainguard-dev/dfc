@@ -81,6 +81,11 @@ func cli() *cobra.Command {
 				return fmt.Errorf("requires at least 1 arg(s), only received 0")
 			}
 
+			// Validate that --org flag is provided
+			if org == "" {
+				return fmt.Errorf("--org flag is required")
+			}
+
 			// Allow for piping into the CLI if first arg is "-"
 			input := cmd.InOrStdin()
 			isFile := args[0] != "-"
@@ -193,7 +198,7 @@ func cli() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&org, "org", dfc.DefaultOrg, "the organization for cgr.dev/<org>/<image> (defaults to ORG)")
+	cmd.Flags().StringVar(&org, "org", "", "the organization for cgr.dev/<org>/<image> (required)")
 	cmd.Flags().StringVar(&registry, "registry", "", "an alternate registry and root namepace (e.g. r.example.com/cg-mirror)")
 	cmd.Flags().BoolVarP(&inPlace, "in-place", "i", false, "modified the Dockerfile in place (vs. stdout), saving original in a .bak file")
 	cmd.Flags().BoolVarP(&j, "json", "j", false, "print dockerfile as json (before conversion)")
