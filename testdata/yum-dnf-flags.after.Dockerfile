@@ -3,8 +3,8 @@
 FROM cgr.dev/ORG/chainguard-base:latest
 USER root
 
-RUN apk add --no-cache httpd php php-cli php-common
+RUN apk add --no-cache apache2 php php-cli php-common
 
-RUN apk add --no-cache httpd php php-cli php-common
+RUN apk add --no-cache apache2 php php-cli php-common
 
-RUN apk add --no-cache httpd php php-cli php-common
+RUN apk add --no-cache apache2 php php-cli php-common

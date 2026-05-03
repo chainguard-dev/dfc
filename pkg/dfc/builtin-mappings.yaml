@@ -2,105 +2,285 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # NOTE: this file is managed by automation and should not be edited directly
-
 images:
     alpine: chainguard-base:latest
-    amazon/cloudwatch-agent: amazon-cloudwatch-agent-operator
+    altinity/clickhouse-server: altinity-clickhouse-server
+    amazon/cloudwatch-agent: amazon-cloudwatch-agent
+    amazoncorretto: amazon-corretto-jdk
     apache/airflow: airflow-core
+    apache/apisix: apache-apisix
+    apache/beam_python3.11_sdk: apache-beam-python-sdk
     apache/beam_python3.7_sdk: apache-beam-python-sdk
+    apache/hop: apache-hop
+    apache/kvrocks: apache-kvrocks
     apache/nifi: apache-nifi
+    apache/nifi-registry: apache-nifi-registry
     apache/tika: apache-tika
     apache/yunikorn: yunikorn-scheduler
     argoproj/argo-rollouts: kubectl-argo-rollouts
-    argoproj/argocd: argocd-repo-server
     atmoz/sftp: atmoz-sftp
+    authentik/server: authentik
     banzaicloud/logging-operator: kube-logging-operator
-    calico/node: calico-typha
+    bitnami/mongodb-exporter: prometheus-mongodb-exporter
+    bitnami/pgpool: pgpool2
+    boky/postfix: boky-postfix
+    calico/node: calico-node
+    camunda/keycloak: camunda-keycloak
     camunda/zeebe: camunda-zeebe
-    cfssl/cfssl: cfssl-self-sign
     chartmuseum/chartmuseum: helm-chartmuseum
-    cilium/cilium: cilium-operator-aws
+    cilium/cilium: cilium-agent
+    cincan/virustotal: vt
     clickhouse/clickhouse-server: clickhouse
     confluentinc/cp-kafka: confluent-kafka
+    continuumio/miniconda3: conda
+    cr.l5d.io/linkerd/cni-plugin: linkerd-cni-plugin
+    cr.l5d.io/linkerd/controller: linkerd-controller
+    cr.l5d.io/linkerd/debug: linkerd-debug
     cr.l5d.io/linkerd/extension-init: linkerd-extension-init
-    crossplane/provider-aws: crossplane-aws-dynamodb
-    crossplane/provider-azure: crossplane-azure-storage
+    cr.l5d.io/linkerd/proxy: linkerd-proxy
+    cr.l5d.io/linkerd/proxy-init: linkerd-proxy-init
+    cr.l5d.io/linkerd/tap: linkerd-tap
+    cr.l5d.io/linkerd/web: linkerd-web
+    crossplane/provider-aws: crossplane-aws
+    crossplane/provider-azure: crossplane-azure
     crossplane/provider-sql: crossplane-sql
+    custompodautoscaler/operator: custom-pod-autoscaler-operator
+    cyberark/secrets-provider-for-k8s: cyberark-secrets-provider-for-k8s
     cybertecpostgresql/pg_timetable: pg-timetable
     cypress/base: cypress-base
+    daprio/daprd: dapr-daprd
+    daprio/injector: dapr-injector
+    daprio/operator: dapr-operator
+    daprio/placement: dapr-placement
+    daprio/scheduler: dapr-scheduler
+    daprio/sentry: dapr-sentry
     dart: dart-runtime
     daskgateway/dask-gateway: dask-gateway-server
     datadog/agent: datadog-agent
     debezium/connect: debezium-connect
     debian: chainguard-base:latest
+    dependencytrack/apiserver: dependency-track-apiserver
     dependencytrack/bundled: dependency-track
+    dependencytrack/frontend: dependency-track-frontend
+    docker: docker-dind
+    docker.dragonflydb.io/dragonflydb/operator: dragonfly-operator
+    docker/compose: docker-compose
     dopplerhq/kubernetes-operator: doppler-kubernetes-operator
     dragonflyoss/dfdaemon: dragonfly
     eclipse-temurin: jdk
     envoyproxy/gateway: envoy-gateway
     envoyproxy/ratelimit: envoy-ratelimit
     fedora: chainguard-base:latest
-    fluxcd/flux: flux-image-automation-controller
     gcc: gcc-glibc
+    gcr.io/datadoghq/operator: datadog-operator
+    gcr.io/k8s-staging-sig-storage/csi-external-health-monitor-controller: kubernetes-csi-external-health-monitor
+    gcr.io/k8s-staging-sig-storage/csi-provisioner: kubernetes-csi-external-provisioner
+    gcr.io/k8s-staging-sig-storage/csi-resizer: kubernetes-csi-external-resizer
     gcr.io/kaniko-project/executor: kaniko
     gcr.io/kaniko-project/warmer: kaniko-warmer
+    gcr.io/knative-releases/knative.dev/eventing/cmd/broker/filter: knative-eventing-filter
+    gcr.io/knative-releases/knative.dev/eventing/cmd/broker/ingress: knative-eventing-ingress
+    gcr.io/knative-releases/knative.dev/eventing/cmd/controller: knative-eventing-controller
+    gcr.io/knative-releases/knative.dev/eventing/cmd/in_memory/channel_controller: knative-eventing-channel-controller
+    gcr.io/knative-releases/knative.dev/eventing/cmd/in_memory/channel_dispatcher: knative-eventing-channel-dispatcher
+    gcr.io/knative-releases/knative.dev/eventing/cmd/jobsink: knative-eventing-jobsink
+    gcr.io/knative-releases/knative.dev/eventing/cmd/mtchannel_broker: knative-eventing-mtchannel-broker
+    gcr.io/knative-releases/knative.dev/eventing/cmd/webhook: knative-eventing-webhook
+    gcr.io/knative-releases/knative.dev/net-istio/cmd/webhook: knative-net-istio-webhook
+    gcr.io/knative-releases/knative.dev/net-kourier/cmd/kourier: net-kourier
     gcr.io/knative-releases/knative.dev/operator/cmd/operator: knative-operator-webhook
+    gcr.io/knative-releases/knative.dev/serving/cmd/activator: knative-serving-activator
+    gcr.io/knative-releases/knative.dev/serving/cmd/autoscaler: knative-serving-autoscaler
+    gcr.io/knative-releases/knative.dev/serving/cmd/controller: knative-serving-controller
     gcr.io/knative-releases/knative.dev/serving/cmd/queue: knative-serving-queue
-    ghcr.io/kyverno/kyverno: kyvernopre
+    gcr.io/knative-releases/knative.dev/serving/cmd/webhook: knative-serving-webhook
+    gcr.io/ml-pipeline/api-server: kubeflow-pipelines-api-server
+    gcr.io/ml-pipeline/cache-deployer: kubeflow-pipelines-cache-deployer
+    gcr.io/ml-pipeline/cache-server: kubeflow-pipelines-cache-server
+    gcr.io/ml-pipeline/frontend: kubeflow-pipelines-frontend
+    gcr.io/ml-pipeline/metadata-envoy: kubeflow-pipelines-metadata-envoy
+    gcr.io/ml-pipeline/metadata-writer: kubeflow-pipelines-metadata-writer
+    gcr.io/ml-pipeline/persistenceagent: kubeflow-pipelines-persistenceagent
+    gcr.io/ml-pipeline/scheduledworkflow: kubeflow-pipelines-scheduledworkflow
+    gcr.io/ml-pipeline/viewer-crd-controller: kubeflow-pipelines-viewer-crd-controller
+    gcr.io/ml-pipeline/visualization-server: kubeflow-pipelines-visualization-server
+    ghcr.io/apache/camel-karavan-devmode: apache-camel-karavan-devmode
+    ghcr.io/azure/azure-workload-identity/webhook: azure-workload-identity-webhook
+    ghcr.io/cloudnative-pg/postgresql: postgres-cloudnative-pg
+    ghcr.io/crossplane-contrib/function-auto-ready: crossplane-function-auto-ready
+    ghcr.io/crossplane-contrib/function-environment-configs: crossplane-function-environment-configs
+    ghcr.io/crossplane-contrib/function-go-templating: crossplane-function-go-templating
+    ghcr.io/crossplane-contrib/provider-aws: crossplane-aws-provider
+    ghcr.io/crossplane-contrib/provider-aws-cloudformation: crossplane-aws-cloudformation
+    ghcr.io/crossplane-contrib/provider-aws-cloudfront: crossplane-aws-cloudfront
+    ghcr.io/crossplane-contrib/provider-aws-cloudwatchlogs: crossplane-aws-cloudwatchlogs
+    ghcr.io/crossplane-contrib/provider-aws-dynamodb: crossplane-aws-dynamodb
+    ghcr.io/crossplane-contrib/provider-aws-ec2: crossplane-aws-ec2
+    ghcr.io/crossplane-contrib/provider-aws-eks: crossplane-aws-eks
+    ghcr.io/crossplane-contrib/provider-aws-elasticache: crossplane-aws-elasticache
+    ghcr.io/crossplane-contrib/provider-aws-firehose: crossplane-aws-firehose
+    ghcr.io/crossplane-contrib/provider-aws-iam: crossplane-aws-iam
+    ghcr.io/crossplane-contrib/provider-aws-kinesis: crossplane-aws-kinesis
+    ghcr.io/crossplane-contrib/provider-aws-kms: crossplane-aws-kms
+    ghcr.io/crossplane-contrib/provider-aws-lambda: crossplane-aws-lambda
+    ghcr.io/crossplane-contrib/provider-aws-memorydb: crossplane-aws-memorydb
+    ghcr.io/crossplane-contrib/provider-aws-rds: crossplane-aws-rds
+    ghcr.io/crossplane-contrib/provider-aws-route53: crossplane-aws-route53
+    ghcr.io/crossplane-contrib/provider-aws-s3: crossplane-aws-s3
+    ghcr.io/crossplane-contrib/provider-aws-sns: crossplane-aws-sns
+    ghcr.io/crossplane-contrib/provider-aws-sqs: crossplane-aws-sqs
+    ghcr.io/crossplane-contrib/provider-family-aws: crossplane-aws
+    ghcr.io/crossplane-contrib/provider-family-gcp: crossplane-gcp-provider-family
+    ghcr.io/crossplane-contrib/provider-gcp-compute: crossplane-gcp-compute
+    ghcr.io/crossplane-contrib/provider-gcp-container: crossplane-gcp-container
+    ghcr.io/crossplane-contrib/provider-gcp-dns: crossplane-gcp-dns
+    ghcr.io/crossplane-contrib/provider-gcp-kms: crossplane-gcp-kms
+    ghcr.io/crossplane-contrib/provider-gcp-pubsub: crossplane-gcp-pubsub
+    ghcr.io/crossplane-contrib/provider-gcp-storage: crossplane-gcp-storage
+    ghcr.io/crossplane-contrib/provider-gitlab: crossplane-provider-gitlab
+    ghcr.io/crossplane-contrib/provider-kubernetes: crossplane-provider-kubernetes
+    ghcr.io/crossplane-contrib/provider-terraform: crossplane-provider-terraform
+    ghcr.io/dask/dask-kubernetes-operator: dask-kubernetes
+    ghcr.io/flux-iac/tf-runner: tofu-controller-runner
+    ghcr.io/fluxcd/flux-cli: flux
+    ghcr.io/fluxcd/helm-controller: flux-helm-controller
+    ghcr.io/fluxcd/image-automation-controller: flux-image-automation-controller
+    ghcr.io/fluxcd/image-reflector-controller: flux-image-reflector-controller
+    ghcr.io/fluxcd/kustomize-controller: flux-kustomize-controller
+    ghcr.io/fluxcd/notification-controller: flux-notification-controller
+    ghcr.io/fluxcd/source-controller: flux-source-controller
+    ghcr.io/fluxcd/source-watcher: flux-source-watcher
+    ghcr.io/graalvm/graalvm-community: graalvm
+    ghcr.io/graalvm/jdk-community: graalvm
+    ghcr.io/graalvm/nodejs-community: graalvm
+    ghcr.io/grafana/alloy-operator: grafana-alloy-operator
+    ghcr.io/kube-logging/logging-operator/node-exporter: kube-logging-operator-node-exporter
+    ghcr.io/kubeflow/katib/earlystopping-medianstop: kubeflow-katib-earlystopping-medianstop
+    ghcr.io/kubeflow/katib/katib-controller: kubeflow-katib-controller
+    ghcr.io/kubeflow/katib/katib-db-manager: kubeflow-katib-db-manager
+    ghcr.io/kubeflow/kubeflow/central-dashboard: kubeflow-centraldashboard
+    ghcr.io/kubeflow/kubeflow/jupyter-web-app: kubeflow-jupyter-web-app
+    ghcr.io/kubeflow/kubeflow/kfam: kubeflow-access-management
+    ghcr.io/kubeflow/kubeflow/notebook-controller: kubeflow-notebook-controller
+    ghcr.io/kubeflow/kubeflow/poddefaults-webhook: kubeflow-admission-webhook
+    ghcr.io/kubeflow/kubeflow/profile-controller: kubeflow-profile-controller
+    ghcr.io/kubeflow/kubeflow/pvcviewer-controller: kubeflow-pvcviewer-controller
+    ghcr.io/kyverno/background-controller: kyverno-background-controller
+    ghcr.io/kyverno/cleanup-controller: kyverno-cleanup-controller
+    ghcr.io/kyverno/policy-reporter: kyverno-policy-reporter-plugin
+    ghcr.io/kyverno/policy-reporter/kyverno-plugin: kyverno-policy-reporter-plugin-kyverno
+    ghcr.io/kyverno/policy-reporter/trivy-plugin: kyverno-policy-reporter-plugin-trivy
+    ghcr.io/kyverno/reports-controller: kyverno-reports-controller
+    ghcr.io/kyverno/reports-server: kyverno-reports-server
+    ghcr.io/mesosphere/cloud-provider-vsphere/driver: mesosphere-vsphere-csi-driver
+    ghcr.io/mesosphere/cloud-provider-vsphere/syncer: mesosphere-vsphere-csi-syncer
+    ghcr.io/nginx/nginx-s3-gateway/nginx-oss-s3-gateway: nginx-s3-gateway
+    ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java: opentelemetry-java-instrumentation
     ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator: opentelemetry-operator-target-allocator
     ghcr.io/opencost/opencost: opencost-ui
     ghcr.io/opencost/opencost-ui: opencost
-    goharbor/harbor-core: harbor-jobservice
+    ghcr.io/shadowsocks/sslocal-rust: shadowsocks-rust-sslocal
+    ghcr.io/shadowsocks/ssserver-rust: shadowsocks-rust-ssserver
+    ghcr.io/sigstore/scaffolding/createctconfig: sigstore-scaffolding-ctlog-createctconfig
+    ghcr.io/sigstore/scaffolding/createdb: sigstore-scaffolding-trillian-createdb
+    ghcr.io/sigstore/scaffolding/createtree: sigstore-scaffolding-trillian-createtree
+    ghcr.io/sigstore/scaffolding/getoidctoken: sigstore-scaffolding-getoidctoken
+    ghcr.io/sigstore/scaffolding/managectroots: sigstore-scaffolding-ctlog-managectroots
+    ghcr.io/sigstore/scaffolding/rekor-createsecret: sigstore-scaffolding-rekor-createsecret
+    ghcr.io/sigstore/scaffolding/updatetree: sigstore-scaffolding-trillian-updatetree
+    ghcr.io/sigstore/timestamp-server: timestamp-authority-server
+    ghcr.io/spiffe/oidc-discovery-provider: spire-oidc-discovery-provider
+    ghcr.io/tektoncd/github.com/tektoncd/chains/cmd/controller: tekton-chains
     golang*: go
     google/cloud-sdk: google-cloud-sdk
     grafana/agent-operator: grafana-agent-operator
     grafana/alloy: grafana-alloy
+    grafana/beyla: grafana-beyla
     grafana/mimir: grafana-mimir
     grafana/oncall: grafana-oncall
+    grafana/pyroscope: grafana-pyroscope
     grafana/rollout-operator: grafana-rollout-operator
     guacamole/guacamole: guacamole-server
-    hashicorp/vault: vault-k8s
-    istio/install-cni: istio-pilot
-    istio/operator: istio-pilot
+    guacamole/guacd: guacamole-server
+    infinispan/operator: infinispan-operator
+    istio/install-cni: istio-install-cni
+    istio/operator: istio-operator
     istio/pilot: istio-pilot
-    istio/proxyv2: istio-pilot
-    jaegertracing/all-in-one: jaeger-query
-    jitsucom/bulker: jitsucom-syncctl
+    istio/proxyv2: istio-proxy
+    jaegertracing/all-in-one: jaeger-all-in-one
+    jenkins/inbound-agent: jenkins-inbound-agent
+    jitesoft/tesseract-ocr: tesseract
+    jitsucom/bulker: jitsucom-bulker
     jitsucom/jitsu: jitsucom-console
     jupyterhub/k8s-hub: jupyterhub-k8s-hub
+    jupyterhub/k8s-image-awaiter: jupyterhub-k8s-image-awaiter
     jupyterhub/k8s-network-tools: jupyterhub-k8s-network-tools
     justwatch/elasticsearch_exporter: prometheus-elasticsearch-exporter
-    kedacore/keda: keda-admission-webhooks
+    k8ssandra/medusa: cassandra-medusa
+    kafbat/kafka-ui: kafbat-ui
+    kserve/agent: kserve-agent
+    kserve/modelmesh: kserve-modelmesh
+    kserve/modelmesh-controller: kserve-modelmesh-controller
+    kserve/modelmesh-runtime-adapter: kserve-modelmesh-runtime-adapter
+    kserve/rest-proxy: kserve-rest-proxy
+    kserve/router: kserve-router
+    kserve/storage-initializer: kserve-storage-initializer
+    kubeflowkatib/file-metrics-collector: kubeflow-katib-file-metrics-collector
+    kubeflowkatib/suggestion-goptuna: kubeflow-katib-suggestion-goptuna
+    kubeflowkatib/suggestion-hyperband: kubeflow-katib-suggestion-hyperband
+    kubeflowkatib/suggestion-hyperopt: kubeflow-katib-suggestion-hyperopt
+    kubeflowkatib/suggestion-optuna: kubeflow-katib-suggestion-optuna
+    kubeflowkatib/suggestion-pbt: kubeflow-katib-suggestion-pbt
+    kubeflowkatib/suggestion-skopt: kubeflow-katib-suggestion-skopt
     kubernetesui/dashboard: kubernetes-dashboard
     kubernetesui/dashboard-api: kubernetes-dashboard-api
     kubernetesui/dashboard-auth: kubernetes-dashboard-auth
     kubernetesui/dashboard-metrics-scraper: kubernetes-dashboard-metrics-scraper
     kubernetesui/dashboard-web: kubernetes-dashboard-web
+    letsencrypt/trillian_log_server: trillian-logserver
     library/docker: docker-dind
-    library/tomcat: tomcat-jdk8
+    longhornio/support-bundle-kit: longhorn-support-bundle-kit
     mailcow/unbound: unbound-mailcow
+    martenseemann/quic-go-interop: quic-go
     mattermost/mattermost-team-edition: mattermost
+    mcr.microsoft.com/azure-cli: az
+    mcr.microsoft.com/azure-functions/node: azure-functions-node
+    mcr.microsoft.com/azure-functions/python: azure-functions-python
     mcr.microsoft.com/dotnet/aspnet: aspnet-runtime
     mcr.microsoft.com/dotnet/runtime: dotnet-runtime
-    mcr.microsoft.com/dotnet/sdk: dotnet-runtime
+    mcr.microsoft.com/dotnet/sdk: dotnet-sdk
+    mcr.microsoft.com/k8s/azureserviceoperator: azure-service-operator
+    mcr.microsoft.com/oss/kubernetes/azure-cloud-controller-manager: cloud-provider-azure-controller-manager
+    mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager: cloud-provider-azure-node-manager
+    mcr.microsoft.com/oss/v2/azure/secrets-store/provider-azure: secrets-store-csi-driver-provider-azure
     minio/minio: minio-client
     minio/operator: minio-operator
     mongo: mongodb
-    neuvector/controller: neuvector-manager
+    nacos/nacos-server: nacos
+    ncabatoff/process-exporter: prometheus-process-exporter
+    neuvector/controller: neuvector-controller
     newrelic/infrastructure-bundle: newrelic-infrastructure-bundle
     newrelic/infrastructure-k8s: newrelic-infrastructure-k8s
     newrelic/k8s-events-forwarder: newrelic-k8s-events-forwarder
+    newrelic/newrelic-fluentbit-output: newrelic-fluent-bit-output
     newrelic/nri-kube-events: newrelic-kube-events
     newrelic/nri-kubernetes: newrelic-kubernetes
     newrelic/nri-prometheus: newrelic-prometheus
     newrelic/nri-statsd: newrelic-nri-statsd
+    nextcloud: nextcloud-server
     nodejs*: node
+    nvcr.io/nvidia/driver: nvidia-gpu-driver
     nvidia/container-toolkit: nvidia-container-toolkit
     nvidia/k8s-device-plugin: nvidia-device-plugin
     oliver006/redis_exporter: prometheus-redis-exporter
     openbao/openbao: openbao-k8s
     openebs/provisioner-localpv: dynamic-localpv-provisioner
     openjdk: jdk
+    opensearchproject/opensearch-operator: opensearch-k8s-operator
+    pgpool/pgpool: pgpool2
+    powerdns/dnsdist-master: dnsdist
+    powerdns/pdns-auth-master: pdns-auth
+    powerdns/pdns-recursor-54: pdns-recursor
     prom/alertmanager: prometheus-alertmanager
     prom/blackbox-exporter: prometheus-blackbox-exporter
     prom/cloudwatch-exporter: prometheus-cloudwatch-exporter
@@ -108,36 +288,116 @@ images:
     prom/node-exporter: prometheus-node-exporter
     prom/pushgateway: prometheus-pushgateway
     prom/statsd-exporter: prometheus-statsd-exporter
+    prometheuscommunity/pgbouncer-exporter: prometheus-pgbouncer-exporter
+    public.ecr.aws/ebs-csi-driver/volume-modifier-for-k8s: aws-volume-modifier-for-k8s
+    public.ecr.aws/eks-distro/kubernetes-csi/external-attacher: kubernetes-csi-external-attacher
+    public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner: kubernetes-csi-external-provisioner
+    public.ecr.aws/eks-distro/kubernetes-csi/external-resizer: kubernetes-csi-external-resizer
+    public.ecr.aws/eks-distro/kubernetes-csi/external-snapshotter/csi-snapshotter: kubernetes-csi-external-snapshotter
+    public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe: kubernetes-csi-livenessprobe
+    public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar: kubernetes-csi-node-driver-registrar
+    public.ecr.aws/gravitational/teleport-distroless: teleport
+    public.ecr.aws/k1n1h4h4/cert-manager-aws-privateca-issuer: aws-privateca-issuer
     public.ecr.aws/karpenter/controller: karpenter
     public.ecr.aws/mountpoint-s3-csi-driver/aws-mountpoint-s3-csi-driver: mountpoint-s3-csi-driver
+    quay.io/argoproj/argocli: argo-cli
+    quay.io/argoproj/argoexec: argo-exec
+    quay.io/argoproj/workflow-controller: argo-workflowcontroller
+    quay.io/cilium/certgen: cilium-certgen
     quay.io/debezium/connect: debezium-connect
-    quay.io/jetstack/cert-manager-controller: cert-manager-webhook
-    quay.io/jupyter/base-notebook: jupyterhub-base-notebook
+    quay.io/infinispan/server: infinispan
+    quay.io/jetstack/cmctl: cert-manager-cmctl
+    quay.io/jupyter/base-notebook: jupyter-base-notebook
+    quay.io/kubescape/operator: kubescape-operator
+    quay.io/metallb/controller: metallb-controller
+    quay.io/metallb/speaker: metallb-speaker
+    quay.io/minio/mc: minio-client
+    quay.io/minio/operator: minio-operator
+    quay.io/minio/operator-sidecar: minio-operator-sidecar
+    quay.io/mongodb/mongodb-kubernetes-readinessprobe: mongodb-kubernetes-operator-readinessprobe
+    quay.io/prometheus-operator/admission-webhook: prometheus-admission-webhook
     quay.io/prometheus/cloudwatch-exporter: prometheus-cloudwatch-exporter
-    quay.io/prometheuscommunity/yet-another-cloudwatch-exporter: yace
+    quay.io/prometheus/node-exporter: prometheus-node-exporter
+    quay.io/prometheus/snmp-exporter: prometheus-snmp-exporter
+    quay.io/prometheuscommunity/pgbouncer-exporter: prometheus-pgbouncer-exporter
+    quay.io/prometheuscommunity/yet-another-cloudwatch-exporter: prometheus-yet-another-cloudwatch-exporter
+    quay.io/skopeo/stable: skopeo
+    quay.io/superq/chrony-exporter: chrony_exporter
+    quay.io/tigera/operator: tigera-operator
+    rabbitmqoperator/messaging-topology-operator: rabbitmq-messaging-topology-operator
     rancher/agent: rancher-agent
     rancher/fleet: rancher-fleet-agent
+    rancher/fleet-agent: rancher-fleet-agent
     rancher/k3s: k3s-static
+    rancher/rke2-runtime: rke2-runtime-airgap
+    rancher/security-scan: rancher-security-scan
+    rancher/shell: rancher-shell
+    rancher/system-upgrade-controller: rancher-system-upgrade-controller
     redis: redis-sentinel
-    redpandadata/console: redpanda-data-console
+    regclient/regbot: regclient-regbot
+    regclient/regctl: regclient-regctl
+    regclient/regsync: regclient-regsync
+    registry.gitlab.com/gitlab-org/build/cng/certificates: gitlab-certificates
+    registry.k8s.io/autoscaling/addon-resizer: kubernetes-autoscaler-addon-resizer
+    registry.k8s.io/autoscaling/vpa-admission-controller: vertical-pod-autoscaler-admission-controller
+    registry.k8s.io/autoscaling/vpa-recommender: vertical-pod-autoscaler-recommender
+    registry.k8s.io/autoscaling/vpa-updater: vertical-pod-autoscaler-updater
+    registry.k8s.io/capi-ipam-ic/cluster-api-ipam-in-cluster-controller: cluster-api-ipam-provider-in-cluster
+    registry.k8s.io/cloud-provider-gcp/cloud-controller-manager: cloud-provider-gcp-cloud-controller-manager
+    registry.k8s.io/conformance: kube-conformance
+    registry.k8s.io/csi-secrets-store/driver: secrets-store-csi-driver
+    registry.k8s.io/csi-secrets-store/driver-crds: secrets-store-csi-driver-crds
+    registry.k8s.io/defaultbackend: kubernetes-ingress-defaultbackend
+    registry.k8s.io/dns/k8s-dns-node-cache: kubernetes-dns-node-cache
+    registry.k8s.io/ingress-nginx/controller: ingress-nginx-controller
+    registry.k8s.io/kube-apiserver: kubernetes-kube-apiserver
+    registry.k8s.io/kube-controller-manager: kubernetes-kube-controller-manager
+    registry.k8s.io/kube-proxy: kubernetes-kube-proxy
+    registry.k8s.io/kube-scheduler: kubernetes-kube-scheduler
+    registry.k8s.io/pause: kubernetes-pause
     registry.k8s.io/provider-aws/cloud-controller-manager: cloud-provider-aws
-    registryk8s: cluster-api-clusterctl
+    registry.k8s.io/sig-storage/csi-attacher: kubernetes-csi-external-attacher
+    registry.k8s.io/sig-storage/csi-node-driver-registrar: kubernetes-csi-node-driver-registrar
+    registry.k8s.io/sig-storage/livenessprobe: kubernetes-csi-livenessprobe
+    registry.k8s.io/sig-storage/nfsplugin: kubernetes-csi-driver-nfs
+    registry.k8s.io/sig-storage/snapshot-controller: kubernetes-csi-external-snapshot-controller
+    registry.k8s.io/sig-storage/snapshotter: kubernetes-csi-external-snapshotter
     rook/ceph: rook-ceph
     s3-controller: aws-s3-controller
-    selenium/hub: docker-selenium-hub
+    sbtscala/scala-sbt: sbt
+    selenium/base: selenium-base
+    selenium/distributor: selenium-distributor
+    selenium/event-bus: selenium-event-bus
+    selenium/hub: selenium-hub
+    selenium/node-base: selenium-node-base
+    selenium/node-chromium: selenium-node-chromium
+    selenium/node-docker: selenium-node-docker
+    selenium/node-firefox: selenium-node-firefox
+    selenium/router: selenium-router
+    selenium/session-queue: selenium-session-queue
+    selenium/sessions: selenium-sessions
+    selenium/standalone-chromium: selenium-standalone-chromium
+    selenium/standalone-docker: selenium-standalone-docker
+    selenium/standalone-firefox: selenium-standalone-firefox
+    sonobuoy/systemd-logs: sonobuoy-systemd-logs
     stakater/reloader: stakater-reloader
     static*: static:latest
     strimzi/kafka: strimzi-kafka
     strimzi/operator: strimzi-kafka-operator
     temporalio/admin-tools: temporal-admin-tools
     temporalio/server: temporal-server
+    temporalio/ui: temporal-ui-server
     thingsboard/tb: thingsboard-tb-js-executor
+    timescale/timescaledb: timescaledb-compat
     ubuntu: chainguard-base:latest
-    upstream-image: dapr-sentry
-    vault: vault-k8s
+    ubuntu/squid: squid-proxy
+    us-docker.pkg.dev/secretmanager-csi/secrets-store-csi-driver-provider-gcp/plugin: secrets-store-csi-driver-provider-gcp
     victoriametrics/operator: victoriametrics-operator
     victoriametrics/victoria-metrics: victoriametrics-vmstorage
+    vitess/lite: vitess-lite
     vmware/kube-fluentd-operator: kube-logging-operator-fluentd
+    wavefronthq/proxy: wavefront-proxy
+    wavefronthq/wavefront-kubernetes-collector: wavefront-collector-for-kubernetes
     wrouesnel/postgres_exporter: prometheus-postgres-exporter
     xpkg.upbound.io/crossplane-contrib/provider-keycloak: crossplane-keycloak
 packages:
@@ -147,6 +407,8 @@ packages:
             - aws-cli
         build-essential:
             - build-base
+        default-mysql-client:
+            - mysql-client
         fonts-liberation:
             - font-liberation
         fonts-open-sans:
@@ -176,10 +438,22 @@ packages:
             - cups-libs
         libcurl4-openssl-dev:
             - curl-dev
+        libdbd-mysql-perl:
+            - perl-dbd-mysql
+        libdbi-perl:
+            - perl-dbi
+        libfreetype6-dev:
+            - freetype-dev
         libgssapi-krb5-2:
             - krb5-libs
+        libheif1:
+            - libheif
         libicu-dev:
             - icu-dev
+        libjpeg62-turbo:
+            - libjpeg-turbo
+        libjpeg-dev:
+            - libjpeg-turbo-dev
         libkrb5-dev:
             - krb5-dev
         liblzma-dev:
@@ -187,10 +461,16 @@ packages:
         libmagic1:
             - libmagic
             - libmagic-dev
+        libmariadb-dev:
+            - mariadb-dev
+        libmariadb-dev-compat:
+            - mariadb-connector-c-dev
         libncurses5-dev:
             - ncurses
         libncursesw5-dev:
             - ncurses-dev
+        libp11-kit0:
+            - p11-kit
         libpq-dev:
             - postgresql-dev
         libpq5:
@@ -199,6 +479,8 @@ packages:
             - librdkafka
         libreadline-dev:
             - readline
+        librtmp1:
+            - librtmp
         libsqlite3-dev:
             - sqlite-libs
         libssl-dev:
@@ -213,8 +495,12 @@ packages:
             - xmlsec-dev
         libxmlsec1-openssl:
             - xmlsec-openssl
+        libzip5:
+            - libzip
         locales:
             - glibc-locales
+        lsb-release:
+            - lsb-release-minimal
         netbase:
             - wolfi-baselayout
         netcat-traditional:
@@ -241,6 +527,8 @@ packages:
             - py3-pyopenssl
         s3fs:
             - s3fs-fuse
+        sqlite3:
+            - sqlite
         ssh:
             - openssh-client
             - openssh-server
@@ -258,5 +546,1231 @@ packages:
         zlib1g-dev:
             - zlib-dev
     fedora:
+        apr:
+            - apr-util
+        apr-devel:
+            - apr-util-dev
+        apr-util-devel:
+            - apr-util-dev
+        aspnetcore-runtime-10.0:
+            - aspnet-10-runtime
+        aspnetcore-runtime-8.0:
+            - aspnet-8-runtime
+        aspnetcore-runtime-9.0:
+            - aspnet-9-runtime
+        aspnetcore-targeting-pack-10.0:
+            - aspnet-10-targeting-pack
+        aspnetcore-targeting-pack-8.0:
+            - aspnet-8-targeting-pack
+        aspnetcore-targeting-pack-9.0:
+            - aspnet-9-targeting-pack
+        audit-libs:
+            - audit
+        augeas-libs:
+            - augeas
+        avahi-libs:
+            - avahi
+        babel:
+            - py3-babel
+        bind-license:
+            - bind
+        bind-utils:
+            - bind-tools
+        brotli-devel:
+            - brotli-dev
+        bsdtar:
+            - libarchive-tools
+        bzip2-devel:
+            - bzip2-dev
+        bzip2-libs:
+            - bzip2
+        capstone:
+            - capstone-5
+        cargo:
+            - cargo-c
+        cargo-doc:
+            - cargo-c
+        clang-devel:
+            - clang-17-dev
+        clang-libs:
+            - clang
+        compat-openssl11:
+            - openssl
+        composefs-libs:
+            - composefs
+        container-tools:
+            - containerd
+        containernetworking-plugins:
+            - cni-plugins
+        containers-common-extra:
+            - containers-common
+        coreutils-common:
+            - coreutils
+        cpp:
+            - gcc
+        criu:
+            - crac-criu
+        criu-libs:
+            - crac-criu
+        cronie-anacron:
+            - cronie
+        cryptsetup-libs:
+            - cryptsetup
+        cyrus-sasl-devel:
+            - cyrus-sasl-dev
+        cyrus-sasl-gssapi:
+            - cyrus-sasl
+        cyrus-sasl-lib:
+            - cyrus-sasl
+        cyrus-sasl-plain:
+            - cyrus-sasl
+        dbus-daemon:
+            - dbus
+        dbus-tools:
+            - dbus
+        device-mapper-devel:
+            - device-mapper
+        device-mapper-event:
+            - device-mapper-event-libs
+        dotnet-runtime-10.0:
+            - dotnet-10-runtime
+        dotnet-runtime-8.0:
+            - dotnet-8-runtime
+        dotnet-runtime-9.0:
+            - dotnet-9-runtime
+        dotnet-sdk-10.0:
+            - dotnet-10-sdk
+        dotnet-sdk-8.0:
+            - dotnet-8-sdk
+        dotnet-sdk-9.0:
+            - dotnet-9-sdk
+        dotnet-sdk-aot-10.0:
+            - dotnet-10-aot
+        dotnet-sdk-aot-9.0:
+            - dotnet-9-aot
+        dotnet-targeting-pack-10.0:
+            - dotnet-10-targeting-pack
+        dotnet-targeting-pack-8.0:
+            - dotnet-8-targeting-pack
+        dotnet-targeting-pack-9.0:
+            - dotnet-9-targeting-pack
+        dracut:
+            - dracut-ng
+        elfutils-debuginfod-client:
+            - elfutils
+        elfutils-libelf:
+            - elfutils
+        elfutils-libs:
+            - elfutils
+        enchant:
+            - enchant2
+        expat-devel:
+            - expat-dev
+        expect:
+            - py3-pexpect
+        fftw-devel:
+            - fftw-dev
+        fftw-libs:
+            - fftw
+        fftw-libs-double:
+            - fftw-double-libs
+        fftw-libs-single:
+            - fftw-single-libs
+        file-libs:
+            - file
+        flac-libs:
+            - flac
+        freetype-devel:
+            - freetype-dev
+        fribidi-devel:
+            - fribidi-dev
+        fuse:
+            - fuse3
+        fuse-devel:
+            - fuse2
+        fuse-libs:
+            - fuse2
+        fuse3-devel:
+            - fuse3-dev
+        gcc-c++:
+            - gcc
+        gcc-gfortran:
+            - gfortran
+        gcc-toolset-12:
+            - gcc-12
+        gcc-toolset-12-annobin-annocheck:
+            - gcc-12
+        gcc-toolset-12-annobin-docs:
+            - gcc-12
+        gcc-toolset-12-annobin-plugin-gcc:
+            - gcc-12
+        gcc-toolset-12-binutils:
+            - binutils
+        gcc-toolset-12-binutils-devel:
+            - gcc-12
+        gcc-toolset-12-binutils-gold:
+            - gcc-12
+        gcc-toolset-12-build:
+            - gcc-12
+        gcc-toolset-12-dwz:
+            - gcc-12
+        gcc-toolset-12-gcc:
+            - gcc-12
+        gcc-toolset-12-gcc-c++:
+            - gcc-12
+        gcc-toolset-12-gcc-gfortran:
+            - gcc-12
+        gcc-toolset-12-gcc-plugin-annobin:
+            - gcc-12
+        gcc-toolset-12-gcc-plugin-devel:
+            - gcc-12
+        gcc-toolset-12-gdb:
+            - gdb
+        gcc-toolset-12-libasan-devel:
+            - gcc-12
+        gcc-toolset-12-libatomic-devel:
+            - gcc-12
+        gcc-toolset-12-libgccjit:
+            - gcc-12
+        gcc-toolset-12-libgccjit-devel:
+            - gcc-12
+        gcc-toolset-12-libgccjit-docs:
+            - gcc-12
+        gcc-toolset-12-libitm-devel:
+            - gcc-12
+        gcc-toolset-12-liblsan-devel:
+            - gcc-12
+        gcc-toolset-12-libquadmath-devel:
+            - gcc-12
+        gcc-toolset-12-libstdc++-devel:
+            - gcc-12
+        gcc-toolset-12-libstdc++-docs:
+            - gcc-12
+        gcc-toolset-12-libtsan-devel:
+            - gcc-12
+        gcc-toolset-12-libubsan-devel:
+            - gcc-12
+        gcc-toolset-12-offload-nvptx:
+            - gcc-12
+        gcc-toolset-12-runtime:
+            - gcc-12
+        gcc-toolset-13:
+            - gcc-13
+        gcc-toolset-13-annobin-annocheck:
+            - gcc-13
+        gcc-toolset-13-annobin-docs:
+            - gcc-13
+        gcc-toolset-13-annobin-plugin-gcc:
+            - gcc-13
+        gcc-toolset-13-binutils:
+            - binutils
+        gcc-toolset-13-binutils-devel:
+            - gcc-13
+        gcc-toolset-13-binutils-gold:
+            - gcc-13
+        gcc-toolset-13-dwz:
+            - gcc-13
+        gcc-toolset-13-gcc:
+            - gcc-13
+        gcc-toolset-13-gcc-c++:
+            - gcc-13
+        gcc-toolset-13-gcc-gfortran:
+            - gcc-13
+        gcc-toolset-13-gcc-plugin-annobin:
+            - gcc-13
+        gcc-toolset-13-gcc-plugin-devel:
+            - gcc-13
+        gcc-toolset-13-gdb:
+            - gdb
+        gcc-toolset-13-libasan-devel:
+            - gcc-13
+        gcc-toolset-13-libatomic-devel:
+            - gcc-13
+        gcc-toolset-13-libgccjit:
+            - gcc-13
+        gcc-toolset-13-libgccjit-devel:
+            - gcc-13
+        gcc-toolset-13-libitm-devel:
+            - gcc-13
+        gcc-toolset-13-liblsan-devel:
+            - gcc-13
+        gcc-toolset-13-libquadmath-devel:
+            - gcc-13
+        gcc-toolset-13-libstdc++-devel:
+            - gcc-13
+        gcc-toolset-13-libstdc++-docs:
+            - gcc-13
+        gcc-toolset-13-libtsan-devel:
+            - gcc-13
+        gcc-toolset-13-libubsan-devel:
+            - gcc-13
+        gcc-toolset-13-offload-nvptx:
+            - gcc-13
+        gcc-toolset-13-runtime:
+            - gcc-13
+        gcc-toolset-14:
+            - gcc-14
+        gcc-toolset-14-annobin-annocheck:
+            - gcc-14
+        gcc-toolset-14-annobin-docs:
+            - gcc-14
+        gcc-toolset-14-annobin-plugin-gcc:
+            - gcc-14
+        gcc-toolset-14-binutils:
+            - binutils
+        gcc-toolset-14-binutils-devel:
+            - gcc-14
+        gcc-toolset-14-binutils-gold:
+            - gcc-14
+        gcc-toolset-14-dwz:
+            - gcc-14
+        gcc-toolset-14-gcc:
+            - gcc-14
+        gcc-toolset-14-gcc-c++:
+            - gcc-14
+        gcc-toolset-14-gcc-gfortran:
+            - gfortran-14
+        gcc-toolset-14-gcc-plugin-annobin:
+            - gcc-14
+        gcc-toolset-14-gcc-plugin-devel:
+            - gcc-14
+        gcc-toolset-14-libasan-devel:
+            - gcc-14
+        gcc-toolset-14-libatomic-devel:
+            - gcc-14
+        gcc-toolset-14-libgccjit:
+            - gcc-14
+        gcc-toolset-14-libgccjit-devel:
+            - gcc-14
+        gcc-toolset-14-libitm-devel:
+            - gcc-14
+        gcc-toolset-14-liblsan-devel:
+            - gcc-14
+        gcc-toolset-14-libquadmath-devel:
+            - gcc-14
+        gcc-toolset-14-libstdc++-devel:
+            - gcc-14
+        gcc-toolset-14-libstdc++-docs:
+            - gcc-14
+        gcc-toolset-14-libtsan-devel:
+            - gcc-14
+        gcc-toolset-14-libubsan-devel:
+            - gcc-14
+        gcc-toolset-14-offload-nvptx:
+            - gcc-14
+        gcc-toolset-14-runtime:
+            - gcc-14
+        gcc-toolset-15:
+            - gcc
+        gcc-toolset-15-binutils:
+            - binutils
+        gcc-toolset-15-gcc:
+            - gcc
+        gcc-toolset-15-libgccjit:
+            - libgccjit
+        gd-devel:
+            - gd-dev
+        gdb-headless:
+            - gdb
+        gdbm-libs:
+            - gdbm
+        gettext-libs:
+            - gettext
+        git-core:
+            - git
+        glib2:
+            - glib
+        glib2-devel:
+            - glib-dev
+        glibc-devel:
+            - glibc-dev
+        glibc-headers:
+            - glibc-dev
+        gmp-devel:
+            - gmp-dev
+        go-toolset:
+            - go-1.25
+        golang:
+            - golangci-lint
+        golang-docs:
+            - golangci-lint
+        gpgme-devel:
+            - gpgme-dev
+        graphite2-devel:
+            - graphite2-dev
+        haproxy:
+            - haproxy-3.0
+        harfbuzz-devel:
+            - harfbuzz-dev
+        httpd:
+            - apache2
+        httpd-core:
+            - apache2-config
+        httpd-devel:
+            - apache2-dev
+        httpd-tools:
+            - apache2-utils
+        hunspell-en:
+            - hunspell-dictionary-en
+        hunspell-en-US:
+            - hunspell-dictionary-en
+        info:
+            - texinfo
+        ipset-libs:
+            - ipset
+        iptables-libs:
+            - iptables
+        jasper-libs:
+            - jasper
+        java-1.8.0-openjdk:
+            - openjdk-8
+        java-1.8.0-openjdk-devel:
+            - openjdk-8
+        java-1.8.0-openjdk-headless:
+            - openjdk-8
+        java-11-openjdk:
+            - openjdk-11
+        java-11-openjdk-devel:
+            - openjdk-11-default-jdk
+        java-11-openjdk-headless:
+            - openjdk-11
+        java-11-openjdk-jmods:
+            - openjdk-11-jmods
+        java-17-openjdk:
+            - openjdk-17
+        java-17-openjdk-devel:
+            - openjdk-17-default-jdk
+        java-17-openjdk-headless:
+            - openjdk-17
+        java-17-openjdk-jmods:
+            - openjdk-17-jmods
+        java-21-openjdk:
+            - openjdk-21
+        java-21-openjdk-devel:
+            - openjdk-21-default-jdk
+        java-21-openjdk-headless:
+            - openjdk-21
+        java-21-openjdk-jmods:
+            - openjdk-21-jmods
+        jbig2dec-libs:
+            - jbig2dec
+        kbd-misc:
+            - kbd
+        kernel-headers:
+            - linux-headers
+        keyutils-libs-devel:
+            - keyutils-libs
+        krb5-devel:
+            - krb5-dev
+        lcms2-devel:
+            - lcms2-dev
+        libICE:
+            - libice
+        libSM:
+            - libsm
+        libX11:
+            - libx11
+        libX11-common:
+            - libxt
+        libX11-devel:
+            - libx11-dev
+        libXScrnSaver:
+            - libxscrnsaver
+        libXau:
+            - libxau
+        libXau-devel:
+            - libxau-dev
+        libXaw:
+            - libxaw
+        libXcomposite:
+            - libxcomposite
+        libXcursor:
+            - libxcursor
+        libXdamage:
+            - libxdamage
+        libXext:
+            - libxext
+        libXfixes:
+            - libxfixes
+        libXft:
+            - libxft
+        libXft-devel:
+            - libxft-dev
+        libXi:
+            - libxi
+        libXinerama:
+            - libxinerama
+        libXmu:
+            - libxmu
+        libXpm:
+            - libxpm
+        libXpm-devel:
+            - libxpm-dev
+        libXrandr:
+            - libxrandr
+        libXrender:
+            - libxrender
+        libXrender-devel:
+            - libxrender-dev
+        libXt:
+            - libxt
+        libXtst:
+            - libxtst
+        libXv:
+            - libxv
+        libXxf86vm:
+            - libxxf86vm
+        libacl:
+            - acl
+        libassuan-devel:
+            - libassuan-dev
+        libattr:
+            - attr
+        libblkid-devel:
+            - libblkid
+        libbrotli:
+            - brotli
+        libcap-devel:
+            - libcap-dev
+        libcap-ng-devel:
+            - libcap-ng-dev
+        libcom_err-devel:
+            - libcom_err
+        libcurl:
+            - curl
+        libcurl-devel:
+            - curl-dev
+        libdb:
+            - db
+        libdb-devel:
+            - db-dev
+        libdb-utils:
+            - db-utils
+        libedit-devel:
+            - libedit-dev
+        libevent-devel:
+            - libevent-dev
+        libexif-devel:
+            - libexif-dev
+        libffi-devel:
+            - libffi-dev
+        libgcrypt-devel:
+            - libgcrypt-dev
+        libgpg-error-devel:
+            - libgpg-error-dev
+        libgs:
+            - libgsf
+        libicu:
+            - icu
+        libicu-devel:
+            - icu-dev
+        libjpeg-turbo-devel:
+            - libjpeg-turbo-dev
+        libmnl-devel:
+            - libmnl-dev
+        libmount-devel:
+            - libmount
+        libmpc:
+            - mpc
+        libmpc-devel:
+            - mpc-dev
+        libnghttp2:
+            - nghttp2
+        libnghttp2-devel:
+            - nghttp2-dev
+        libnsl2:
+            - libnsl
+        libpcap-devel:
+            - libpcap-dev
+        libpciaccess-devel:
+            - libpciaccess-dev
+        libpkgconf:
+            - pkgconf
+        libpng-devel:
+            - libpng-dev
+        libpq:
+            - libpq-18
+        libpq-devel:
+            - postgresql-devel
+        libquadmath-devel:
+            - libquadmath
+        librdkafka-devel:
+            - librdkafka-dev
+        librsvg2:
+            - librsvg
+        libseccomp-devel:
+            - libseccomp-dev
+        libsecret-devel:
+            - libsecret-dev
+        libselinux-devel:
+            - libselinux-dev
+        libselinux-utils:
+            - libselinux
+        libsepol-devel:
+            - libsepol-dev
+        libserf:
+            - serf
+        libss:
+            - libssp
+        libssh-devel:
+            - libssh-dev
+        libstdc++-devel:
+            - libstdc++-dev
+        libtalloc:
+            - talloc
+        libtdb:
+            - tdb
+        libtiff:
+            - tiff
+        libtiff-devel:
+            - tiff-dev
+        libtool-ltdl:
+            - libtool
+        liburing-devel:
+            - liburing-dev
+        libuuid-devel:
+            - libuuid
+        libverto-devel:
+            - libverto-dev
+        libwebp-devel:
+            - libwebp-dev
+        libxcb-devel:
+            - libxcb-dev
+        libxcrypt-devel:
+            - libxcrypt-dev
+        libxml2-devel:
+            - libxml2-dev
+        libxslt-devel:
+            - libxslt-dev
+        libyaml:
+            - yaml
+        libyaml-devel:
+            - yaml-dev
+        libzip-devel:
+            - libzip
+        libzstd:
+            - zstd
+        libzstd-devel:
+            - zstd-dev
+        lld:
+            - lld-21
+        llvm-devel:
+            - llvm-dev
+        llvm-doc:
+            - llvm
+        llvm-libs:
+            - llvm
+        llvm-toolset:
+            - llvm-21
+        lmdb-libs:
+            - lmdb
+        lua:
+            - lua5.4
+        lua-libs:
+            - lua5.4-libs
+        lvm2-libs:
+            - lvm2
+        lz4-devel:
+            - lz4-dev
+        lz4-libs:
+            - lz4
+        mariadb-common:
+            - mariadb
+        mariadb-connector-c-devel:
+            - mariadb-connector-c-dev
+        maven:
+            - maven-3.8
+        mpfr-devel:
+            - mpfr-dev
+        mysql-common:
+            - mysql
+        mysql-libs:
+            - mariadb-connector-c
+        ncurses-c++-libs:
+            - ncurses
+        ncurses-devel:
+            - ncurses-dev
+        ncurses-libs:
+            - ncurses
+        net-snmp-utils:
+            - net-snmp
+        nginx-core:
+            - nginx-mainline
+        nginx-mod-http-image-filter:
+            - nginx-mainline-mod-http_image_filter
+        nginx-mod-http-perl:
+            - nginx-mainline-mod-http_perl
+        nginx-mod-http-xslt-filter:
+            - nginx-mainline-mod-http_xslt_filter
+        nginx-mod-mail:
+            - nginx-mainline-mod-mail
+        nginx-mod-stream:
+            - nginx-mainline-mod-stream
+        nodejs-docs:
+            - nodejs
+        nodejs-libs:
+            - nodejs
+        nspr:
+            - libnspr
+        nss-tools:
+            - nss
+        nss_wrapper-libs:
+            - nss_wrapper
+        numactl-libs:
+            - numactl
+        openblas-devel:
+            - openblas-dev
+        openexr-libs:
+            - openexr
+        openjpeg2:
+            - openjpeg
+        openjpeg2-devel:
+            - openjpeg-dev
+        openjpeg2-tools:
+            - openjpeg-tools
+        openldap-devel:
+            - openldap-dev
+        openssh-clients:
+            - openssh-client
+        openssl-devel:
+            - openssl-dev
+        openssl-libs:
+            - openssl
+        ostree-libs:
+            - ostree
+        pam:
+            - linux-pam
+        pcre-cpp:
+            - pcre
+        pcre-devel:
+            - pcre-dev
+        pcre-utf16:
+            - pcre
+        pcre-utf32:
+            - pcre
+        pcre2-devel:
+            - pcre2-dev
+        pcre2-utf16:
+            - pcre2
+        pcre2-utf32:
+            - pcre2
+        perl-Algorithm-Diff:
+            - perl-algorithm-diff
+        perl-App-cpanminus:
+            - perl-app-cpanminus
+        perl-B:
+            - perl-b-hooks-endofscope
+        perl-Benchmark:
+            - benchmark
+        perl-CPAN:
+            - perl-cpan-distnameinfo
+        perl-CPAN-DistnameInfo:
+            - perl-cpan-distnameinfo
+        perl-CPAN-Meta:
+            - perl-cpan-meta-requirements
+        perl-CPAN-Meta-Requirements:
+            - perl-cpan-meta-requirements
+        perl-Clone:
+            - perl-clone
+        perl-DBD-MySQL:
+            - perl-dbd-mysql
+        perl-DBI:
+            - perl-dbi
+        perl-Devel-PPPort:
+            - perl-devel-ppport
+        perl-Digest:
+            - perl-digest-md5
+        perl-Digest-MD5:
+            - perl-digest-md5
+        perl-Encode:
+            - perl-encode-locale
+        perl-Encode-Locale:
+            - perl-encode-locale
+        perl-Encode-devel:
+            - perl-encode-locale
+        perl-ExtUtils-Install:
+            - perl-extutils-installpaths
+        perl-ExtUtils-MakeMaker:
+            - perl-extutils-makemaker-cpanfile
+        perl-File-Copy:
+            - perl-file-copy-recursive
+        perl-File-Listing:
+            - perl-file-listing
+        perl-File-Which:
+            - perl-file-which
+        perl-File-pushd:
+            - perl-file-pushd
+        perl-Git:
+            - git
+        perl-HTML-Parser:
+            - perl-html-parser
+        perl-HTML-Tagset:
+            - perl-html-tagset
+        perl-HTTP-Cookies:
+            - perl-http-cookies
+        perl-HTTP-Date:
+            - perl-http-date
+        perl-HTTP-Message:
+            - perl-http-message
+        perl-HTTP-Negotiate:
+            - perl-http-negotiate
+        perl-HTTP-Tiny:
+            - perl-http-tinyish
+        perl-IO:
+            - perl-io-gzip
+        perl-IO-HTML:
+            - perl-io-html
+        perl-IO-Socket-SSL:
+            - perl-io-socket-ssl
+        perl-Importer:
+            - perl-importer
+        perl-LWP-MediaTypes:
+            - perl-lwp-mediatypes
+        perl-LWP-Protocol-https:
+            - perl-lwp-protocol-https
+        perl-MRO-Compat:
+            - perl-mro-compat
+        perl-Module-Build:
+            - perl-module-build
+        perl-Module-CPANfile:
+            - perl-module-cpanfile
+        perl-Mozilla-CA:
+            - perl-mozilla-ca
+        perl-Net:
+            - perl-net-snmp
+        perl-Net-HTTP:
+            - perl-net-http
+        perl-Net-SSLeay:
+            - perl-net-ssleay
+        perl-Parse-PMFile:
+            - perl-parse-pmfile
+        perl-String-ShellQuote:
+            - perl-string-shellquote
+        perl-Sub-Exporter:
+            - perl-sub-exporter-progressive
+        perl-Term-Table:
+            - perl-term-table
+        perl-Test:
+            - perl-test-pod
+        perl-Test-Simple:
+            - perl-test-simple
+        perl-Text-Diff:
+            - perl-text-diff
+        perl-Time:
+            - perl-time-hires
+        perl-Time-HiRes:
+            - perl-time-hires
+        perl-Try-Tiny:
+            - perl-try-tiny
+        perl-URI:
+            - perl-uri
+        perl-WWW-RobotRules:
+            - perl-www-robotrules
+        perl-YAML:
+            - yaml
+        perl-devel:
+            - perl-dev
+        perl-interpreter:
+            - perl
+        perl-less:
+            - less
+        perl-lib:
+            - perl-libwww
+        perl-libnet:
+            - libnet
+        perl-libs:
+            - perl
+        perl-macros:
+            - perl
+        perl-mro:
+            - perl-mro-compat
+        php-pecl-apcu:
+            - php-apcu
+        php-pecl-zip:
+            - php-zip
+        podman-docker:
+            - podman
+        podman-remote:
+            - podman
+        postgresql:
+            - postgresql-18
+        procps-ng:
+            - procps
+        pybind11-devel:
+            - py3-pybind11
+        python3:
+            - python-3.9
+        python3-Cython:
+            - py3-cython
+        python3-PyMySQL:
+            - py3-pymysql
+        python3-appdirs:
+            - py3-appdirs
+        python3-argcomplete:
+            - py3-argcomplete
+        python3-attrs:
+            - py3-attrs
+        python3-audit:
+            - py3-audit
+        python3-augeas:
+            - py3-augeas
+        python3-babel:
+            - py3-babel
+        python3-bind:
+            - bind
+        python3-cairo:
+            - py3-cairo
+        python3-cffi:
+            - py3-cffi
+        python3-clang:
+            - py3-clang
+        python3-configobj:
+            - py3-configobj
+        python3-cryptography:
+            - py3-cryptography
+        python3-debug:
+            - py3-debugpy
+        python3-devel:
+            - python-3.9
+        python3-distro:
+            - py3-distro
+        python3-dmidecode:
+            - dmidecode
+        python3-docutils:
+            - py3-docutils
+        python3-ethtool:
+            - ethtool
+        python3-gssapi:
+            - py3-gssapi
+        python3-imagesize:
+            - py3-imagesize
+        python3-imath:
+            - py3-imath
+        python3-iniconfig:
+            - py3-iniconfig
+        python3-jinja2:
+            - py3-jinja2
+        python3-jmespath:
+            - py3-jmespath
+        python3-jsonpatch:
+            - py3-jsonpatch
+        python3-jsonpointer:
+            - py3-jsonpointer
+        python3-jsonschema:
+            - py3-jsonschema
+        python3-jwcrypto:
+            - py3-jwcrypto
+        python3-kmod:
+            - kmod
+        python3-ldap:
+            - py3-ldap
+        python3-lesscpy:
+            - py3-lesscpy
+        python3-libmount:
+            - libmount
+        python3-libs:
+            - python-3.9
+        python3-libselinux:
+            - libselinux
+        python3-libsemanage:
+            - libsemanage
+        python3-libxml2:
+            - libxml2
+        python3-lxml:
+            - py3-lxml
+        python3-mako:
+            - py3-mako
+        python3-markdown:
+            - py3-markdown
+        python3-markupsafe:
+            - py3-markupsafe
+        python3-net-snmp:
+            - net-snmp
+        python3-netaddr:
+            - py3-netaddr
+        python3-netifaces:
+            - py3-netifaces
+        python3-nftables:
+            - nftables
+        python3-oauthlib:
+            - py3-oauthlib
+        python3-packaging:
+            - py3-packaging
+        python3-pexpect:
+            - py3-pexpect
+        python3-pip:
+            - py3-pip
+        python3-pluggy:
+            - py3-pluggy
+        python3-ply:
+            - py3-ply
+        python3-policycoreutils:
+            - policycoreutils
+        python3-prettytable:
+            - py3-prettytable
+        python3-protobuf:
+            - py3-protobuf
+        python3-psutil:
+            - py3-psutil
+        python3-psycopg2:
+            - py3-psycopg2
+        python3-ptyprocess:
+            - py3-ptyprocess
+        python3-pyasn1:
+            - py3-pyasn1
+        python3-pyasn1-modules:
+            - py3-pyasn1-modules
+        python3-pybind11:
+            - py3-pybind11
+        python3-pycparser:
+            - py3-pycparser
+        python3-pycurl:
+            - py3-pycurl
+        python3-pyelftools:
+            - py3-pyelftools
+        python3-pygments:
+            - py3-pygments
+        python3-pyparsing:
+            - py3-pyparsing
+        python3-pyrsistent:
+            - py3-pyrsistent
+        python3-pyserial:
+            - py3-pyserial
+        python3-pytest:
+            - py3-pytest
+        python3-pytest-timeout:
+            - py3-pytest-timeout
+        python3-pytz:
+            - py3-pytz
+        python3-pyyaml:
+            - py3-pyyaml
+        python3-requests-oauthlib:
+            - py3-requests-oauthlib
+        python3-resolvelib:
+            - py3-resolvelib
+        python3-rrdtool:
+            - rrdtool
+        python3-ruamel-yaml:
+            - py3-ruamel-yaml
+        python3-ruamel-yaml-clib:
+            - py3-ruamel-yaml-clib
+        python3-scipy:
+            - py3-scipy
+        python3-snowballstemmer:
+            - py3-snowballstemmer
+        python3-talloc:
+            - py3-talloc
+        python3-toml:
+            - py3-toml
+        python3-tomli:
+            - py3-tomli
+        python3-unbound:
+            - unbound
+        python3-wcwidth:
+            - py3-wcwidth
+        python3-wheel:
+            - py3-wheel
+        python3.11:
+            - python-3.11
+        python3.11-Cython:
+            - py3.11-cython
+        python3.11-PyMySQL:
+            - py3.11-pymysql
+        python3.11-attrs:
+            - py3.11-attrs
+        python3.11-cffi:
+            - py3.11-cffi
+        python3.11-charset-normalizer:
+            - py3.11-charset-normalizer
+        python3.11-cryptography:
+            - py3.11-cryptography
+        python3.11-devel:
+            - python-3.9
+        python3.11-idna:
+            - py3.11-idna
+        python3.11-iniconfig:
+            - py3.11-iniconfig
+        python3.11-libs:
+            - python-3.9
+        python3.11-lxml:
+            - py3.11-lxml
+        python3.11-packaging:
+            - py3.11-packaging
+        python3.11-pip:
+            - py3.11-pip
+        python3.11-pip-wheel:
+            - py3-pip-wheel
+        python3.11-pluggy:
+            - py3.11-pluggy
+        python3.11-ply:
+            - py3.11-ply
+        python3.11-psycopg2:
+            - py3.11-psycopg2
+        python3.11-pybind11:
+            - py3.11-pybind11
+        python3.11-pycparser:
+            - py3.11-pycparser
+        python3.11-pyparsing:
+            - py3.11-pyparsing
+        python3.11-pytest:
+            - py3.11-pytest
+        python3.11-pyyaml:
+            - py3.11-pyyaml
+        python3.11-requests:
+            - py3.11-requests
+        python3.11-scipy:
+            - py3.11-scipy
+        python3.11-setuptools:
+            - py3.11-setuptools
+        python3.11-setuptools-rust:
+            - py3.11-setuptools-rust
+        python3.11-setuptools-wheel:
+            - py3-setuptools-wheel
+        python3.11-six:
+            - py3.11-six
+        python3.11-urllib3:
+            - py3.11-urllib3
+        python3.11-wheel:
+            - py3.11-wheel
+        python3.12:
+            - python-3.12
+        python3.12-Cython:
+            - py3.12-cython
+        python3.12-PyMySQL:
+            - py3.12-pymysql
+        python3.12-cffi:
+            - py3.12-cffi
+        python3.12-charset-normalizer:
+            - py3.12-charset-normalizer
+        python3.12-cryptography:
+            - py3.12-cryptography
+        python3.12-devel:
+            - python-3.9
+        python3.12-flit-core:
+            - py3.12-flit-core
+        python3.12-idna:
+            - py3.12-idna
+        python3.12-iniconfig:
+            - py3.12-iniconfig
+        python3.12-libs:
+            - python-3.9
+        python3.12-lxml:
+            - py3.12-lxml
+        python3.12-packaging:
+            - py3.12-packaging
+        python3.12-pip:
+            - py3.12-pip
+        python3.12-pip-wheel:
+            - py3-pip-wheel
+        python3.12-pluggy:
+            - py3.12-pluggy
+        python3.12-ply:
+            - py3.12-ply
+        python3.12-psycopg2:
+            - py3.12-psycopg2
+        python3.12-pybind11:
+            - py3.12-pybind11
+        python3.12-pycparser:
+            - py3.12-pycparser
+        python3.12-pytest:
+            - py3.12-pytest
+        python3.12-pyyaml:
+            - py3.12-pyyaml
+        python3.12-requests:
+            - py3.12-requests
+        python3.12-scipy:
+            - py3.12-scipy
+        python3.12-setuptools:
+            - py3.12-setuptools
+        python3.12-setuptools-rust:
+            - py3.12-setuptools-rust
+        python3.12-setuptools-wheel:
+            - py3-setuptools-wheel
+        python3.12-urllib3:
+            - py3.12-urllib3
+        python3.12-wheel:
+            - py3.12-wheel
+        qpdf-libs:
+            - qpdf
+        rdma-core-devel:
+            - rdma-core-dev
+        rest:
+            - restic
+        ruby:
+            - ruby-3.3
+        ruby-devel:
+            - ruby-3.3
+        ruby-libs:
+            - ruby-3.3
+        rubygem-bundler:
+            - ruby3.4-bundler
+        rubygem-io-console:
+            - ruby3.4-io-console
+        rubygem-json:
+            - ruby3.4-json
+        rubygem-pg:
+            - ruby3.4-pg
+        rubygem-psych:
+            - ruby3.4-psych
+        rubygem-rexml:
+            - ruby3.4-rexml
+        rubygems:
+            - ruby-3.4
+        rubygems-devel:
+            - ruby-3.4-dev
+        rust:
+            - rustup
+        rust-doc:
+            - rustup
+        rust-toolset:
+            - rust-1.91
         shadow-utils:
             - shadow
+        shadow-utils-subid:
+            - shadow
+        sisu:
+            - basisu
+        spirv-tools-libs:
+            - spirv-tools
+        sqlite-devel:
+            - sqlite-dev
+        subversion-devel:
+            - subversion-dev
+        subversion-tools:
+            - subversion
+        systemd-devel:
+            - systemd-dev
+        systemd-libs:
+            - systemd
+        tcl-devel:
+            - tcl-dev
+        time:
+            - timescaledb-tune
+        tk-devel:
+            - tk-dev
+        toolbox:
+            - gitlab-toolbox-ce-18.2
+        unixODBC:
+            - unixodbc
+        unixODBC-devel:
+            - unixodbc-dev
+        util-linux-user:
+            - util-linux
+        uuid:
+            - uuidgen
+        valgrind-devel:
+            - valgrind-dev
+        varnish-docs:
+            - varnish
+        vim-common:
+            - vim
+        xmlsec1:
+            - xmlsec
+        xmlsec1-openssl:
+            - xmlsec-openssl
+        xz-devel:
+            - xz-dev
+        xz-libs:
+            - xz
+        zlib-devel:
+            - zlib-dev
