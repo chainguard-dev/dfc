@@ -70,8 +70,12 @@ jobs:
 
       - if: ${{ env.WORKFLOW_CONCLUSION == 'success' }}
         working-directory: /tmp
-        run: echo ${{ env.WORKFLOW_CONCLUSION }} && exit 0
+        env:
+          WORKFLOW_CONCLUSION: ${{ env.WORKFLOW_CONCLUSION }}
+        run: echo "$WORKFLOW_CONCLUSION" && exit 0
 
       - if: ${{ env.WORKFLOW_CONCLUSION == 'failure' }}
         working-directory: /tmp
-        run: echo ${{ env.WORKFLOW_CONCLUSION }} && exit 1
+        env:
+          WORKFLOW_CONCLUSION: ${{ env.WORKFLOW_CONCLUSION }}
+        run: echo "$WORKFLOW_CONCLUSION" && exit 1
