@@ -44,6 +44,8 @@ jobs:
 
       - name: Check out code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
 
       - uses: chainguard-dev/actions/boilerplate@76af37936141ab4766b6578400f136c2621614fd # main
         with:
@@ -68,8 +70,12 @@ jobs:
 
       - if: ${{ env.WORKFLOW_CONCLUSION == 'success' }}
         working-directory: /tmp
-        run: echo ${{ env.WORKFLOW_CONCLUSION }} && exit 0
+        env:
+          WORKFLOW_CONCLUSION: ${{ env.WORKFLOW_CONCLUSION }}
+        run: echo "$WORKFLOW_CONCLUSION" && exit 0
 
       - if: ${{ env.WORKFLOW_CONCLUSION == 'failure' }}
         working-directory: /tmp
-        run: echo ${{ env.WORKFLOW_CONCLUSION }} && exit 1
+        env:
+          WORKFLOW_CONCLUSION: ${{ env.WORKFLOW_CONCLUSION }}
+        run: echo "$WORKFLOW_CONCLUSION" && exit 1
