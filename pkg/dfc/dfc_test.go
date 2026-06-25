@@ -1197,8 +1197,15 @@ func TestFullFileConversion(t *testing.T) {
 		t.Fatalf("Failed to find test files: %v", err)
 	}
 
+	var filteredFiles []string
+	for _, file := range beforeFiles {
+		if !strings.Contains(filepath.Base(file), "multistage-") {
+			filteredFiles = append(filteredFiles, file)
+		}
+	}
+
 	// Test each file
-	for _, beforeFile := range beforeFiles {
+	for _, beforeFile := range filteredFiles {
 		name := strings.Split(filepath.Base(beforeFile), ".")[0]
 		t.Run(name, func(t *testing.T) {
 			ctx := context.Background()
@@ -2377,6 +2384,165 @@ func TestPlatformFlagPreservedInConversion(t *testing.T) {
 			result := converted.String()
 			if !strings.Contains(result, tt.expectedOutput) {
 				t.Errorf("Expected output to contain:\n%s\nActual output:\n%s", tt.expectedOutput, result)
+			}
+		})
+	}
+}
+
+func TestConvertToMultistage(t *testing.T) {
+	tests := []struct {
+		name                  string
+		raw                   string
+		convertToMultistage   bool
+		expectedStages        int
+		expectBuilderAlias    bool
+		expectCopyFromBuilder bool
+	}{
+		{
+			name: "single-stage with package installation converts to multistage",
+			raw: `FROM python:3.9
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["python", "app.py"]`,
+			convertToMultistage:   true,
+			expectedStages:        2,
+			expectBuilderAlias:    true,
+			expectCopyFromBuilder: true,
+		},
+		{
+			name: "single-stage without package installation remains single-stage",
+			raw: `FROM python:3.9
+WORKDIR /app
+COPY . .
+CMD ["python", "app.py"]`,
+			convertToMultistage:   true,
+			expectedStages:        1,
+			expectBuilderAlias:    false,
+			expectCopyFromBuilder: false,
+		},
+		{
+			name: "multistage conversion disabled keeps original structure",
+			raw: `FROM python:3.9
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["python", "app.py"]`,
+			convertToMultistage:   false,
+			expectedStages:        1,
+			expectBuilderAlias:    false,
+			expectCopyFromBuilder: false,
+		},
+		{
+			name: "dockerfile with apt-get converts to multistage",
+			raw: `FROM ubuntu:20.04
+RUN apt-get update && apt-get install -y python3
+COPY app.py /app/
+CMD ["python3", "/app/app.py"]`,
+			convertToMultistage:   true,
+			expectedStages:        2,
+			expectBuilderAlias:    true,
+			expectCopyFromBuilder: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+
+			parsed, err := ParseDockerfile(ctx, []byte(tt.raw))
+			if err != nil {
+				t.Fatalf("Failed to parse Dockerfile: %v", err)
+			}
+
+			converted, err := parsed.Convert(ctx, Options{
+				ConvertToMultistage: tt.convertToMultistage,
+				ExtraMappings: MappingsConfig{
+					Images: map[string]string{
+						"python": "python",
+						"ubuntu": "chainguard-base",
+					},
+					Packages: PackageMap{},
+				},
+				NoBuiltIn: true,
+			})
+			if err != nil {
+				t.Fatalf("Failed to convert Dockerfile: %v", err)
+			}
+
+			// Count stages and check for builder alias and COPY --from=builder
+			stageCount := 0
+			hasBuilderAlias := false
+			hasCopyFromBuilder := false
+
+			for _, line := range converted.Lines {
+				if line.From != nil {
+					stageCount++
+					if line.From.Alias == "builder" {
+						hasBuilderAlias = true
+					}
+				}
+				if strings.Contains(line.Raw, "COPY --from=builder") || strings.Contains(line.Converted, "COPY --from=builder") {
+					hasCopyFromBuilder = true
+				}
+			}
+
+			if stageCount != tt.expectedStages {
+				t.Errorf("Expected %d stages, got %d", tt.expectedStages, stageCount)
+			}
+
+			if hasBuilderAlias != tt.expectBuilderAlias {
+				t.Errorf("Expected builder alias: %v, got: %v", tt.expectBuilderAlias, hasBuilderAlias)
+			}
+
+			if hasCopyFromBuilder != tt.expectCopyFromBuilder {
+				t.Errorf("Expected COPY --from=builder: %v, got: %v", tt.expectCopyFromBuilder, hasCopyFromBuilder)
+			}
+		})
+	}
+}
+
+// TestMultistageFileConversion tests full file conversion with multistage option enabled
+func TestMultistageFileConversion(t *testing.T) {
+	beforeFiles, err := filepath.Glob("../../testdata/multistage-*.before.Dockerfile")
+	if err != nil {
+		t.Fatalf("Failed to find multistage test files: %v", err)
+	}
+
+	for _, beforeFile := range beforeFiles {
+		name := strings.Split(filepath.Base(beforeFile), ".")[0]
+		t.Run(name, func(t *testing.T) {
+			ctx := context.Background()
+
+			before, err := os.ReadFile(beforeFile)
+			if err != nil {
+				t.Fatalf("Failed to read input file: %v", err)
+			}
+
+			afterFile := strings.Replace(beforeFile, ".before.", ".after.", 1)
+			after, err := os.ReadFile(afterFile)
+			if err != nil {
+				t.Fatalf("Failed to read expected output file: %v", err)
+			}
+
+			orig, err := ParseDockerfile(ctx, before)
+			if err != nil {
+				t.Fatalf("Failed to parse Dockerfile: %v", err)
+			}
+			converted, err := orig.Convert(ctx, Options{
+				ConvertToMultistage: true,
+			})
+			if err != nil {
+				t.Fatalf("Failed to convert Dockerfile: %v", err)
+			}
+
+			got := converted.String()
+			want := string(after)
+
+			if diff := cmp.Diff(want, got); diff != "" {
+				t.Errorf("multistage conversion not as expected (-want, +got):\n%s", diff)
 			}
 		})
 	}
