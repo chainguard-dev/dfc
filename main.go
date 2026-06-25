@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"syscall"
 
 	"github.com/chainguard-dev/clog"
@@ -118,10 +119,27 @@ func cli() *cobra.Command {
 
 			// If custom mappings file is provided, load it as ExtraMappings
 			if mappingsFile != "" {
-				log.Info("Loading custom mappings file", "file", mappingsFile)
-				mappingsBytes, err := os.ReadFile(mappingsFile)
+				cleanedPath := filepath.Clean(mappingsFile)
+
+				// Reject empty path
+				if cleanedPath == "" || cleanedPath == "." {
+					return fmt.Errorf("mappings file path is empty or invalid: %q", cleanedPath)
+				}
+
+				// Prevents directory traversal
+				if strings.Contains(cleanedPath, "..") {
+					return fmt.Errorf("invalid mappings file path: %q", cleanedPath)
+				}
+
+				// Require .yaml or .yml extension
+				ext := filepath.Ext(cleanedPath)
+				if ext != ".yaml" && ext != ".yml" {
+					return fmt.Errorf("mappings file must be .yaml or .yml, got %q", ext)
+				}
+				log.Info("Loading custom mappings file", "file", cleanedPath)
+				mappingsBytes, err := os.ReadFile(cleanedPath)
 				if err != nil {
-					return fmt.Errorf("reading mappings file %s: %w", mappingsFile, err)
+					return fmt.Errorf("reading mappings file %s: %w", cleanedPath, err)
 				}
 
 				var extraMappings dfc.MappingsConfig
