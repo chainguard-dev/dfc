@@ -15,8 +15,8 @@
 ## About
 
 The `dfc` tool (DFC) helps you migrate your Dockerfiles to use Chainguard Images. For comprehensive guides on migration, check out:
-- [Dockerfile Conversion Guide](https://edu.chainguard.dev/chainguard/migration/dockerfile-conversion/)
-- [Chainguard Migration Overview](https://edu.chainguard.dev/chainguard/migration/migrations-overview/)
+- [Dockerfile Conversion Guide](https://www.chainguard.dev/docs/chainguard/containers/migration/migration-tools/dockerfile-conversion)
+- [Chainguard Migration Overview](https://www.chainguard.dev/docs/chainguard/containers/migration/migrations-overview)
 
 ## Installation
 
