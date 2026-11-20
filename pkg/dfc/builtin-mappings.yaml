@@ -466,7 +466,7 @@ packages:
         libmariadb-dev-compat:
             - mariadb-connector-c-dev
         libncurses5-dev:
-            - ncurses
+            - ncurses-dev
         libncursesw5-dev:
             - ncurses-dev
         libp11-kit0:
@@ -478,13 +478,13 @@ packages:
         librdkafka1:
             - librdkafka
         libreadline-dev:
-            - readline
+            - readline-dev
         librtmp1:
             - librtmp
         libsqlite3-dev:
-            - sqlite-libs
+            - sqlite-dev
         libssl-dev:
-            - libssl3
+            - openssl-dev
         libvshadow-utils:
             - shadow
         libxi6:
@@ -514,7 +514,7 @@ packages:
         postgresql-contrib:
             - postgresql-14-contrib
         protobuf-compiler:
-            - protobuf-c-compiler
+            - protoc
         python3:
             - python-3
         python3-pip:
@@ -594,8 +594,6 @@ packages:
             - clang-17-dev
         clang-libs:
             - clang
-        compat-openssl11:
-            - openssl
         composefs-libs:
             - composefs
         container-tools:
@@ -1399,7 +1397,7 @@ packages:
         pybind11-devel:
             - py3-pybind11
         python3:
-            - python-3.9
+            - python-3
         python3-Cython:
             - py3-cython
         python3-PyMySQL:
@@ -1431,7 +1429,7 @@ packages:
         python3-debug:
             - py3-debugpy
         python3-devel:
-            - python-3.9
+            - python-3-dev
         python3-distro:
             - py3-distro
         python3-dmidecode:
@@ -1469,7 +1467,7 @@ packages:
         python3-libmount:
             - libmount
         python3-libs:
-            - python-3.9
+            - python-3
         python3-libselinux:
             - libselinux
         python3-libsemanage:
@@ -1585,13 +1583,13 @@ packages:
         python3.11-cryptography:
             - py3.11-cryptography
         python3.11-devel:
-            - python-3.9
+            - python-3.11-dev
         python3.11-idna:
             - py3.11-idna
         python3.11-iniconfig:
             - py3.11-iniconfig
         python3.11-libs:
-            - python-3.9
+            - python-3.11
         python3.11-lxml:
             - py3.11-lxml
         python3.11-packaging:
@@ -1645,7 +1643,7 @@ packages:
         python3.12-cryptography:
             - py3.12-cryptography
         python3.12-devel:
-            - python-3.9
+            - python-3.12-dev
         python3.12-flit-core:
             - py3.12-flit-core
         python3.12-idna:
@@ -1653,7 +1651,7 @@ packages:
         python3.12-iniconfig:
             - py3.12-iniconfig
         python3.12-libs:
-            - python-3.9
+            - python-3.12
         python3.12-lxml:
             - py3.12-lxml
         python3.12-packaging:
@@ -1699,7 +1697,7 @@ packages:
         ruby:
             - ruby-3.3
         ruby-devel:
-            - ruby-3.3
+            - ruby-3.3-dev
         ruby-libs:
             - ruby-3.3
         rubygem-bundler:
@@ -1744,8 +1742,6 @@ packages:
             - systemd
         tcl-devel:
             - tcl-dev
-        time:
-            - timescaledb-tune
         tk-devel:
             - tk-dev
         toolbox:
